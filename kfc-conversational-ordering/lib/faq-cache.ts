@@ -138,6 +138,29 @@ const LIBRARY: FaqEntry[] = [
     ],
   },
   {
+    // Complaints get an instant apology + handoff, never a canned excuse. Early
+    // in the library so a complaint phrase can never lose to a factual entry.
+    id: "complaint",
+    triggers: [
+      "khieu nai",
+      "phan nan",
+      "bi nguoi",
+      "do an nguoi",
+      "bi thieu mon",
+      "giao thieu mon",
+      "giao sai mon",
+      "don bi sai",
+      "giao sai roi",
+      "lam roi vai",
+      "te qua",
+      "that vong",
+      "phuc vu kem",
+    ],
+    answers: [
+      "Dạ em thành thật xin lỗi anh/chị về trải nghiệm này ạ 🙏 Anh/chị mô tả giúp em vấn đề (đơn nào, món nào), em ghi nhận và đội hỗ trợ sẽ xử lý ngay nhé.",
+    ],
+  },
+  {
     id: "hours",
     triggers: [
       "may gio mo",
@@ -152,9 +175,31 @@ const LIBRARY: FaqEntry[] = [
       "gio mo cua the nao",
       "mo cua den may gio",
       "gio hoat dong",
+      "dang mo cua khong",
+      "dang mo khong",
+      "con mo khong",
+      "gio co mo khong",
+      "mo cua chua",
+      "what time do you open",
+      "opening hours",
     ],
     answers: [
       "KFC thường mở khoảng 9h sáng tới 22h tối, nhưng tuỳ chi nhánh nên anh/chị kiểm tra cửa hàng gần nhất cho chắc nhé ạ!",
+    ],
+  },
+  {
+    id: "holiday-hours",
+    triggers: [
+      "tet co mo",
+      "le co mo",
+      "co mo cua tet",
+      "co mo tet khong",
+      "nghi tet khong",
+      "nghi le khong",
+      "le tet co ban",
+    ],
+    answers: [
+      "Dạ đa số cửa hàng KFC vẫn mở xuyên lễ Tết ạ, giờ giấc có thể thay đổi nhẹ tuỳ chi nhánh. Anh/chị kiểm tra cửa hàng gần nhất trước khi ghé nhé!",
     ],
   },
   {
@@ -174,6 +219,73 @@ const LIBRARY: FaqEntry[] = [
     ],
     answers: [
       "Dạ KFC có cả giao tận nơi lẫn đến lấy tại quầy ạ. Anh/chị muốn giao hàng hay tự đến lấy để em chuẩn bị đơn nhé?",
+    ],
+  },
+  {
+    id: "delivery-time",
+    triggers: [
+      "giao bao lau",
+      "ship bao lau",
+      "bao lau thi giao",
+      "bao lau thi toi",
+      "bao lau nhan duoc",
+      "giao co lau khong",
+      "giao nhanh khong",
+      "ship nhanh khong",
+      "cho bao lau",
+      "mat bao lau",
+      "how long is delivery",
+    ],
+    answers: [
+      "Dạ thường khoảng 20–40 phút tuỳ khoảng cách và giờ cao điểm ạ. Khi anh/chị chốt đơn, bên em sẽ báo thời gian dự kiến cụ thể nhé!",
+    ],
+  },
+  {
+    id: "delivery-fee",
+    triggers: [
+      "phi ship bao nhieu",
+      "phi ship the nao",
+      "phi giao hang",
+      "ship bao nhieu tien",
+      "phi van chuyen",
+      "tien ship",
+      "mat phi ship",
+      "co tinh phi ship",
+      "free ship khong",
+      "co freeship",
+      "mien phi giao hang",
+      "mien phi ship",
+    ],
+    answers: [
+      "Dạ phí giao tuỳ khoảng cách và sẽ hiện rõ trước khi anh/chị xác nhận đơn ạ — thỉnh thoảng còn có ưu đãi freeship nữa. Anh/chị cứ chọn món trước nhé!",
+    ],
+  },
+  {
+    id: "delivery-area",
+    triggers: [
+      "giao xa khong",
+      "co giao xa",
+      "giao ngoai thanh",
+      "co giao tinh",
+      "khu vuc giao",
+      "pham vi giao",
+      "xa co giao khong",
+    ],
+    answers: [
+      "Dạ phạm vi giao tuỳ chi nhánh gần anh/chị ạ. Anh/chị gửi địa chỉ khi chốt đơn, hệ thống sẽ báo ngay có giao được không nhé!",
+    ],
+  },
+  {
+    id: "min-order",
+    triggers: [
+      "don toi thieu",
+      "toi thieu bao nhieu",
+      "mua toi thieu",
+      "co toi thieu khong",
+      "gia tri toi thieu",
+    ],
+    answers: [
+      "Dạ anh/chị cứ chọn món thoải mái ạ — nếu đơn giao hàng cần thêm điều kiện gì, em sẽ báo rõ trước khi chốt nhé!",
     ],
   },
   {
@@ -197,6 +309,13 @@ const LIBRARY: FaqEntry[] = [
     ],
   },
   {
+    id: "invoice",
+    triggers: ["xuat hoa don", "hoa don do", "hoa don vat", "lay hoa don", "co hoa don khong", "xuat vat"],
+    answers: [
+      "Dạ được ạ, KFC xuất hoá đơn VAT theo yêu cầu. Anh/chị báo nhân viên khi nhận hàng hoặc tại quầy để được hỗ trợ nhé!",
+    ],
+  },
+  {
     id: "spice",
     triggers: [
       "co cay khong",
@@ -212,6 +331,195 @@ const LIBRARY: FaqEntry[] = [
     ],
     answers: [
       "Gà giòn truyền thống thì không cay, còn Gà Hot & Spicy sẽ cay nhẹ đậm đà ạ. Anh/chị thích vị nào để em gợi ý?",
+    ],
+  },
+  {
+    id: "sauce",
+    triggers: [
+      "co tuong ot khong",
+      "co tuong ca",
+      "co sot khong",
+      "sot gi khong",
+      "co mayonnaise",
+      "co sot mayo",
+      "kem sot gi",
+      "co cham gi",
+      "xin them tuong",
+    ],
+    answers: [
+      "Dạ có tương ớt, tương cà kèm sẵn ạ. Anh/chị muốn thêm loại sốt nào cứ dặn em khi chốt món nhé!",
+    ],
+  },
+  {
+    id: "best-seller",
+    triggers: [
+      "mon nao ngon",
+      "mon gi ngon",
+      "ngon nhat",
+      "best seller",
+      "ban chay nhat",
+      "mon nao hot",
+      "nen an gi",
+      "an gi ngon",
+      "nen thu mon nao",
+      "mon nao dang thu",
+      "mon nao noi tieng",
+      "dac san la gi",
+    ],
+    answers: [
+      "Dạ best-seller bên em là Gà Rán Giòn Truyền Thống, Gà Hot & Spicy và burger Zinger ạ. Anh/chị thích gà rán, burger hay combo tiết kiệm để em gợi ý đúng vị hơn nhé?",
+    ],
+  },
+  {
+    id: "budget",
+    triggers: [
+      "mon nao re",
+      "re nhat la gi",
+      "gia re nhat",
+      "it tien nhat",
+      "tiet kiem nhat",
+      "an gi re",
+      "ngan sach it",
+      "sinh vien ngheo",
+    ],
+    answers: [
+      "Dạ có nhiều lựa chọn tiết kiệm lắm ạ! Anh/chị cho em khoảng ngân sách (ví dụ 'dưới 100k'), em tìm phần vừa ví ngon nhất liền nhé 💸",
+    ],
+  },
+  {
+    id: "portion",
+    triggers: [
+      "may mieng",
+      "bao nhieu mieng",
+      "gom nhung gi",
+      "gom mon gi",
+      "co nhung gi ben trong",
+      "trong combo co gi",
+      "mot phan co gi",
+    ],
+    answers: [
+      "Dạ tuỳ phần ạ — anh/chị nói giúp em tên món hoặc combo, em nêu rõ gồm những gì kèm giá luôn nhé!",
+    ],
+  },
+  {
+    id: "kids-family",
+    triggers: [
+      "cho tre em",
+      "tre em an duoc",
+      "menu tre em",
+      "phan tre em",
+      "be an duoc khong",
+      "cho be an",
+      "con nit an",
+      "do choi khong",
+      "an ca gia dinh",
+      "phan gia dinh",
+    ],
+    answers: [
+      "Dạ các bé rất mê gà rán truyền thống, khoai tây nghiền và súp ạ! Nhà mình mấy người để em gợi ý phần ăn gia đình vừa đủ, khỏi thừa khỏi thiếu nhé?",
+    ],
+  },
+  {
+    id: "freshness",
+    triggers: [
+      "ga co tuoi khong",
+      "co tuoi khong",
+      "chien moi khong",
+      "lam moi khong",
+      "co nong khong",
+      "con nong khong",
+      "do an nong khong",
+      "de lau chua",
+      "co gion khong",
+    ],
+    answers: [
+      "Dạ gà bên em được chiên mới liên tục trong ngày, giao đến vẫn nóng giòn ạ. Anh/chị yên tâm nhé! 🍗",
+    ],
+  },
+  {
+    id: "birthday-party",
+    triggers: [
+      "dat tiec",
+      "to chuc sinh nhat",
+      "tiec sinh nhat",
+      "lam sinh nhat",
+      "tiec cong ty",
+      "dat cho nhieu nguoi",
+      "dai gia dinh",
+      "nhom dong nguoi",
+    ],
+    answers: [
+      "Dạ KFC có nhận tiệc sinh nhật và nhóm đông ạ! Đặt tiệc tại nhà hàng thì anh/chị liên hệ chi nhánh gần nhất, còn đặt phần ăn số lượng nhiều giao tận nơi thì em giúp ngay được ạ 🎉",
+    ],
+  },
+  {
+    id: "loyalty-program",
+    triggers: [
+      "diem thuong la gi",
+      "diem la gi",
+      "chuong trinh diem",
+      "tich luy diem",
+      "the thanh vien",
+      "co the thanh vien",
+      "loyalty",
+      "diem thuong dung sao",
+      "diem dung lam gi",
+    ],
+    answers: [
+      "Dạ mỗi đơn đều tự động tích điểm thưởng theo giá trị đơn ạ. Điểm đổi được thành giảm giá ngay khi thanh toán — lúc chốt đơn em sẽ nhắc anh/chị dùng điểm nếu có lợi nhé!",
+    ],
+  },
+  {
+    id: "store-locations",
+    triggers: [
+      "cua hang o dau",
+      "chi nhanh o dau",
+      "co chi nhanh nao",
+      "gan day co kfc",
+      "kfc gan nhat",
+      "cua hang gan nhat",
+      "dia chi cua hang",
+      "dia chi o dau",
+      "co cua hang o",
+      "o dau vay shop",
+    ],
+    answers: [
+      "Dạ KFC có chi nhánh khắp các thành phố lớn ạ. Anh/chị xem cửa hàng gần nhất trên kfcvietnam.com.vn hoặc app KFC nhé — còn muốn đặt giao tận nơi thì em lo được luôn ạ!",
+    ],
+  },
+  {
+    id: "hotline",
+    triggers: [
+      "so tong dai",
+      "tong dai bao nhieu",
+      "hotline bao nhieu",
+      "so hotline",
+      "lien he the nao",
+      "cham soc khach hang",
+    ],
+    answers: [
+      "Dạ anh/chị xem hotline chính thức trên kfcvietnam.com.vn nhé, hoặc cứ nhắn em ở đây ạ — em hỗ trợ đặt món và giải đáp được hầu hết luôn!",
+    ],
+  },
+  {
+    id: "app-website",
+    triggers: [
+      "co app khong",
+      "dat qua app",
+      "tai app o dau",
+      "co website khong",
+      "dat online duoc khong",
+      "dat qua mang",
+    ],
+    answers: [
+      "Dạ có app KFC Việt Nam và website kfcvietnam.com.vn ạ. Mà anh/chị đặt ngay với em ở đây cũng được luôn — nhanh gọn, không cần cài gì thêm ạ! 🐔",
+    ],
+  },
+  {
+    id: "wifi-seating",
+    triggers: ["co wifi", "wifi khong", "pass wifi", "co cho sac", "o cam dien"],
+    answers: [
+      "Dạ đa số chi nhánh đều có chỗ ngồi thoải mái và wifi ạ, tuỳ cửa hàng. Anh/chị hỏi nhân viên tại quầy để lấy pass wifi nhé!",
     ],
   },
   {
@@ -303,7 +611,22 @@ const LIBRARY: FaqEntry[] = [
   },
   {
     id: "greeting",
-    triggers: ["xin chao", "chao em", "chao shop", "chao ban", "hello em", "hello shop", "alo em", "alo shop", "chao ad"],
+    triggers: [
+      "xin chao",
+      "chao em",
+      "chao shop",
+      "chao ban",
+      "hello em",
+      "hello shop",
+      "alo em",
+      "alo shop",
+      "chao ad",
+      "hi em",
+      "hi shop",
+      "hey em",
+      "chao buoi sang",
+      "chao buoi toi",
+    ],
     answers: [
       "Dạ em chào anh/chị! Em là Đại sứ Gà KFC đây ạ. Anh/chị muốn dùng gì hôm nay để em gợi ý nhé? 🍗",
     ],

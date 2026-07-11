@@ -83,4 +83,34 @@ assert.equal(await matchOrderOpener("mấy giờ mở cửa"), null, "non-order 
 assert.equal(await matchOrderOpener("áp mã KFC20"), null, "voucher command is not an order opener");
 assert.equal(await matchOrderOpener("cho mình 1 burger thật ngon cho bữa trưa hôm nay nhé"), null, "long opener falls through");
 
+// --- expanded library: common pre-cached intents hit the right entry ---------
+
+const expandedHits = [
+  ["giao bao lâu vậy shop?", "delivery-time"],
+  ["phí ship bao nhiêu vậy", "delivery-fee"],
+  ["giao xa không em", "delivery-area"],
+  ["món nào ngon nhất vậy?", "best-seller"],
+  ["đồ ăn bị nguội quá", "complaint"],
+  ["giao sai món rồi", "complaint"],
+  ["tích luỹ điểm thế nào?", "loyalty-program"],
+  ["gần đây có KFC không?", "store-locations"],
+  ["tết có mở cửa không?", "holiday-hours"],
+  ["đang mở cửa không em?", "hours"],
+  ["xuất hoá đơn được không", "invoice"],
+  ["có tương ớt không?", "sauce"],
+  ["gà có tươi không vậy", "freshness"],
+  ["đặt tiệc sinh nhật được không", "birthday-party"],
+  ["món nào rẻ nhất?", "budget"],
+  ["menu trẻ em có gì", "kids-family"],
+  ["có app không em", "app-website"],
+] as const;
+
+for (const [text, id] of expandedHits) {
+  assert.equal(matchFaq(text)?.id, id, `"${text}" hits ${id}`);
+}
+
+// Guard still wins over every new entry: order-shaped messages never hit.
+assert.equal(matchFaq("cho mình 1 phần gà rồi giao bao lâu"), null, "order verb + FAQ phrase stays guarded");
+assert.equal(matchFaq("đặt hàng giao xa không"), null, "checkout verb + FAQ phrase stays guarded");
+
 console.log("faq-cache tests passed");
