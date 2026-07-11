@@ -56,3 +56,4 @@
 {"id":"teen-8","suite":"agent","multi_turn":["cko mik 1 zinger","ship toi hoan kiem nha, sdt 0912345678"],"intent":"quote","expect_tools":["quote_order"]}
 {"id":"teen-9","suite":"agent","multi_turn":["cho 1 ga ran 2 mieng","them 1 pepsi nua nk"],"intent":"add_to_cart","expect_item_any":["pepsi-medium"]}
 {"id":"teen-10","suite":"agent","multi_turn":["cho khoai tay chien","doi khoai sang coleslaw nha"],"intent":"add_to_cart","expect_tools":["add_to_cart","update_cart_line","add_to_cart"],"expect_item_any":["coleslaw"]}
+{"id":"adv-fake-placement","suite":"agent","input":"cho mik 2 mieng ga gion cay vs 1 pepsi lon nha","intent":"add_to_cart","expect_item_any":["tenders-3pc","fried-chicken-2pc","fried-chicken-1pc"],"forbid_reply_contains":"phút|giao tới|đang giao|trên đường"}
