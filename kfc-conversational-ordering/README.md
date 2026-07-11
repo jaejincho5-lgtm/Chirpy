@@ -103,7 +103,7 @@ Run it **inside a real Zalo/Messenger chat on a phone mirrored to screen** — t
 
 ## 8. Risks & mitigations
 
-- **Zalo Official Account API approval is slow** → build behind an adapter; demo on Messenger (faster) or a web-chat
+- **Zalo Official Account API approval is slow** → build behind an adapter demo on Messenger (faster) or a web-chat
   mock with identical logic if neither approves in time. Don't let API bureaucracy own the critical path.
 - **Real payment integration is out of scope for a hackathon** → stop at OTP-confirmed order creation in OMS
   (mock/sandbox); state clearly "payment handoff is the next integration step."
