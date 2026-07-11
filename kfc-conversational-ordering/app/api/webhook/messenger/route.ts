@@ -1,6 +1,25 @@
 import { extractMessengerMessages, forwardToAgent, verifyMessengerSignature } from "@/lib/channel";
+import { supabaseAdmin } from "@/lib/supabase";
 
 export const runtime = "nodejs";
+
+// Facebook redelivers a webhook it hasn't seen acknowledged within ~20s — an
+// agent turn near that budget means the SAME message is processed twice and
+// the cart doubles (seen live 2026-07-11, two runs 19s apart). Claim each
+// message.mid in kfc_webhook_events before running the agent; a unique-key
+// conflict means another delivery already owns it, so drop the duplicate.
+// Without Supabase (local/webhook-stub runs) dedup is skipped — single-instance
+// dev never sees Facebook retries.
+async function claimMessage(mid: string | undefined): Promise<boolean> {
+  if (!mid) return true;
+  try {
+    const { error } = await supabaseAdmin().from("kfc_webhook_events").insert({ mid });
+    if (error?.code === "23505") return false; // already processed by an earlier delivery
+    return true; // claimed (or table missing / transient error: fail open, worst case = old behavior)
+  } catch {
+    return true;
+  }
+}
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
@@ -49,8 +68,10 @@ export async function POST(request: Request) {
   }
 
   const inbound = extractMessengerMessages(payload);
+  const claims = await Promise.all(inbound.map((message) => claimMessage(message.mid)));
+  const fresh = inbound.filter((_, i) => claims[i]);
   const results = await Promise.all(
-    inbound.map((message) => forwardToAgent("messenger", message.senderId, message.text)),
+    fresh.map((message) => forwardToAgent("messenger", message.senderId, message.text)),
   );
   const forwardedToAgent = results.some((result) => result.forwarded);
 
@@ -59,7 +80,8 @@ export async function POST(request: Request) {
       ok: true,
       channel: "messenger",
       forwardedToAgent,
-      messageCount: inbound.length,
+      messageCount: fresh.length,
+      duplicatesDropped: inbound.length - fresh.length,
       results,
       note: inbound.length
         ? "Inbound text normalized and forwarded to the agent runtime."

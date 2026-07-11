@@ -291,3 +291,14 @@ create index if not exists kfc_reengage_notifications_idx
 alter table public.kfc_reengage_prefs enable row level security;
 alter table public.kfc_reengage_notifications enable row level security;
 -- server-only.
+
+-- ---------------------------------------------------------------------------
+-- Messenger webhook redelivery dedup (2026-07-11). Facebook retries a webhook
+-- not acknowledged within ~20s; each message.mid is claimed here once before
+-- the agent runs, so a redelivery conflicts on the PK and is dropped instead
+-- of doubling the cart. Server-only.
+create table if not exists public.kfc_webhook_events (
+  mid text primary key,
+  created_at timestamptz not null default now()
+);
+alter table public.kfc_webhook_events enable row level security;

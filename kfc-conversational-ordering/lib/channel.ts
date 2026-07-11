@@ -29,18 +29,20 @@ type MessengerPayload = {
   entry?: Array<{
     messaging?: Array<{
       sender?: { id?: string };
-      message?: { text?: string };
+      message?: { text?: string; mid?: string };
     }>;
   }>;
 };
 
-export function extractMessengerMessages(payload: unknown): Array<{ senderId: string; text: string }> {
-  const out: Array<{ senderId: string; text: string }> = [];
+export function extractMessengerMessages(
+  payload: unknown,
+): Array<{ senderId: string; text: string; mid?: string }> {
+  const out: Array<{ senderId: string; text: string; mid?: string }> = [];
   const entries = (payload as MessengerPayload)?.entry ?? [];
   for (const entry of entries) {
     for (const event of entry.messaging ?? []) {
       const text = event.message?.text;
-      if (text) out.push({ senderId: event.sender?.id ?? "unknown", text });
+      if (text) out.push({ senderId: event.sender?.id ?? "unknown", text, mid: event.message?.mid });
     }
   }
   return out;
