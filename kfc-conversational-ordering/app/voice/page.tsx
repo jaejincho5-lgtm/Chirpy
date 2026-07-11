@@ -11,8 +11,15 @@ import { useChat } from "@ai-sdk/react";
 import { getLatestOrder, KfcMark, MicIcon, Receipt } from "../demo-shared";
 import { extractSay } from "@/lib/say";
 import { getSpeaker } from "@/lib/speech";
+import type { MenuItem, MenuMatch } from "@/lib/menu";
+import ItemPopups from "./item-popups";
+import MenuPanel from "./menu-panel";
 
 const VrmStage = dynamic(() => import("./chicken-stage"), { ssr: false });
+
+// Kill-switch for the visual menu layer (popups + side panel) — §5.4 of
+// docs/FEATURE_ITEM_POPUPS.md: with this off, /voice behaves exactly as before.
+const SHOW_MENU_VISUALS = true;
 
 const VOICE_GREETING = "Chào anh/chị! Em là Đại sứ Gà đây — mình muốn dùng gì hôm nay ạ? 🐔";
 // Spoken while the agent is still thinking, so the avatar never sits silent.
@@ -41,6 +48,12 @@ export default function VoicePage() {
   // Hands-free driver mode: the page listens by itself; the mic button only mutes.
   const [muted, setMuted] = useState(false);
   const [started, setStarted] = useState(false);
+  // Visual menu layer (docs/FEATURE_ITEM_POPUPS.md): side panel + the agent's
+  // LIVE catalog + OOS set (one /api/menu fetch; null catalog = fetch pending
+  // or failed, panel falls back to the static copy).
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [liveCatalog, setLiveCatalog] = useState<MenuItem[] | null>(null);
+  const [outOfStock, setOutOfStock] = useState<Set<string>>(new Set());
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const recognitionRef = useRef<any>(null);
   const spokenCountRef = useRef(0);
@@ -149,6 +162,38 @@ export default function VoicePage() {
       }
     })();
   }, [speakLine]);
+
+  // One-shot availability fetch for the visual menu (§5.3). Failure is fine —
+  // no OOS info just means no greyed-out rows; place_order still enforces it.
+  useEffect(() => {
+    if (!started || !SHOW_MENU_VISUALS) return;
+    let alive = true;
+    fetch("/api/menu")
+      .then((response) => (response.ok ? response.json() : null))
+      .then((json) => {
+        if (!alive) return;
+        if (Array.isArray(json?.outOfStock)) setOutOfStock(new Set<string>(json.outOfStock));
+        if (Array.isArray(json?.catalog)) setLiveCatalog(json.catalog as MenuItem[]);
+      })
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, [started]);
+
+  // Tap-to-add (§3.2/§4.2): we hold the exact item, but the cart is
+  // server-authoritative, so the add rides the same agent path as a spoken
+  // order — submit() cancels speech, guards isBusy, and the echo-guard pauses
+  // the mic exactly like any other turn.
+  function quickAdd(match: MenuMatch) {
+    if (!started || isBusy) return;
+    setMenuOpen(false);
+    // Vietnamese name + "1 phần", not the English name: "Cho mình 1 Fried
+    // Chicken Rice" made the agent match "1 Fried Chicken" (leading-digit
+    // collision, verified live). The VN name is what the menu search is tuned
+    // for, and "1 phần X" keeps the quantity unambiguous for any item name.
+    submit(`Cho mình 1 phần ${match.vietnameseName} nha`);
+  }
 
   // Pre-warm the server audio cache on mount so the first spoken lines (greeting
   // + fillers) are instant. Fire-and-forget; 503 (no key) is a harmless no-op.
@@ -475,6 +520,15 @@ export default function VoicePage() {
             </div>
           ) : null}
         </div>
+        {SHOW_MENU_VISUALS && started ? (
+          <ItemPopups
+            messages={messages}
+            isBusy={isBusy}
+            outOfStock={outOfStock}
+            onAdd={quickAdd}
+            onOpenMenu={() => setMenuOpen(true)}
+          />
+        ) : null}
         {latestOrder && latestOrder.cart.length > 0 ? (
           <aside className={`voice-receipt ${latestOrder.stage === "placed" ? "is-placed" : ""}`}>
             <div className="voice-receipt__head">
@@ -533,6 +587,17 @@ export default function VoicePage() {
           </button>
         )}
       </div>
+      {SHOW_MENU_VISUALS && started ? (
+        <MenuPanel
+          open={menuOpen}
+          onToggle={setMenuOpen}
+          isBusy={isBusy}
+          outOfStock={outOfStock}
+          latestOrder={latestOrder}
+          onAdd={quickAdd}
+          catalog={liveCatalog}
+        />
+      ) : null}
       </div>
     </main>
   );

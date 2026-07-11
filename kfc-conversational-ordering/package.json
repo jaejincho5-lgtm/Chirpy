@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "tsx tests/order.test.ts && tsx tests/profile.test.ts && tsx tests/suggest.test.ts && tsx tests/combos.test.ts && tsx tests/cravings.test.ts && tsx tests/oos.test.ts && tsx tests/oms-store.test.ts && tsx tests/worldstate.test.ts && tsx tests/otp-limits.test.ts && tsx tests/verbosity.test.ts && tsx tests/reengage.test.ts && tsx tests/vouchers-auto.test.ts && tsx tests/reorder.test.ts && tsx tests/answer-cache.test.ts && tsx tests/contact.test.ts && tsx tests/voice-links.test.ts && tsx tests/speech-text.test.ts && tsx tests/faq-cache.test.ts && tsx tests/trust.test.ts && tsx tests/loyalty.test.ts",
+    "test": "tsx tests/order.test.ts && tsx tests/profile.test.ts && tsx tests/suggest.test.ts && tsx tests/combos.test.ts && tsx tests/cravings.test.ts && tsx tests/oos.test.ts && tsx tests/oms-store.test.ts && tsx tests/worldstate.test.ts && tsx tests/otp-limits.test.ts && tsx tests/verbosity.test.ts && tsx tests/reengage.test.ts && tsx tests/vouchers-auto.test.ts && tsx tests/reorder.test.ts && tsx tests/answer-cache.test.ts && tsx tests/contact.test.ts && tsx tests/voice-links.test.ts && tsx tests/speech-text.test.ts && tsx tests/faq-cache.test.ts && tsx tests/trust.test.ts && tsx tests/loyalty.test.ts && tsx tests/voice-items.test.ts",
     "eval": "tsx eval/run.ts",
     "eval:channel": "tsx eval/channel.ts"
   },

@@ -1716,6 +1716,126 @@ button:disabled { cursor: default; }
   transition: transform 120ms var(--ease-out), box-shadow 160ms var(--ease-out);
 }
 .voice-avatar__tap:active { transform: scale(0.992); }
+
+/* ---- /voice item popups (docs/FEATURE_ITEM_POPUPS.md) ----
+   The layer is pointer-events:none so it can never eat taps meant for the
+   avatar's tap-to-repeat; only the cards themselves are interactive. */
+.voice-popups {
+  position: absolute; inset: auto 10px 10px 10px; z-index: 4;
+  display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-end; gap: 8px;
+  pointer-events: none;
+}
+.voice-popup {
+  position: relative; pointer-events: auto;
+  width: min(158px, 44%);
+  background: oklch(0.99 0.006 70); color: var(--ink);
+  border-radius: 14px;
+  box-shadow: 0 18px 36px -18px oklch(0.14 0.06 30 / 0.7), 0 3px 10px -5px oklch(0.14 0.06 30 / 0.4);
+  animation: popupIn 0.32s var(--ease-out) both;
+}
+@keyframes popupIn {
+  from { opacity: 0; transform: translateY(10px) scale(0.94); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.voice-popup__body {
+  display: grid; gap: 2px; width: 100%; text-align: left;
+  padding: 10px 12px; border: 0; background: none; color: inherit;
+  font-family: inherit; border-radius: 14px; cursor: pointer;
+}
+.voice-popup__body:disabled { cursor: default; }
+.voice-popup__body:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; }
+.voice-popup:not(.is-oos):not(.is-adding) .voice-popup__body:hover { background: oklch(0.96 0.02 70); }
+.voice-popup__cat {
+  font-size: 9px; font-weight: 800; letter-spacing: 0.13em; text-transform: uppercase; color: var(--red);
+}
+.voice-popup__name { font-size: 13px; font-weight: 800; line-height: 1.2; }
+.voice-popup__desc {
+  font-size: 10.5px; color: var(--ink-soft); line-height: 1.3;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.voice-popup__price { font-family: var(--font-mono), monospace; font-size: 12px; font-weight: 600; }
+.voice-popup__dismiss {
+  position: absolute; top: -7px; right: -7px; z-index: 1;
+  width: 20px; height: 20px; border-radius: 50%; border: 0; cursor: pointer;
+  background: var(--ink); color: oklch(0.99 0.006 70); font-size: 13px; line-height: 1;
+  display: grid; place-items: center;
+}
+.voice-popup.is-oos .voice-popup__body { opacity: 0.55; }
+.voice-popup__ribbon {
+  position: absolute; top: 8px; right: -6px; padding: 2px 8px; border-radius: 6px;
+  background: var(--red); color: #fff; font-size: 9.5px; font-weight: 800;
+  letter-spacing: 0.06em; text-transform: uppercase; transform: rotate(6deg);
+}
+.voice-popup__state {
+  font-size: 11px; font-weight: 700; color: var(--red);
+}
+.voice-popup.is-adding { box-shadow: 0 0 0 2px var(--red), 0 18px 36px -18px oklch(0.14 0.06 30 / 0.7); }
+.voice-popup--more {
+  width: auto; padding: 9px 14px; border: 0; cursor: pointer;
+  font-family: inherit; font-size: 12px; font-weight: 800; color: var(--ink);
+  background: oklch(0.99 0.006 70); border-radius: 999px; align-self: flex-end;
+}
+.voice-popup--more:hover { background: oklch(0.96 0.02 70); }
+
+/* ---- /voice side menu panel ---- */
+.voice-menu { position: absolute; inset: 0; z-index: 6; pointer-events: none; }
+.voice-menu__handle {
+  position: absolute; right: -2px; top: 46%; pointer-events: auto;
+  transform: rotate(180deg); writing-mode: vertical-rl;
+  padding: 12px 7px; border: 1px solid oklch(1 0 0 / 0.16); border-right: 0; cursor: pointer;
+  border-radius: 0 10px 10px 0;
+  background: oklch(1 0 0 / 0.12); color: oklch(0.98 0.008 60 / 0.9);
+  font-family: inherit; font-size: 11.5px; font-weight: 800; letter-spacing: 0.08em;
+}
+.voice-menu.is-open .voice-menu__handle { display: none; }
+.voice-menu__sheet {
+  position: absolute; top: 0; right: 0; bottom: 0; width: min(320px, 88%);
+  pointer-events: auto; display: flex; flex-direction: column;
+  background: oklch(0.99 0.006 70); color: var(--ink);
+  border-radius: 18px 0 0 18px;
+  box-shadow: -18px 0 44px -20px oklch(0.14 0.06 30 / 0.75);
+  transform: translateX(105%); transition: transform 0.28s var(--ease-out);
+  visibility: hidden;
+}
+.voice-menu.is-open .voice-menu__sheet { transform: translateX(0); visibility: visible; }
+.voice-menu__head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 16px 8px; font-size: 15px;
+}
+.voice-menu__close {
+  width: 26px; height: 26px; border-radius: 50%; border: 0; cursor: pointer;
+  background: oklch(0.94 0.01 70); color: var(--ink); font-size: 16px; line-height: 1;
+}
+.voice-menu__search {
+  margin: 0 14px 8px; padding: 8px 12px; border-radius: 10px;
+  border: 1px solid var(--line); font-family: inherit; font-size: 13px; color: var(--ink);
+  background: oklch(0.97 0.008 70);
+}
+.voice-menu__search:focus { outline: none; border-color: color-mix(in oklch, var(--red) 45%, var(--line)); }
+.voice-menu__list { flex: 1; overflow-y: auto; padding: 0 10px 10px; }
+.voice-menu__empty { font-size: 13px; color: var(--ink-faint); padding: 12px 6px; }
+.voice-menu__group-title {
+  margin: 12px 6px 4px; font-size: 10.5px; font-weight: 800;
+  letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-faint);
+}
+.voice-menu__row {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  width: 100%; padding: 8px 8px; border: 0; border-radius: 10px; cursor: pointer;
+  background: none; font-family: inherit; text-align: left; color: var(--ink);
+}
+.voice-menu__row:hover:not(:disabled) { background: oklch(0.95 0.015 70); }
+.voice-menu__row:disabled { cursor: default; }
+.voice-menu__row.is-oos { opacity: 0.5; }
+.voice-menu__row-main { display: grid; gap: 1px; min-width: 0; }
+.voice-menu__row-main b { font-size: 13px; font-weight: 700; }
+.voice-menu__row-main small { font-size: 11px; color: var(--ink-soft); }
+.voice-menu__hot, .voice-menu__oos-tag { font-style: normal; font-size: 10.5px; color: var(--red); font-weight: 700; }
+.voice-menu__row-price { font-family: var(--font-mono), monospace; font-size: 12px; font-weight: 600; white-space: nowrap; }
+.voice-menu__cart {
+  padding: 10px 16px calc(12px + env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid var(--line); font-size: 13px; color: var(--ink-soft);
+}
+.voice-menu__cart b { font-family: var(--font-mono), monospace; font-weight: 700; color: var(--ink); }
 .voice-avatar__tap:focus-visible {
   box-shadow: inset 0 0 0 2px oklch(0.99 0.006 70 / 0.46), 0 0 0 4px oklch(0.82 0.16 70 / 0.18);
 }
@@ -1979,6 +2099,12 @@ button:disabled { cursor: default; }
   .voice-dot,
   .vrm-status--loading,
   .voice-mic.is-listening .voice-mic__rings i { animation: none; }
+  .voice-popup { animation: popupFade 0.2s ease both; }
+  .voice-menu__sheet { transition: none; }
+}
+@keyframes popupFade {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 /* ---- /voice?tune — dev pose tuner (not shipped; only shows with ?tune) ---- */
