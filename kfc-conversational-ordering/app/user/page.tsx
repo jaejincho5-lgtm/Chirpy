@@ -14,6 +14,7 @@ import {
   KfcMark,
   MenuCards,
   MicIcon,
+  STAGE_LABEL_VI,
   SendIcon,
   SuggestionChip,
   VerifiedBadge,
@@ -181,16 +182,7 @@ export default function UserPhone() {
   const latestOrder = useMemo(() => getLatestOrder(messages), [messages]);
   const traces = useMemo(() => getToolTraces(messages), [messages]);
   const isBusy = status === "submitted" || status === "streaming";
-  const STAGE_LABEL: Record<string, string> = {
-    browsing: "đang xem menu",
-    cart: "giỏ hàng",
-    quoted: "đã báo giá",
-    otp_requested: "chờ mã xác nhận",
-    confirmed: "đã xác nhận",
-    placed: "đã đặt",
-    handoff: "gặp nhân viên",
-  };
-  const stage = latestOrder ? (STAGE_LABEL[latestOrder.stage] ?? latestOrder.stage) : "sẵn sàng";
+  const stage = latestOrder ? (STAGE_LABEL_VI[latestOrder.stage] ?? latestOrder.stage) : "sẵn sàng";
   const messagesRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {

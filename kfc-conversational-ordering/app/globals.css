@@ -2474,3 +2474,29 @@ button:disabled { cursor: default; }
   font-weight: 600;
   letter-spacing: 0.02em;
 }
+
+/* ---------- /voice receipt: dismissable card ---------- */
+
+/* The chip became a button (toggles the receipt) — keep its pill look. */
+button.voice-cart__chip { border: none; font-family: inherit; cursor: pointer; }
+button.voice-cart__chip:hover { background: oklch(0.97 0.01 70); }
+button.voice-cart__chip:focus-visible { outline: 2px solid oklch(1 0 0 / 0.7); outline-offset: 2px; }
+
+.voice-receipt__close {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 999px;
+  background: oklch(1 0 0 / 0.18);
+  color: white;
+  font-size: 15px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 160ms var(--ease-out);
+}
+.voice-receipt__close:hover { background: oklch(1 0 0 / 0.32); }
+.voice-receipt__close:focus-visible { outline: 2px solid oklch(1 0 0 / 0.7); outline-offset: 1px; }

@@ -52,6 +52,7 @@ export default function VoicePage() {
   // LIVE catalog + OOS set (one /api/menu fetch; null catalog = fetch pending
   // or failed, panel falls back to the static copy).
   const [menuOpen, setMenuOpen] = useState(false);
+  const [receiptOpen, setReceiptOpen] = useState(true);
   const [liveCatalog, setLiveCatalog] = useState<MenuItem[] | null>(null);
   const [outOfStock, setOutOfStock] = useState<Set<string>>(new Set());
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -240,11 +241,13 @@ export default function VoicePage() {
     speakLine(say, { meaningful: true });
   }, [messages, isBusy, speakLine]);
 
-  // Happy burst when the order transitions into "placed".
+  // Happy burst when the order transitions into "placed" — and force the
+  // receipt open so the confirmation beat is never hidden behind a closed card.
   useEffect(() => {
     const stage = latestOrder?.stage ?? null;
     if (stage === "placed" && lastStageRef.current !== "placed") {
       setMood("happy");
+      setReceiptOpen(true);
       const timer = setTimeout(() => setMood("idle"), 2500);
       return () => clearTimeout(timer);
     }
@@ -498,10 +501,16 @@ export default function VoicePage() {
             {statusLabel}
           </div>
           {latestOrder && latestOrder.cart.length > 0 ? (
-            <span className="voice-cart__chip">
+            <button
+              type="button"
+              className="voice-cart__chip"
+              onClick={() => setReceiptOpen((open) => !open)}
+              aria-pressed={receiptOpen}
+              aria-label={receiptOpen ? "Ẩn đơn hàng" : "Xem đơn hàng"}
+            >
               <span className="voice-cart__count">{latestOrder.cart.length} món</span>
               <b>{latestOrder.totals.displayTotal}</b>
-            </span>
+            </button>
           ) : null}
         </div>
       </header>
@@ -534,13 +543,21 @@ export default function VoicePage() {
             onOpenMenu={() => setMenuOpen(true)}
           />
         ) : null}
-        {latestOrder && latestOrder.cart.length > 0 ? (
+        {latestOrder && latestOrder.cart.length > 0 && receiptOpen ? (
           <aside className={`voice-receipt ${latestOrder.stage === "placed" ? "is-placed" : ""}`}>
             <div className="voice-receipt__head">
               <span>Đơn của bạn</span>
               {latestOrder.stage === "placed" && latestOrder.placedOrder ? (
                 <span className="voice-receipt__placed">✓ Đã đặt · #{latestOrder.placedOrder.orderNumber}</span>
               ) : null}
+              <button
+                type="button"
+                className="voice-receipt__close"
+                onClick={() => setReceiptOpen(false)}
+                aria-label="Đóng đơn hàng"
+              >
+                ×
+              </button>
             </div>
             <Receipt order={latestOrder} />
           </aside>

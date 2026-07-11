@@ -357,12 +357,22 @@ export function BillSwapCard({ proposal, onAccept }: { proposal: BillProposal; o
   );
 }
 
+export const STAGE_LABEL_VI: Record<string, string> = {
+  browsing: "đang xem menu",
+  cart: "giỏ hàng",
+  quoted: "đã báo giá",
+  otp_requested: "chờ mã xác nhận",
+  confirmed: "đã xác nhận",
+  placed: "đã đặt",
+  handoff: "gặp nhân viên",
+};
+
 export function Receipt({ order }: { order?: Order | null }) {
   return (
     <div className="receipt">
       <div className="receipt__head">
         <span>Đơn hàng</span>
-        <b>{order ? order.stage.replace("_", " ") : "chưa có"}</b>
+        <b>{order ? (STAGE_LABEL_VI[order.stage] ?? order.stage) : "chưa có"}</b>
       </div>
       {order && order.cart.length ? (
         <div className="receipt__lines">
