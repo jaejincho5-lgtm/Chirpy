@@ -192,6 +192,17 @@ export function createOrder(channel: Order["channel"] = "web"): Order {
   };
 }
 
+/**
+ * The order to build on when the customer starts adding items. A placed (or
+ * handed-off) order is history — appending to it would silently merge the new
+ * request into the already-charged cart and double quantities ("như cũ" right
+ * after checkout). A new request after checkout starts a fresh order on the
+ * same channel; any earlier stage passes through untouched.
+ */
+export function cartForNewRequest(order: Order): Order {
+  return order.stage === "placed" || order.stage === "handoff" ? createOrder(order.channel) : order;
+}
+
 export function calculateTotals(order: Order): OrderTotals {
   const subtotalVnd = order.cart.reduce((sum, line) => sum + line.totalPriceVnd, 0);
 

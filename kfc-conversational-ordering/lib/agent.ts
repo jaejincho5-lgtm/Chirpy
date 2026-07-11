@@ -4,6 +4,7 @@ import { createMatchId, searchMenuGrounded } from "./menu";
 import {
   CartGuardrailError,
   addToCart,
+  cartForNewRequest,
   compactOrderState,
   createOrder,
   revalidateOrder,
@@ -202,7 +203,7 @@ function buildTools(ctx: {
       execute: async ({ catalogId, matchId, quantity, optionIds }) => {
         try {
           ctx.setOrder(
-            addToCart(ctx.getOrder(), {
+            addToCart(cartForNewRequest(ctx.getOrder()), {
               catalogId,
               matchId,
               quantity,
@@ -301,7 +302,7 @@ function buildTools(ctx: {
         if (!result.ok) {
           return payloadLite({ ok: false, reason: result.reason });
         }
-        let order = ctx.getOrder();
+        let order = cartForNewRequest(ctx.getOrder());
         const applied: string[] = [];
         for (const line of result.lines) {
           order = addToCart(order, {

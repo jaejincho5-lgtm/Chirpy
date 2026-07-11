@@ -2,7 +2,7 @@
 
 Operator sheet for the person driving. What to *say* is in [DEMO_SCRIPT.md](./DEMO_SCRIPT.md); this is only what to *click and type*, in sequence. Practice until you can do it without reading.
 
-**Golden rule:** after ANY completed order, click **"Khách quay lại, chat mới"** before demoing the next order. Ordering again in the same chat re-uses the placed cart and DOUBLES quantities (known bug in `reorder_usual` — unfixed as of now).
+**Golden rule:** after ANY completed order, click **"Khách quay lại, chat mới"** before demoing the next order. (The old doubling bug — same-chat reorders merging into the placed cart — is FIXED in code via `cartForNewRequest`, but a fresh chat still demos cleaner: no scrollback, fresh receipt.)
 
 ---
 

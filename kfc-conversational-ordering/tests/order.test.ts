@@ -165,4 +165,36 @@ assert.equal(freeship.ok, true);
 if (!freeship.ok) throw new Error("FREESHIP should apply");
 assert.equal(freeship.order.totals.deliveryFeeVnd, 0, "FREESHIP waives fee regardless of apply order");
 
+// --- cartForNewRequest: a new request after checkout never reuses the cart ---
+// Regression: "như cũ" (reorder_usual) or add_to_cart in the same session as a
+// placed order used to append to the already-charged cart and double every line.
+{
+  const { cartForNewRequest } = await import("../lib/order");
+  const base = addToCart(createOrder("web"), {
+    source: "search_menu",
+    catalogId: match.catalogId,
+    matchId: match.matchId,
+    quantity: 1,
+  });
+
+  const placedStage = { ...base, stage: "placed" as const };
+  const fresh = cartForNewRequest(placedStage);
+  assert.equal(fresh.cart.length, 0, "placed order yields a FRESH empty cart");
+  assert.equal(fresh.stage, "browsing", "fresh order starts at browsing");
+  assert.equal(fresh.channel, "web", "fresh order keeps the channel");
+
+  const readd = addToCart(fresh, {
+    source: "search_menu",
+    catalogId: match.catalogId,
+    matchId: createMatchId(match.catalogId),
+    quantity: 1,
+  });
+  assert.equal(readd.cart[0].quantity, 1, "re-ordering after checkout is 1x, never merged to 2x");
+
+  const handoffStage = { ...base, stage: "handoff" as const };
+  assert.equal(cartForNewRequest(handoffStage).cart.length, 0, "handoff order also yields a fresh cart");
+
+  assert.equal(cartForNewRequest(base), base, "an active cart passes through untouched");
+}
+
 console.log("order guardrail + security + reprice tests passed");
