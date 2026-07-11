@@ -94,7 +94,7 @@ export function VouchersModule() {
   return (
     <section className="ops">
       <div className="ops__head">
-        <p className="rail-title">Voucher — quản lý khuyến mãi</p>
+        <p className="rail-title">Voucher, quản lý khuyến mãi</p>
         {source ? <small className="ops__subnote">nguồn: {source === "db" ? "Supabase" : "mặc định (offline)"}</small> : null}
       </div>
       {msg ? <p className="oms-error">{msg}</p> : null}

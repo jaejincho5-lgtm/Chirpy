@@ -106,6 +106,13 @@ function MessageBubble({
       ) : null}
       <div className="bubble">
         {((message.parts ?? []) as ChatPart[]).map((part, index) => {
+          if (part.type === "data-cache") {
+            return (
+              <span key={`${message.id}-${index}`} className="cache-badge" title="Trả lời từ answer cache, không gọi AI">
+                ⚡ trả lời tức thì
+              </span>
+            );
+          }
           if (part.type === "text" && part.text) {
             const contract = parseContract(part.text);
             return (
@@ -174,7 +181,16 @@ export default function UserPhone() {
   const latestOrder = useMemo(() => getLatestOrder(messages), [messages]);
   const traces = useMemo(() => getToolTraces(messages), [messages]);
   const isBusy = status === "submitted" || status === "streaming";
-  const stage = latestOrder?.stage.replace("_", " ") ?? "sẵn sàng";
+  const STAGE_LABEL: Record<string, string> = {
+    browsing: "đang xem menu",
+    cart: "giỏ hàng",
+    quoted: "đã báo giá",
+    otp_requested: "chờ mã xác nhận",
+    confirmed: "đã xác nhận",
+    placed: "đã đặt",
+    handoff: "gặp nhân viên",
+  };
+  const stage = latestOrder ? (STAGE_LABEL[latestOrder.stage] ?? latestOrder.stage) : "sẵn sàng";
   const messagesRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -379,7 +395,12 @@ export default function UserPhone() {
             </span>
             <small>Official Account · trả lời trong vài giây</small>
           </div>
-          <Link href="/voice" className="phone__voice-link" title="Nói chuyện với Đại sứ ảo">
+          <Link
+            href="/voice"
+            className="phone__voice-link"
+            title="Nói chuyện với Đại sứ ảo"
+            aria-label="Mở Đại sứ ảo, nói chuyện bằng giọng nói"
+          >
             🎤
           </Link>
           <span className={`stage-pill ${latestOrder?.placedOrder ? "stage-pill--placed" : ""}`}>{stage}</span>
@@ -389,7 +410,7 @@ export default function UserPhone() {
           {messages.length === 0 ? (
             <div className="empty-state">
               <span>Gà nóng, chat là tới. Hôm nay bạn thèm gì?</span>
-              <p>Nhắn tiếng Việt tự nhiên — agent tự tra menu, giá thật, không bịa.</p>
+              <p>Nhắn tiếng Việt tự nhiên, agent tự tra menu, giá thật, không bịa.</p>
               <div className="empty-prompts">
                 {emptyPrompts.map((prompt) => (
                   <button key={prompt} type="button" onClick={() => submitMessage(prompt)} disabled={isBusy}>
@@ -435,6 +456,7 @@ export default function UserPhone() {
             type="button"
             onClick={toggleMic}
             title={listening ? "Đang nghe... bấm để dừng" : "Nói tiếng Việt (Chrome/Edge)"}
+            aria-label={listening ? "Đang nghe, bấm để dừng" : "Nhập bằng giọng nói"}
             aria-pressed={listening}
           >
             <MicIcon />

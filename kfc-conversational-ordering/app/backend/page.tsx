@@ -111,7 +111,7 @@ export default function BackendConsole() {
           </div>
           <div>
             <b>COLONEL · Backend</b>
-            <small>Bàn điều khiển vận hành — mô-đun hóa</small>
+            <small>Bàn điều khiển vận hành, mô-đun hóa</small>
           </div>
         </div>
         <nav className="module-nav">

@@ -162,7 +162,7 @@ async function interceptOptOut(
   await store.setOptOut(customerId, optOut).catch(() => null);
   if (optIn) await store.setMuted(customerId, null).catch(() => null);
   return optOut
-    ? "Đã tắt thông báo chủ động. Bạn vẫn đặt hàng bình thường bất cứ lúc nào — nhắn \"bật thông báo\" nếu muốn nhận lại. 🙏"
+    ? "Đã tắt thông báo chủ động. Bạn vẫn đặt hàng bình thường bất cứ lúc nào, nhắn \"bật thông báo\" nếu muốn nhận lại. 🙏"
     : "Đã bật lại thông báo chủ động. Hẹn gặp bạn đúng bữa! 🍗";
 }
 
@@ -192,7 +192,7 @@ async function interceptChirpy(channel: "messenger", senderId: string, text: str
   const customerId = channelCustomerId(channel, senderId);
   const conversationKey = convoId(channel, senderId);
   const { token } = await mintVoiceLink(customerId, conversationKey);
-  return `Bấm vào đây để nói chuyện với em nhé — em nhớ đơn của mình rồi 🐔 ${baseAppUrl()}/voice?t=${token}`;
+  return `Bấm vào đây để nói chuyện với em nhé, em nhớ đơn của mình rồi 🐔 ${baseAppUrl()}/voice?t=${token}`;
 }
 
 export async function forwardToAgent(

@@ -89,7 +89,7 @@ export async function sweepGhostedConversations(): Promise<FollowupResult[]> {
         customerId: convo.customerId,
         channel: "messenger",
         model: "followup-template",
-        userText: "(no reply — ghost follow-up trigger)",
+        userText: "(no reply, ghost follow-up trigger)",
         replyText: message,
         toolCalls: ["followup"],
         inputTokens: 0,

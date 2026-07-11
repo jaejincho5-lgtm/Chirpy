@@ -74,7 +74,7 @@ function AnswerCacheCard() {
           ))}
         </ol>
       ) : (
-        <p className="ops__empty">Chưa học câu trả lời nào — sẽ đầy dần khi khách hỏi.</p>
+        <p className="ops__empty">Chưa học câu trả lời nào, sẽ đầy dần khi khách hỏi.</p>
       )}
     </div>
   );
@@ -103,7 +103,7 @@ export function AgentOpsModule() {
   if (!feed) {
     return (
       <section className="ops">
-        <p className="rail-title">Giao dịch &amp; phân tích — mọi kênh</p>
+        <p className="rail-title">Giao dịch &amp; phân tích, mọi kênh</p>
         <p className="ops__empty">Đang tải dữ liệu từ Supabase…</p>
       </section>
     );
@@ -115,7 +115,7 @@ export function AgentOpsModule() {
   return (
     <section className="ops">
       <div className="ops__head">
-        <p className="rail-title">Giao dịch &amp; phân tích — mọi kênh (Supabase, live)</p>
+        <p className="rail-title">Giao dịch &amp; phân tích, mọi kênh (Supabase, live)</p>
         <label className="ops__toggle">
           <input type="checkbox" checked={showTests} onChange={(event) => setShowTests(event.target.checked)} />
           hiện traffic test
@@ -218,7 +218,7 @@ export function AgentOpsModule() {
       <AnswerCacheCard />
 
       <p className="console-note" style={{ marginTop: 10 }}>
-        KPI chỉ tính khách thật (loại eval/probe/test). Chi phí ước tính từ token đã lưu — số chính thức là AI Gateway
+        KPI chỉ tính khách thật (loại eval/probe/test). Chi phí ước tính từ token đã lưu, số chính thức là AI Gateway
         dashboard.
       </p>
     </section>

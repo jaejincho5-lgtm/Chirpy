@@ -64,16 +64,16 @@ function buildPersonas(): Persona[] {
   ];
 
   return [
-    { key: "guest", label: "Khách mới", hint: "chưa có lịch sử — chạy theo mặc định quần thể", profile: null },
+    { key: "guest", label: "Khách mới", hint: "chưa có lịch sử, chạy theo mặc định quần thể", profile: null },
     {
       key: "linh",
-      label: "Linh — nghiện Zinger",
+      label: "Linh, nghiện Zinger",
       hint: "4 đơn zinger cay + pepsi",
       profile: deriveProfileFromRecords(zingerFan, [], "viz_linh"),
     },
     {
       key: "mom",
-      label: "Mẹ Linh — đơn gia đình",
+      label: "Mẹ Linh, đơn gia đình",
       hint: "3 đơn combo 4 người, buổi tối",
       profile: deriveProfileFromRecords(familyOrders, [], "viz_mom"),
     },
@@ -127,10 +127,10 @@ export default function DecisionsPage() {
   return (
     <main className="decisions">
       <header className="decisions__head">
-        <h1>Ma trận quyết định — gợi ý bán kèm</h1>
+        <h1>Ma trận quyết định, gợi ý bán kèm</h1>
         <p>
           Cùng một giỏ hàng (1 Zinger burger), mỗi ô là output thật của <code>suggestAddons()</code> theo
-          hồ sơ khách × bối cảnh — engine tất định, không gọi LLM. Cột cuối chứng minh kỷ luật im lặng khi giỏ đã đủ.
+          hồ sơ khách × bối cảnh, engine tất định, không gọi LLM. Cột cuối chứng minh kỷ luật im lặng khi giỏ đã đủ.
         </p>
       </header>
 

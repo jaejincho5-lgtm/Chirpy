@@ -11,7 +11,7 @@ import { vnd, type VoucherRow } from "./shared";
 import { DEMO_BUS, type DemoBusMessage } from "../../demo-shared";
 
 const TEMPLATES = [
-  "🔥 Thứ Ba vui vẻ! Combo Gà Rán chỉ 79k hôm nay — nhắn “combo” để đặt ngay nhé!",
+  "🔥 Thứ Ba vui vẻ! Combo Gà Rán chỉ 79k hôm nay, nhắn “combo” để đặt ngay nhé!",
   "Trời mưa rồi ☔ Gà nóng giao tận nơi, đặt qua chat trong 30 giây. Bạn thèm gì?",
   "🎁 Riêng khách quen KFC: freeship cho đơn từ 150k tối nay. Đặt liền nha!",
 ];
@@ -72,7 +72,7 @@ export function PromotionsModule() {
   return (
     <section className="ops">
       <div className="ops__head">
-        <p className="rail-title">Khuyến mãi — soạn &amp; gửi tới khách</p>
+        <p className="rail-title">Khuyến mãi, soạn &amp; gửi tới khách</p>
         <small className="ops__subnote">Gửi qua Messenger cho khách trong 24h + hiển thị ngay trên /user (demo)</small>
       </div>
       {error ? <p className="oms-error">{error}</p> : null}
@@ -97,7 +97,7 @@ export function PromotionsModule() {
       {result ? (
         <p className="promo-result">
           Đã gửi tới <b>{result.sent}</b>/{result.attempted} khách qua Messenger
-          {result.attempted === 0 ? " (chưa có khách nào trong cửa sổ 24h — demo hiển thị trên /user)" : ""}.
+          {result.attempted === 0 ? " (chưa có khách nào trong cửa sổ 24h, demo hiển thị trên /user)" : ""}.
         </p>
       ) : null}
 

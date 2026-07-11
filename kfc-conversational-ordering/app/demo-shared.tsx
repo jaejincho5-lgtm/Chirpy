@@ -111,7 +111,7 @@ export const demoBeats = [
   { label: "Voucher + điểm thưởng", hint: "KFC20, loyalty redeem" },
   { label: "Combo Math tiết kiệm", hint: "optimize_bill → swap" },
   { label: "OTP → đặt hàng", hint: "kịch bản hết hàng tự xử lý" },
-  { label: "Khách quay lại", hint: "“như mọi khi?” — taste memory" },
+  { label: "Khách quay lại", hint: "“như mọi khi?”, taste memory" },
 ];
 
 /* ---------- helpers ---------- */
@@ -376,7 +376,7 @@ export function Receipt({ order }: { order?: Order | null }) {
           ))}
         </div>
       ) : (
-        <p className="receipt__empty">Giỏ hàng trống — khách chưa gọi món.</p>
+        <p className="receipt__empty">Giỏ hàng trống, khách chưa gọi món.</p>
       )}
       {order ? (
         <div className="receipt__meta">
@@ -413,7 +413,7 @@ export function TraceConsole({ traces }: { traces: ToolTrace[] }) {
             </div>
           ))
         ) : (
-          <p className="trace-console__empty">Chưa có tool call — gửi tin nhắn để xem agent làm việc.</p>
+          <p className="trace-console__empty">Chưa có tool call, gửi tin nhắn để xem agent làm việc.</p>
         )}
       </div>
     </div>

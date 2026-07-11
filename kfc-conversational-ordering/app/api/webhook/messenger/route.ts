@@ -2,6 +2,9 @@ import { extractMessengerMessages, forwardToAgent, verifyMessengerSignature } fr
 import { supabaseAdmin } from "@/lib/supabase";
 
 export const runtime = "nodejs";
+// A full agent turn ran 16.5s live; never let the platform default cut the
+// function off mid-turn (the reply is sent via the Send API before return).
+export const maxDuration = 60;
 
 // Facebook redelivers a webhook it hasn't seen acknowledged within ~20s — an
 // agent turn near that budget means the SAME message is processed twice and

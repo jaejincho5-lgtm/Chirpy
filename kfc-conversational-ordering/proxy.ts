@@ -8,6 +8,13 @@ import { OPS_AUTH_COOKIE, opsAuthToken } from "@/lib/ops-auth";
 
 const OPS_PAGE = /^\/backend(?!\/login)/;
 
+// Vercel cron targets (vercel.json) — crons carry no ops cookie, so they must
+// bypass the gate. /api/followup is not in OPS_APIS; /api/reengage/scan would
+// match the /api/reengage prefix below without this exemption. Abuse surface
+// is acceptable: the scan enforces its own quiet hours and per-customer
+// weekly cooldowns.
+const OPS_EXEMPT = ["/api/reengage/scan"];
+
 const OPS_APIS = [
   "/api/console",
   "/api/console-state",
@@ -24,6 +31,7 @@ const OPS_APIS = [
 
 export default async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
+  if (OPS_EXEMPT.includes(pathname)) return NextResponse.next();
   const isPage = OPS_PAGE.test(pathname);
   const isApi = OPS_APIS.some((p) => pathname === p || pathname.startsWith(`${p}/`));
   if (!isPage && !isApi) return NextResponse.next();

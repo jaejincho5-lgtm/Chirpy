@@ -11,7 +11,7 @@ async function buildGreeting(customerId: string): Promise<string> {
   if (profile?.usual) {
     const item = getCatalogEntry(profile.usual.catalogId);
     const name = item?.name ?? "phần quen";
-    return `Chào mừng quay lại! Phần như mọi khi của mình — ${name} — em nhớ rồi, nói "như mọi khi" là em lên đơn liền nha.`;
+    return `Chào mừng quay lại! Phần như mọi khi của mình (${name}), em nhớ rồi, nói "như mọi khi" là em lên đơn liền nha.`;
   }
   return "Chào mừng anh/chị đến với Đại sứ Gà KFC! Mình muốn dùng gì hôm nay để em gợi ý nhé? 🐔";
 }

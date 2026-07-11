@@ -21,7 +21,7 @@ const VrmStage = dynamic(() => import("./chicken-stage"), { ssr: false });
 // docs/FEATURE_ITEM_POPUPS.md: with this off, /voice behaves exactly as before.
 const SHOW_MENU_VISUALS = true;
 
-const VOICE_GREETING = "Chào anh/chị! Em là Đại sứ Gà đây — mình muốn dùng gì hôm nay ạ? 🐔";
+const VOICE_GREETING = "Chào anh/chị! Em là Đại sứ Gà đây, mình muốn dùng gì hôm nay ạ? 🐔";
 // Spoken while the agent is still thinking, so the avatar never sits silent.
 const FILLERS = ["Dạ, để em xem…", "Dạ có ngay ạ…", "Ok ạ, chờ em xíu nha…"];
 
@@ -158,7 +158,7 @@ export default function VoicePage() {
         }
       } else {
         setShowCaptions(true);
-        setSubtitle('Link đã hết hạn — nhắn "chirpy" trong Messenger để lấy link mới nhé 🐔');
+        setSubtitle('Link đã hết hạn, nhắn "chirpy" trong Messenger để lấy link mới nhé 🐔');
       }
     })();
   }, [speakLine]);
@@ -330,7 +330,7 @@ export default function VoicePage() {
     if (!Impl) {
       setShowType(true);
       setShowCaptions(true);
-      setSubtitle("Trình duyệt chưa hỗ trợ nhận giọng nói — anh/chị gõ giúp em nhé.");
+      setSubtitle("Trình duyệt chưa hỗ trợ nhận giọng nói, anh/chị gõ giúp em nhé.");
       return;
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -363,7 +363,7 @@ export default function VoicePage() {
         return;
       }
       setInterim("");
-      if (canListen()) beginRecognition(); // heard nothing — keep listening
+      if (canListen()) beginRecognition(); // heard nothing, keep listening
     };
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     recognition.onerror = (event: any) => {
@@ -375,18 +375,18 @@ export default function VoicePage() {
         setMuted(true);
         setShowType(true);
         setShowCaptions(true);
-        setSubtitle("Em chưa được cấp quyền mic — anh/chị bật quyền hoặc gõ giúp em nhé.");
+        setSubtitle("Em chưa được cấp quyền mic, anh/chị bật quyền hoặc gõ giúp em nhé.");
         return;
       }
       if (err === "no-speech" || err === "aborted") {
-        if (canListen()) beginRecognition(); // benign — restart quietly
+        if (canListen()) beginRecognition(); // benign, restart quietly
         return;
       }
       errorStreakRef.current += 1;
       if (errorStreakRef.current >= 2) {
         setShowType(true);
         setShowCaptions(true);
-        setSubtitle("Nhận giọng nói đang trục trặc — anh/chị gõ giúp em nhé.");
+        setSubtitle("Nhận giọng nói đang trục trặc, anh/chị gõ giúp em nhé.");
         return;
       }
       if (canListen()) beginRecognition();
@@ -425,7 +425,7 @@ export default function VoicePage() {
       setMuted(true);
       setShowType(true);
       setShowCaptions(true);
-      setSubtitle("Em chưa được cấp quyền mic — anh/chị bật quyền hoặc gõ giúp em nhé.");
+      setSubtitle("Em chưa được cấp quyền mic, anh/chị bật quyền hoặc gõ giúp em nhé.");
       return;
     }
     speakLine(lastSpokenRef.current ?? VOICE_GREETING, { meaningful: true });
@@ -466,7 +466,7 @@ export default function VoicePage() {
           </span>
           <b className="voice-start__title">Đại sứ Gà KFC</b>
           <span className="voice-start__cta">Bắt đầu</span>
-          <small className="voice-start__hint">Chạm để nói chuyện — em nghe rảnh tay, không cần giữ nút</small>
+          <small className="voice-start__hint">Chạm để nói chuyện, em nghe rảnh tay, không cần giữ nút</small>
         </button>
       ) : null}
       <header className="voice-top">
@@ -548,7 +548,7 @@ export default function VoicePage() {
           className={`voice-mic ${muted ? "is-muted" : "is-listening"} ${listening ? "is-capturing" : ""}`}
           onClick={toggleMute}
           aria-pressed={muted}
-          aria-label={muted ? "Mic đang tắt — chạm để bật" : "Đang nghe — chạm để tắt mic"}
+          aria-label={muted ? "Mic đang tắt, chạm để bật" : "Đang nghe, chạm để tắt mic"}
         >
           <span className="voice-mic__rings" aria-hidden>
             <i />
@@ -558,7 +558,7 @@ export default function VoicePage() {
             <MicIcon />
           </span>
           <span className="voice-mic__label">
-            {muted ? "Mic đang tắt — chạm để bật" : "Đang nghe — chạm để tắt mic"}
+            {muted ? "Mic đang tắt, chạm để bật" : "Đang nghe, chạm để tắt mic"}
           </span>
         </button>
 

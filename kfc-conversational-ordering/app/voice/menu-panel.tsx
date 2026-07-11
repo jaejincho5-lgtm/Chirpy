@@ -94,7 +94,7 @@ export default function MenuPanel({ open, onToggle, isBusy, outOfStock, latestOr
                     type="button"
                     className={`voice-menu__row ${oos ? "is-oos" : ""}`}
                     disabled={isBusy || oos}
-                    aria-label={oos ? `${item.name} tạm hết hàng` : `Thêm ${item.name} vào giỏ — ${formatVnd(item.priceVnd)}`}
+                    aria-label={oos ? `${item.name} tạm hết hàng` : `Thêm ${item.name} vào giỏ, ${formatVnd(item.priceVnd)}`}
                     onClick={() => handleAdd(item)}
                     tabIndex={open ? 0 : -1}
                   >

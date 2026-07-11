@@ -76,7 +76,7 @@ export function CustomersModule() {
               </button>
             ))
           ) : (
-            <p className="ops__empty">Chưa có thành viên loyalty — đặt một đơn để tích điểm.</p>
+            <p className="ops__empty">Chưa có thành viên loyalty, đặt một đơn để tích điểm.</p>
           )}
         </div>
         <div className="cust-detail">

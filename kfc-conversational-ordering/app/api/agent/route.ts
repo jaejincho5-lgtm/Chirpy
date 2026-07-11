@@ -106,7 +106,7 @@ export async function POST(req: Request) {
   const MAX_USER_TURNS = 12;
   if (messages.filter((message) => message.role === "user").length > MAX_USER_TURNS) {
     return Response.json(
-      { ok: false, message: "Phiên chat đã dài — bạn bắt đầu phiên mới giúp mình nhé." },
+      { ok: false, message: "Phiên chat đã dài, bạn bắt đầu phiên mới giúp mình nhé." },
       { status: 429 },
     );
   }
@@ -166,6 +166,9 @@ export async function POST(req: Request) {
     const stream = createUIMessageStream({
       execute: ({ writer }) => {
         const id = `cache-${cached.id}`;
+        // Marks the reply as a cache hit so /user can render the "trả lời tức
+        // thì" badge; /voice ignores unknown data parts.
+        writer.write({ type: "data-cache", data: { source: cacheModel } });
         writer.write({ type: "text-start", id });
         writer.write({ type: "text-delta", id, delta: cached.say });
         writer.write({ type: "text-end", id });
@@ -205,6 +208,7 @@ export async function POST(req: Request) {
     const stream = createUIMessageStream({
       execute: ({ writer }) => {
         const id = "cache-learned";
+        writer.write({ type: "data-cache", data: { source: "learned-cache" } });
         writer.write({ type: "text-start", id });
         writer.write({ type: "text-delta", id, delta: learned });
         writer.write({ type: "text-end", id });

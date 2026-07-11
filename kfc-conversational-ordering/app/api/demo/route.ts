@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { setChannelWeather, clearChannelWeather, setOutOfStock } from "@/lib/demo";
-import { getCatalogEntry } from "@/lib/menu";
+import { isOutOfStock, setChannelWeather, clearChannelWeather, setOutOfStock } from "@/lib/demo";
+import { getCatalogEntry, MENU_CATALOG } from "@/lib/menu";
 
 const demoSchema = z.object({
   outOfStock: z.array(z.string()).max(20).optional(),
@@ -11,6 +11,15 @@ const demoSchema = z.object({
 
 function enabled() {
   return process.env.DEMO_CONTROLS === "1" || process.env.NODE_ENV !== "production";
+}
+
+// Current OOS set, so the /backend Stock module can hydrate on mount instead
+// of starting empty and silently disagreeing with server state after a reload.
+// Same in-memory caveat as POST: per-instance state, good enough for the demo.
+export async function GET() {
+  if (!enabled()) return Response.json({ ok: false }, { status: 404 });
+  const outOfStock = MENU_CATALOG.filter((item) => isOutOfStock(item.id)).map((item) => item.id);
+  return Response.json({ ok: true, outOfStock });
 }
 
 export async function POST(req: Request) {

@@ -27,7 +27,7 @@ type Tune = {
   camDistMul: number; camHeightMul: number; fov: number; // camera
   a0rx: number; a0ry: number; a0rz: number; a0px: number; a0py: number; a0pz: number; // arm 0 (leftArm_4)
   a1rx: number; a1ry: number; a1rz: number; a1px: number; a1py: number; a1pz: number; // arm 1 (leftArm_13)
-  armSplay: number; // symmetric arm tilt (deg): +left / -right, mirrors both wings — feeds ARM_SPLAY
+  armSplay: number; // symmetric arm tilt (deg): +left / -right, mirrors both wings, feeds ARM_SPLAY
   hrx: number; hrz: number; // head rotation offset (deg)
 };
 
@@ -450,7 +450,7 @@ export default function ChickenStage(props: Props) {
             </button>
           </div>
           {exportText ? <textarea className="tune-panel__out" readOnly value={exportText} /> : null}
-          <div className="tune-panel__hint">Copied to clipboard — paste it to Claude.</div>
+          <div className="tune-panel__hint">Copied to clipboard, paste it to Claude.</div>
         </div>
       ) : null}
     </div>

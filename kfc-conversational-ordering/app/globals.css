@@ -2457,3 +2457,20 @@ button:disabled { cursor: default; }
 
 .ops-login__card button:hover:not(:disabled) { background: var(--red-deep); }
 .ops-login__card button:disabled { opacity: 0.55; }
+
+/* ---------- cache-hit badge on /user (answer served without the LLM) ---------- */
+
+.cache-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  align-self: flex-start;
+  margin-bottom: 4px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--red-tint);
+  color: var(--red-deep);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}

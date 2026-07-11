@@ -123,7 +123,7 @@ export default function ItemPopups({ messages, isBusy, outOfStock, onAdd, onOpen
             <button
               type="button"
               className="voice-popup__body"
-              aria-label={oos ? `${item.name} tạm hết hàng` : `Thêm ${item.name} vào giỏ — ${item.displayPrice}`}
+              aria-label={oos ? `${item.name} tạm hết hàng` : `Thêm ${item.name} vào giỏ, ${item.displayPrice}`}
               disabled={isBusy || oos || addingId !== null}
               onClick={() => handleAdd(item)}
             >

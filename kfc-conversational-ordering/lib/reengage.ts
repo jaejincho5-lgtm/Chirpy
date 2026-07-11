@@ -274,15 +274,15 @@ export function decideReengage(inputs: ReengagePureInputs): ReengageDecision {
     explanation,
   });
 
-  if (prefs.optedOut) return fail("opted_out", "Khách đã nhắn 'dừng' — không gửi thông báo chủ động.");
+  if (prefs.optedOut) return fail("opted_out", "Khách đã nhắn 'dừng', không gửi thông báo chủ động.");
   if (prefs.mutedAt) {
-    return fail("muted", "Đã tự tắt sau 2 thông báo bị bỏ qua — chỉ bật lại khi khách chủ động quay lại.");
+    return fail("muted", "Đã tự tắt sau 2 thông báo bị bỏ qua, chỉ bật lại khi khách chủ động quay lại.");
   }
 
   const ignores = countConsecutiveIgnores(notifications, placedAtsIso, now);
   if (ignores >= AUTO_MUTE_AFTER_IGNORES) {
     return {
-      ...fail("muted", `${ignores} thông báo liên tiếp bị bỏ qua — tự tắt để tránh làm phiền.`),
+      ...fail("muted", `${ignores} thông báo liên tiếp bị bỏ qua, tự tắt để tránh làm phiền.`),
       autoMuted: true,
     };
   }
@@ -328,7 +328,7 @@ export function decideReengage(inputs: ReengagePureInputs): ReengageDecision {
     if (daysSinceSend < COOLDOWN_DAYS) {
       const left = Math.ceil(COOLDOWN_DAYS - daysSinceSend);
       return {
-        ...fail("cooldown", `Đã gửi trong ${COOLDOWN_DAYS} ngày qua — còn ${left} ngày cooldown.`),
+        ...fail("cooldown", `Đã gửi trong ${COOLDOWN_DAYS} ngày qua, còn ${left} ngày cooldown.`),
         cooldownDaysLeft: left,
       };
     }
@@ -341,7 +341,7 @@ export function decideReengage(inputs: ReengagePureInputs): ReengageDecision {
         : `giờ đặt phân tán (R=${prediction.resultantLength.toFixed(2)})`;
     return fail(
       "low_confidence",
-      `Độ tin cậy ${prediction.confidence.toFixed(2)} < ${MIN_CONFIDENCE} (${why}) — chưa đủ chắc để chủ động nhắn.`,
+      `Độ tin cậy ${prediction.confidence.toFixed(2)} < ${MIN_CONFIDENCE} (${why}), chưa đủ chắc để chủ động nhắn.`,
     );
   }
 

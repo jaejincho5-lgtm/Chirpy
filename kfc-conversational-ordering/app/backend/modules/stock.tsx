@@ -4,7 +4,7 @@
 // /api/demo (in-memory server state; the agent refuses OOS items at placement
 // and offers substitutes). Menu is static catalog data, safe to import here.
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { MENU_CATALOG } from "@/lib/menu";
 import { vnd } from "./shared";
 
@@ -21,6 +21,17 @@ const CATEGORY_LABEL: Record<string, string> = {
 export function StockModule() {
   const [oos, setOos] = useState<Set<string>>(new Set());
   const [busy, setBusy] = useState(false);
+
+  // Hydrate from the server's current OOS set on mount, so a page reload
+  // doesn't show "tất cả còn hàng" while the agent is still refusing items.
+  useEffect(() => {
+    fetch("/api/demo")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data: { ok?: boolean; outOfStock?: string[] } | null) => {
+        if (data?.ok && data.outOfStock?.length) setOos(new Set(data.outOfStock));
+      })
+      .catch(() => null);
+  }, []);
 
   async function toggle(id: string) {
     const next = new Set(oos);
@@ -41,7 +52,7 @@ export function StockModule() {
   return (
     <section className="ops">
       <div className="ops__head">
-        <p className="rail-title">Kho — hết hàng theo món</p>
+        <p className="rail-title">Kho, hết hàng theo món</p>
         <small className="ops__subnote">
           {oos.size ? `${oos.size} món đang đánh dấu hết` : "tất cả còn hàng"}
         </small>

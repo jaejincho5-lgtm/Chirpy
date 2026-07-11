@@ -46,7 +46,7 @@ export async function POST(request: Request) {
     return Response.json({
       ok: false,
       reason: "no_history",
-      message: "Khách chưa có lịch sử đơn — nudge chỉ gửi cho khách đã từng đặt (opt-in).",
+      message: "Khách chưa có lịch sử đơn, nudge chỉ gửi cho khách đã từng đặt (opt-in).",
     });
   }
 

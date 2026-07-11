@@ -247,7 +247,7 @@ const LIBRARY: FaqEntry[] = [
       "noi gi bay gio",
     ],
     answers: [
-      "Anh/chị cứ nói tên món, hoặc kiểu 'thèm gì đó cay cay dưới 100k' — em tìm món, thêm vào giỏ, áp mã và chốt đơn giúp ạ. Anh/chị muốn bắt đầu chưa?",
+      "Anh/chị cứ nói tên món, hoặc kiểu 'thèm gì đó cay cay dưới 100k', em tìm món, thêm vào giỏ, áp mã và chốt đơn giúp ạ. Anh/chị muốn bắt đầu chưa?",
     ],
   },
   {
@@ -269,7 +269,7 @@ const LIBRARY: FaqEntry[] = [
       "co phai ai khong",
     ],
     answers: [
-      "Em là Đại sứ ảo của KFC — một chú gà AI, ở đây để giúp anh/chị gọi món thật nhanh gọn ạ! 🐔",
+      "Em là Đại sứ ảo của KFC, một chú gà AI, ở đây để giúp anh/chị gọi món thật nhanh gọn ạ! 🐔",
     ],
   },
   {
@@ -474,7 +474,7 @@ export async function matchOrderOpener(text: string): Promise<FaqHit | null> {
   const shown = available.slice(0, 4);
   const list = joinList(shown.map((m) => `${m.name} (${m.displayPrice})`));
   const more = available.length > shown.length ? ", và vài lựa chọn khác nữa" : "";
-  const say = `Dạ bên em có vài ${cat.label} như ${list}${more} ạ — anh/chị muốn phần nào để em thêm vào đơn nhé?`;
+  const say = `Dạ bên em có vài ${cat.label} như ${list}${more} ạ, anh/chị muốn phần nào để em thêm vào đơn nhé?`;
 
   return { id: `opener-${cat.key}`, say };
 }

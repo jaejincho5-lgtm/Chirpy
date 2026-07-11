@@ -101,7 +101,7 @@ export function OrdersModule() {
   if (!orders) {
     return (
       <section className="ops">
-        <p className="rail-title">Đơn hàng — hàng đợi OMS</p>
+        <p className="rail-title">Đơn hàng, hàng đợi OMS</p>
         <p className="ops__empty">Đang tải…</p>
       </section>
     );
@@ -112,7 +112,7 @@ export function OrdersModule() {
   return (
     <section className="ops">
       <div className="ops__head">
-        <p className="rail-title">Đơn hàng — hàng đợi OMS (live)</p>
+        <p className="rail-title">Đơn hàng, hàng đợi OMS (live)</p>
         <div className="oms-counts">
           {counts.map(({ stage, n }) => (
             <span key={stage} className={`oms-count oms-count--${stage}`}>
@@ -153,7 +153,7 @@ export function OrdersModule() {
                       {ACTION_LABEL[next]}
                     </button>
                   ))}
-                  {STAGE_FLOW[order.stage].length === 0 ? <span className="oms-terminal">— kết thúc —</span> : null}
+                  {STAGE_FLOW[order.stage].length === 0 ? <span className="oms-terminal">,  kết thúc , </span> : null}
                 </div>
               </div>
             </div>

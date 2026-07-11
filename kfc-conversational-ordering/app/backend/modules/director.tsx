@@ -173,8 +173,8 @@ export function DirectorModule() {
               value={settings.customerId}
               onChange={(event) => sendControl({ settings: { customerId: event.target.value } })}
             >
-              <option value="linh">Linh — khách quen</option>
-              <option value="linh_mom">Mẹ Linh — đơn gia đình</option>
+              <option value="linh">Linh, khách quen</option>
+              <option value="linh_mom">Mẹ Linh, đơn gia đình</option>
               <option value="guest">Khách mới</option>
             </select>
           </label>
@@ -248,10 +248,10 @@ export function DirectorModule() {
               <small>opt-in · tối đa 1/tuần · tự tắt sau 2 lần bỏ qua</small>
             </button>
             <button type="button" className="btn-return" onClick={() => sendControl({ reset: true })}>
-              Khách quay lại — chat mới
+              Khách quay lại, chat mới
             </button>
             <button type="button" className={`btn-oos ${pepsiOos ? "is-active" : ""}`} onClick={togglePepsiOos}>
-              {pepsiOos ? "Pepsi hết hàng — đang bật" : "Kịch bản: Pepsi hết hàng"}
+              {pepsiOos ? "Pepsi hết hàng, đang bật" : "Kịch bản: Pepsi hết hàng"}
             </button>
           </div>
         </div>
@@ -293,9 +293,9 @@ export function DirectorModule() {
           ) : (
             <p className="transcript__empty">
               {mirrorSource === "messenger"
-                ? "Chưa có hội thoại Messenger nào — nhắn tin cho Page để bắt đầu."
+                ? "Chưa có hội thoại Messenger nào, nhắn tin cho Page để bắt đầu."
                 : linked
-                  ? "Chưa có tin nhắn — thao tác ở tab /user."
+                  ? "Chưa có tin nhắn, thao tác ở tab /user."
                   : "Mở /user trong tab khác (cùng trình duyệt) để đồng bộ."}
             </p>
           )}
@@ -309,7 +309,7 @@ export function DirectorModule() {
           <Receipt order={displayedOrder} />
         </div>
         <div>
-          <p className="rail-title">Hồ sơ vị giác — bộ nhớ (live)</p>
+          <p className="rail-title">Hồ sơ vị giác, bộ nhớ (live)</p>
           <div className="profile-card">
             {feed?.ok ? (
               <>
@@ -362,7 +362,7 @@ export function DirectorModule() {
                 ) : null}
               </>
             ) : (
-              <p className="profile-card__empty">Chưa có dữ liệu — đặt một đơn ở /user.</p>
+              <p className="profile-card__empty">Chưa có dữ liệu, đặt một đơn ở /user.</p>
             )}
           </div>
         </div>
@@ -370,7 +370,7 @@ export function DirectorModule() {
           <p className="rail-title">Bên trong agent</p>
           <TraceConsole traces={traces} />
           <p className="console-note" style={{ marginTop: 10 }}>
-            Mỗi dòng là một tool call thật của model — menu, giá, voucher đều lấy từ catalog, không sinh từ LLM.
+            Mỗi dòng là một tool call thật của model, menu, giá, voucher đều lấy từ catalog, không sinh từ LLM.
           </p>
         </div>
       </div>
