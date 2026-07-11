@@ -4,7 +4,7 @@
 // Same agent, same tools, same typed Order state machine as /user underneath —
 // only the surface changes (speech in, speech + lip-sync out).
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
 import dynamic from "next/dynamic";
 import { DefaultChatTransport } from "ai";
 import { useChat } from "@ai-sdk/react";
@@ -36,6 +36,7 @@ export default function VoicePage() {
   const [speaking, setSpeaking] = useState(false);
   const [mood, setMood] = useState<"idle" | "happy">("idle");
   const [showType, setShowType] = useState(false);
+  const [showCaptions, setShowCaptions] = useState(false);
   const [typed, setTyped] = useState("");
   // Hands-free driver mode: the page listens by itself; the mic button only mutes.
   const [muted, setMuted] = useState(false);
@@ -44,6 +45,8 @@ export default function VoicePage() {
   const recognitionRef = useRef<any>(null);
   const spokenCountRef = useRef(0);
   const lastStageRef = useRef<string | null>(null);
+  const lastSpokenRef = useRef<string | null>(VOICE_GREETING);
+  const speechTokenRef = useRef(0);
   // Live mirrors so the recognition callbacks (created once) read current state.
   const mutedRef = useRef(false);
   const startedRef = useRef(false);
@@ -79,6 +82,46 @@ export default function VoicePage() {
   const latestOrder = useMemo(() => getLatestOrder(messages), [messages]);
   const isBusy = status === "submitted" || status === "streaming";
 
+  const speakLine = useCallback((text: string, options: { meaningful?: boolean; cancelFirst?: boolean } = {}) => {
+    if (options.cancelFirst) {
+      speechTokenRef.current += 1;
+      getSpeaker().cancel();
+    }
+    const token = speechTokenRef.current + 1;
+    speechTokenRef.current = token;
+    if (options.meaningful) lastSpokenRef.current = text;
+    setSubtitle(text);
+    setSpeaking(true);
+    getSpeaker().speak(text, {
+      onLevel: (v) => {
+        if (speechTokenRef.current === token) setVisemeLevel(v);
+      },
+      onEnd: () => {
+        if (speechTokenRef.current !== token) return;
+        setSpeaking(false);
+        setVisemeLevel(0);
+      },
+    });
+  }, []);
+
+  function cancelSpeech() {
+    speechTokenRef.current += 1;
+    getSpeaker().cancel();
+    setSpeaking(false);
+    setVisemeLevel(0);
+  }
+
+  function repeatLastSpoken() {
+    if (!started || isBusy) return;
+    speakLine(lastSpokenRef.current ?? VOICE_GREETING, { meaningful: true, cancelFirst: true });
+  }
+
+  function handleAvatarKeyDown(event: KeyboardEvent<HTMLDivElement>) {
+    if (event.key !== "Enter" && event.key !== " ") return;
+    event.preventDefault();
+    repeatLastSpoken();
+  }
+
   // Chirpy handoff: if the URL carries a magic-link token, redeem it once on
   // mount to adopt the Messenger identity (shared cart/taste/loyalty), speak the
   // personalized greeting, and keep the signed channelEcho for the receipt echo.
@@ -98,21 +141,14 @@ export default function VoicePage() {
         setChannelEcho(json.channelEcho ?? null);
         const greeting = String(json.greeting ?? "");
         if (greeting) {
-          setSubtitle(greeting);
-          setSpeaking(true);
-          getSpeaker().speak(greeting, {
-            onLevel: (v) => setVisemeLevel(v),
-            onEnd: () => {
-              setSpeaking(false);
-              setVisemeLevel(0);
-            },
-          });
+          speakLine(greeting, { meaningful: true });
         }
       } else {
+        setShowCaptions(true);
         setSubtitle('Link đã hết hạn — nhắn "chirpy" trong Messenger để lấy link mới nhé 🐔');
       }
     })();
-  }, []);
+  }, [speakLine]);
 
   // Pre-warm the server audio cache on mount so the first spoken lines (greeting
   // + fillers) are instant. Fire-and-forget; 503 (no key) is a harmless no-op.
@@ -136,15 +172,7 @@ export default function VoicePage() {
       fillerTimerRef.current = setTimeout(() => {
         const filler = FILLERS[fillerIndexRef.current % FILLERS.length];
         fillerIndexRef.current += 1;
-        setSubtitle(filler);
-        setSpeaking(true);
-        getSpeaker().speak(filler, {
-          onLevel: (v) => setVisemeLevel(v),
-          onEnd: () => {
-            setSpeaking(false);
-            setVisemeLevel(0);
-          },
-        });
+        speakLine(filler);
       }, 700);
     }
     return () => {
@@ -153,7 +181,7 @@ export default function VoicePage() {
         fillerTimerRef.current = null;
       }
     };
-  }, [isBusy]);
+  }, [isBusy, speakLine]);
 
   // Speak each newly completed assistant message; drive mouth + subtitle.
   useEffect(() => {
@@ -164,16 +192,8 @@ export default function VoicePage() {
     const raw = messageText(assistant[assistant.length - 1]);
     const say = extractSay(raw).trim();
     if (!say) return;
-    setSubtitle(say);
-    setSpeaking(true);
-    getSpeaker().speak(say, {
-      onLevel: (v) => setVisemeLevel(v),
-      onEnd: () => {
-        setSpeaking(false);
-        setVisemeLevel(0);
-      },
-    });
-  }, [messages, isBusy]);
+    speakLine(say, { meaningful: true });
+  }, [messages, isBusy, speakLine]);
 
   // Happy burst when the order transitions into "placed".
   useEffect(() => {
@@ -203,9 +223,7 @@ export default function VoicePage() {
   function submit(text: string) {
     const value = text.trim();
     if (!value || isBusy) return;
-    getSpeaker().cancel();
-    setSpeaking(false);
-    setVisemeLevel(0);
+    cancelSpeech();
     setInterim("");
     sendMessage({ text: value });
   }
@@ -266,6 +284,7 @@ export default function VoicePage() {
     const Impl = getRecognitionImpl();
     if (!Impl) {
       setShowType(true);
+      setShowCaptions(true);
       setSubtitle("Trình duyệt chưa hỗ trợ nhận giọng nói — anh/chị gõ giúp em nhé.");
       return;
     }
@@ -310,6 +329,7 @@ export default function VoicePage() {
       if (err === "not-allowed" || err === "service-not-allowed") {
         setMuted(true);
         setShowType(true);
+        setShowCaptions(true);
         setSubtitle("Em chưa được cấp quyền mic — anh/chị bật quyền hoặc gõ giúp em nhé.");
         return;
       }
@@ -320,6 +340,7 @@ export default function VoicePage() {
       errorStreakRef.current += 1;
       if (errorStreakRef.current >= 2) {
         setShowType(true);
+        setShowCaptions(true);
         setSubtitle("Nhận giọng nói đang trục trặc — anh/chị gõ giúp em nhé.");
         return;
       }
@@ -358,17 +379,11 @@ export default function VoicePage() {
     } catch {
       setMuted(true);
       setShowType(true);
+      setShowCaptions(true);
       setSubtitle("Em chưa được cấp quyền mic — anh/chị bật quyền hoặc gõ giúp em nhé.");
       return;
     }
-    setSpeaking(true);
-    getSpeaker().speak(subtitle || VOICE_GREETING, {
-      onLevel: (v) => setVisemeLevel(v),
-      onEnd: () => {
-        setSpeaking(false);
-        setVisemeLevel(0);
-      },
-    });
+    speakLine(lastSpokenRef.current ?? VOICE_GREETING, { meaningful: true });
   }
 
   function toggleMute() {
@@ -420,6 +435,14 @@ export default function VoicePage() {
           </div>
         </div>
         <div className="voice-top__right">
+          <button
+            type="button"
+            className={`voice-cc ${showCaptions ? "is-on" : ""}`}
+            aria-pressed={showCaptions}
+            onClick={() => setShowCaptions((visible) => !visible)}
+          >
+            Phụ đề
+          </button>
           <div className="voice-status">
             <span className={`voice-dot voice-dot--${state}`} />
             {statusLabel}
@@ -434,12 +457,23 @@ export default function VoicePage() {
       </header>
 
       <div className="voice-avatar">
-        <div className={`voice-glow ${speaking ? "is-speaking" : ""}`} aria-hidden />
-        <div className="voice-floor" aria-hidden />
-        <VrmStage speaking={speaking} thinking={isBusy} mood={mood} visemeLevel={visemeLevel} />
-        <div className={`voice-bubble ${interim ? "is-user" : ""} ${speaking ? "is-speaking" : ""}`}>
-          {captionWho ? <span className="voice-bubble__who">{captionWho}</span> : null}
-          <p className="voice-subtitle">{interim || subtitle}</p>
+        <div
+          className="voice-avatar__tap"
+          role="button"
+          tabIndex={0}
+          aria-label="Chạm để Đại sứ nói lại"
+          onClick={repeatLastSpoken}
+          onKeyDown={handleAvatarKeyDown}
+        >
+          <div className={`voice-glow ${speaking ? "is-speaking" : ""}`} aria-hidden />
+          <div className="voice-floor" aria-hidden />
+          <VrmStage speaking={speaking} thinking={isBusy} mood={mood} visemeLevel={visemeLevel} />
+          {showCaptions ? (
+            <div className={`voice-bubble ${interim ? "is-user" : ""} ${speaking ? "is-speaking" : ""}`}>
+              {captionWho ? <span className="voice-bubble__who">{captionWho}</span> : null}
+              <p className="voice-subtitle">{interim || subtitle}</p>
+            </div>
+          ) : null}
         </div>
         {latestOrder && latestOrder.cart.length > 0 ? (
           <aside className={`voice-receipt ${latestOrder.stage === "placed" ? "is-placed" : ""}`}>

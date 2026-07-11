@@ -43,7 +43,7 @@ The naive build is "chatbot that fills a cart." Three moves separate us:
 Zalo / Messenger webhook
    │  (text or voice note)
    ▼
-Agent loop (Claude Opus 4.8) — orchestrates a typed Order state machine
+Agent loop (AGENT_MODEL via AI Gateway — currently openai/gpt-4o, see lib/ai.ts) — orchestrates a typed Order state machine
    ├─ tool: search_menu(query)            → validated items/combos/prices (menu catalog)
    ├─ tool: add_to_cart(item, mods, qty)  → mutates Order, recomputes total
    ├─ tool: apply_voucher(code)           → validates + applies (OMS/promo API)
@@ -213,7 +213,8 @@ Post-delivery review + build pass (commits `38d5b9f`, `cb8095f`, `c9c5cc8`):
    vouchers enforce minimum subtotals — unpassable by any agent. They now preload a qualifying cart,
    and failure messages distinguish tool-sequence misses from final-state failures. Verified on a
    live run: previously-failing voucher cases pass. `AGENT_MODEL` is now env-overridable
-   (`lib/ai.ts`) so evals can run on a cheaper gateway tier; default stays Opus.
+   (`lib/ai.ts`) so evals can run on a cheaper gateway tier; the code default has since moved to
+   `openai/gpt-4o` (BYOK credit) — note Anthropic prompt-cache hints are inert on it.
 2. **Demo stage redesign** (`app/`): three-panel stage — director rail (6-beat script + operator
    controls for persona/weather/hour/return-visit/OOS, moved *out* of the phone), a Zalo-authentic
    OA chat (official KFC mark, verified badge, typing indicator, menu cards, suggestion chip, Combo

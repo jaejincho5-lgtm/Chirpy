@@ -37,9 +37,15 @@ let cache: { state: WorldState; at: number } | null = null;
 let inFlight = false;
 
 function currentDate(): Date {
-  // HCMC is UTC+7; the server runs in UTC. Build a local-Vietnam Date so
-  // calendar notes and paydays align with the customer's day.
-  return new Date(Date.now() + 7 * 3600 * 1000);
+  // HCMC is UTC+7. Shift into VN wall-clock in UTC space, then rebuild a Date
+  // whose LOCAL getters return those components — vn-calendar reads local
+  // getters, so the naive +7h shift was only right on a UTC host (Vercel) and
+  // double-shifted on a UTC+7 dev laptop (11:30 read as 18:30).
+  const shifted = new Date(Date.now() + 7 * 3600 * 1000);
+  return new Date(
+    shifted.getUTCFullYear(), shifted.getUTCMonth(), shifted.getUTCDate(),
+    shifted.getUTCHours(), shifted.getUTCMinutes(), shifted.getUTCSeconds(),
+  );
 }
 
 // Background refresh — never awaited by a request. Populates the cache so the

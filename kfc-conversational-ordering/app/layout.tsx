@@ -1,5 +1,5 @@
 import "./globals.css";
-import { Be_Vietnam_Pro, Bricolage_Grotesque, Spline_Sans_Mono } from "next/font/google";
+import { Be_Vietnam_Pro, Bricolage_Grotesque, IBM_Plex_Mono } from "next/font/google";
 
 const ui = Be_Vietnam_Pro({
   subsets: ["latin", "vietnamese"],
@@ -15,8 +15,11 @@ const displayFace = Bricolage_Grotesque({
   display: "swap",
 });
 
-const mono = Spline_Sans_Mono({
-  subsets: ["latin"],
+// IBM Plex Mono, not Spline Sans Mono: Spline ships no Vietnamese subset, so
+// diacritics in mono-styled text (KPIs, receipts, trace rows) fell back to a
+// different face mid-word — the "Telex text looks out of place" bug.
+const mono = IBM_Plex_Mono({
+  subsets: ["latin", "vietnamese"],
   weight: ["400", "500", "600"],
   variable: "--font-mono",
   display: "swap",

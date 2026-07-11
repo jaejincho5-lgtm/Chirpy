@@ -882,7 +882,8 @@ button:disabled { cursor: default; }
   white-space: nowrap;
 }
 
-.trace-console__empty { color: var(--console-faint); font-size: 12px; font-family: var(--font-mono), monospace; padding: 10px 4px; margin: 0; }
+/* Vietnamese prose, not console data — the UI face, not mono. */
+.trace-console__empty { color: var(--console-faint); font-size: 12px; padding: 10px 4px; margin: 0; }
 
 .console-note {
   font-size: 12px;
@@ -1045,7 +1046,8 @@ button:disabled { cursor: default; }
 }
 
 .transcript__empty, .transcript__busy { font-size: 13px; color: var(--ink-faint); margin: 0; }
-.transcript__busy { font-family: var(--font-mono), monospace; font-size: 12px; }
+/* Vietnamese prose ("agent đang trả lời…"), not console data — keep the UI face. */
+.transcript__busy { font-size: 12px; font-style: italic; }
 
 @media (max-width: 1100px) {
   .backend-grid { grid-template-columns: 1fr; }
@@ -1555,11 +1557,11 @@ button:disabled { cursor: default; }
 .promo-textarea:focus { outline: none; border-color: color-mix(in oklch, var(--kfc-red, #e4002b) 45%, var(--line)); }
 .promo-meta { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .promo-meta span { font-size: 12px; color: var(--ink-faint); font-variant-numeric: tabular-nums; }
-.promo-meta button {
+.promo-meta button, .promo-submit {
   padding: 8px 16px; border-radius: 9px; border: none; font-size: 13px; font-weight: 700; cursor: pointer;
   background: var(--kfc-red, #e4002b); color: #fff;
 }
-.promo-meta button:disabled { opacity: 0.5; cursor: default; }
+.promo-meta button:disabled, .promo-submit:disabled { opacity: 0.5; cursor: default; }
 .promo-result {
   margin: 4px 0 12px; padding: 9px 12px; border-radius: 9px; font-size: 13px; color: var(--ink-soft);
   background: color-mix(in oklch, var(--green, #16a34a) 10%, transparent);
@@ -1675,7 +1677,7 @@ button:disabled { cursor: default; }
 }
 .voice-brand small { font-size: 12px; opacity: 0.78; font-weight: 500; }
 
-.voice-top__right { display: flex; align-items: center; gap: 8px; }
+.voice-top__right { display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 8px; }
 .voice-cart { display: flex; align-items: center; gap: 8px; }
 .voice-cart__chip {
   display: inline-flex; align-items: baseline; gap: 7px;
@@ -1685,6 +1687,20 @@ button:disabled { cursor: default; }
 }
 .voice-cart__count { color: var(--ink-soft); }
 .voice-cart__chip b { font-family: var(--font-mono), monospace; font-variant-numeric: tabular-nums; font-weight: 600; }
+.voice-cc {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: 30px; padding: 5px 13px; border-radius: 999px;
+  border: 1px solid oklch(1 0 0 / 0.14);
+  background: oklch(1 0 0 / 0.1); color: oklch(0.98 0.008 60 / 0.85);
+  font-family: inherit; font-size: 12px; font-weight: 700; letter-spacing: 0.01em;
+  cursor: pointer; transition: background 160ms var(--ease-out), border-color 160ms var(--ease-out), color 160ms var(--ease-out), box-shadow 160ms var(--ease-out);
+}
+.voice-cc:hover { background: oklch(1 0 0 / 0.16); border-color: oklch(1 0 0 / 0.28); color: oklch(0.98 0.008 60); }
+.voice-cc:focus-visible { outline: 2px solid oklch(0.99 0.006 70 / 0.68); outline-offset: 2px; }
+.voice-cc.is-on {
+  background: var(--red); border-color: oklch(0.99 0.006 70 / 0.36); color: white;
+  box-shadow: 0 8px 20px -12px oklch(0.12 0.06 30 / 0.85), inset 0 0 0 1px oklch(1 0 0 / 0.12);
+}
 .voice-escape {
   font-size: 12.5px; font-weight: 600; color: oklch(0.98 0.008 60); text-decoration: none;
   padding: 7px 13px; border-radius: 999px; border: 1px solid oklch(1 0 0 / 0.28);
@@ -1695,6 +1711,14 @@ button:disabled { cursor: default; }
 /* ---- stage: 3D chicken, grounded ---- */
 
 .voice-avatar { flex: 1; position: relative; min-height: 0; z-index: 2; }
+.voice-avatar__tap {
+  position: absolute; inset: 0; border-radius: 26px; cursor: pointer; outline: none;
+  transition: transform 120ms var(--ease-out), box-shadow 160ms var(--ease-out);
+}
+.voice-avatar__tap:active { transform: scale(0.992); }
+.voice-avatar__tap:focus-visible {
+  box-shadow: inset 0 0 0 2px oklch(0.99 0.006 70 / 0.46), 0 0 0 4px oklch(0.82 0.16 70 / 0.18);
+}
 
 /* Warm spotlight breathing behind the ambassador; brightens while speaking. */
 .voice-glow {

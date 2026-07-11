@@ -182,12 +182,57 @@ alter table public.kfc_otp
 
 -- Ghost-followup dedupe lock (lib/followup.ts): one follow-up per conversation
 -- per 24h. Previously created ad hoc in the dashboard; codified here.
+-- NOTE: the column is convo_key (matches lib/followup.ts and the live table) —
+-- an earlier revision of this file wrongly said convo_id.
 create table if not exists public.kfc_followups (
-  convo_id text primary key,
+  convo_key text primary key,
   sent_at timestamptz not null default now()
 );
 
 alter table public.kfc_followups enable row level security;
+-- server-only.
+
+-- Saved delivery contact per customer (lib/contact-store.ts): the spine of
+-- zero-re-entry checkout and the trusted OTP-skip. Without this table the
+-- Supabase store throws and every caller silently degrades — contacts never
+-- save, so "khách quen" trust can never trigger.
+create table if not exists public.kfc_customer_contacts (
+  customer_id text primary key,
+  name text,
+  phone text,
+  address text,
+  fulfillment text check (fulfillment in ('delivery','pickup')),
+  updated_at timestamptz not null default now()
+);
+
+alter table public.kfc_customer_contacts enable row level security;
+-- server-only.
+
+-- Chirpy chat→voice magic links (lib/voice-links.ts): single-use short-TTL
+-- token minted when a Messenger user types ".chirpy". Missing table = the
+-- handoff link never mints and the demo beat dies.
+create table if not exists public.kfc_voice_links (
+  token text primary key,
+  customer_id text not null,
+  conversation_key text not null,
+  expires_at timestamptz not null,
+  used_at timestamptz
+);
+
+alter table public.kfc_voice_links enable row level security;
+-- server-only.
+
+-- Learned global answer cache (lib/answer-cache.ts): evergreen Q→A pairs shared
+-- across customers, versioned against the menu catalog, 24h TTL.
+create table if not exists public.kfc_answer_cache (
+  key text primary key,
+  say text not null,
+  hits integer not null default 0,
+  created_at timestamptz not null default now(),
+  catalog_version text not null
+);
+
+alter table public.kfc_answer_cache enable row level security;
 -- server-only.
 
 -- Loyalty (lib/loyalty.ts): the loyalty account IS the messaging identity —
