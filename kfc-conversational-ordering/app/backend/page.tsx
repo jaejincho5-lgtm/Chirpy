@@ -15,14 +15,25 @@ import { VouchersModule } from "./modules/vouchers";
 import { PromotionsModule } from "./modules/promotions";
 import { StockModule } from "./modules/stock";
 import { AgentOpsModule } from "./modules/agent-ops";
+import { InboxModule } from "./modules/inbox";
 
-type ModuleKey = "director" | "orders" | "customers" | "reengage" | "vouchers" | "promotions" | "stock" | "agent";
+type ModuleKey =
+  | "director"
+  | "orders"
+  | "inbox"
+  | "customers"
+  | "reengage"
+  | "vouchers"
+  | "promotions"
+  | "stock"
+  | "agent";
 
 const MODULES: Array<{ key: ModuleKey; label: string }> = [
   { key: "director", label: "Đạo diễn" },
   { key: "orders", label: "Đơn hàng" },
+  { key: "inbox", label: "Hộp thư" },
   { key: "customers", label: "Khách hàng" },
-  { key: "reengage", label: "Tái kích hoạt" },
+  { key: "reengage", label: "Nhắc đơn thông minh" },
   { key: "vouchers", label: "Voucher" },
   { key: "promotions", label: "Khuyến mãi" },
   { key: "stock", label: "Kho" },
@@ -43,6 +54,12 @@ function ModuleIcon({ name }: { name: ModuleKey }) {
       <>
         <path d="M6 3h12v18l-2-1.5L14 21l-2-1.5L10 21l-2-1.5L6 21z" />
         <path d="M9 8h6M9 12h6" />
+      </>
+    ),
+    inbox: (
+      <>
+        <path d="M4 5h16v11H9l-5 4z" />
+        <path d="M8.5 9h7M8.5 12h4.5" />
       </>
     ),
     customers: (
@@ -137,6 +154,9 @@ export default function BackendConsole() {
       </div>
       <div hidden={active !== "orders"}>
         <OrdersModule />
+      </div>
+      <div hidden={active !== "inbox"}>
+        <InboxModule />
       </div>
       <div hidden={active !== "customers"}>
         <CustomersModule />

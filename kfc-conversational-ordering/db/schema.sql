@@ -131,6 +131,18 @@ create index if not exists kfc_conversations_updated_idx on public.kfc_conversat
 alter table public.kfc_conversations enable row level security;
 -- server-only: no anon/authenticated policies (same stance as kfc_orders).
 
+-- Human takeover (lib/takeover-store.ts): operator pauses the agent on one
+-- conversation and replies personally from /backend → Hộp thư. Durable so the
+-- webhook honors it on any serverless instance; auto-expires in code (60 min
+-- since last operator action) so a forgotten toggle can't strand a customer.
+create table if not exists public.kfc_takeover (
+  convo_id text primary key,
+  active boolean not null default false,
+  updated_at timestamptz not null default now()
+);
+alter table public.kfc_takeover enable row level security;
+-- server-only: no anon/authenticated policies (same stance as kfc_orders).
+
 -- Durable per-turn agent log (lib/turn-log.ts): every real conversation turn
 -- with tools, token buckets (input / cache-read / cache-write / output), and
 -- latency. Feeds /api/stats, demo replay, eval seeds, cost reconciliation.

@@ -27,6 +27,7 @@ const OPS_APIS = [
   "/api/loyalty",
   "/api/profile",
   "/api/answer-cache",
+  "/api/takeover",
 ];
 
 export default async function proxy(req: NextRequest) {
@@ -62,5 +63,6 @@ export const config = {
     "/api/loyalty/:path*",
     "/api/profile/:path*",
     "/api/answer-cache/:path*",
+    "/api/takeover/:path*",
   ],
 };

@@ -202,6 +202,33 @@ export async function forwardToAgent(
   senderId: string,
   text: string,
 ): Promise<{ forwarded: boolean; reply?: string; sent?: boolean; sendReason?: string; note?: string }> {
+  // Human takeover — checked before EVERY automation (agent, opt-out, chirpy):
+  // when an operator owns this conversation, the inbound message is parked in
+  // the transcript for them and nothing auto-replies. The store fails closed
+  // to "agent answers", so a takeover-store outage can never strand a customer.
+  {
+    const { getTakeoverStore } = await import("./takeover-store");
+    const { getConvoStore, convoId, channelCustomerId } = await import("./convo-store");
+    const id = convoId(channel, senderId);
+    const takenOver = await getTakeoverStore()
+      .isActive(id)
+      .catch(() => false);
+    if (takenOver) {
+      const store = getConvoStore();
+      const convo = await store.get(id).catch(() => null);
+      await store
+        .save({
+          id,
+          customerId: channelCustomerId(channel, senderId),
+          order: convo?.order ?? null,
+          messages: [...(convo?.messages ?? []), { role: "user", content: text }],
+          updatedAt: new Date().toISOString(),
+        })
+        .catch(() => null);
+      return { forwarded: false, note: "Human takeover active; message parked for the operator, agent not invoked." };
+    }
+  }
+
   // One-tap stop for proactive notifications — never reaches the LLM. The
   // exchange still persists like every other reply path: the opt-out is the
   // single most consequential message in the relationship, and the transcript
@@ -284,6 +311,61 @@ export async function forwardToAgent(
       latencyMs: 0,
     });
     return { forwarded: true, reply: chirpyReply, sent: delivery.sent, sendReason: delivery.reason };
+  }
+
+  // Instant answer caches — the same three fast-paths as the web /api/agent
+  // route (curated FAQ, grounded order-opener clarifier, learned global cache).
+  // Every never-wrong guard lives in lib/faq-cache / lib/answer-cache; a miss
+  // falls through to the full agent. Deliberately BEFORE the gateway-key check:
+  // cache hits are keyless, so common questions work even without the LLM.
+  {
+    const cacheStartedAt = Date.now();
+    const { matchFaq, matchOrderOpener } = await import("./faq-cache");
+    const { lookupAnswer } = await import("./answer-cache");
+    const curated = matchFaq(text) ?? (await matchOrderOpener(text));
+    const say = curated?.say ?? (await lookupAnswer(text));
+    if (say) {
+      const cacheModel = curated
+        ? curated.id.startsWith("opener-")
+          ? "opener-cache"
+          : "faq-cache"
+        : "learned-cache";
+      const delivery = await sendChannelReply(channel, senderId, say);
+      const { getConvoStore, convoId, channelCustomerId } = await import("./convo-store");
+      const store = getConvoStore();
+      const id = convoId(channel, senderId);
+      const customerId = channelCustomerId(channel, senderId);
+      const convo = await store.get(id).catch(() => null);
+      await store
+        .save({
+          id,
+          customerId,
+          order: convo?.order ?? null,
+          messages: [
+            ...(convo?.messages ?? []),
+            { role: "user", content: text },
+            { role: "assistant", content: say },
+          ],
+          updatedAt: new Date().toISOString(),
+        })
+        .catch(() => null);
+      const { logTurn } = await import("./turn-log");
+      void logTurn({
+        convoKey: id,
+        customerId,
+        channel,
+        model: cacheModel,
+        userText: text,
+        replyText: say,
+        toolCalls: [],
+        inputTokens: 0,
+        cachedInputTokens: 0,
+        cacheWriteTokens: 0,
+        outputTokens: 0,
+        latencyMs: Date.now() - cacheStartedAt,
+      });
+      return { forwarded: true, reply: say, sent: delivery.sent, sendReason: delivery.reason };
+    }
   }
 
   if (!process.env.AI_GATEWAY_API_KEY) {
@@ -389,6 +471,14 @@ export async function forwardToAgent(
     recordUsage(customerId, AGENT_MODEL, { ...result.totalUsage, cacheWriteTokens });
 
     const reply = extractSay(result.text) || "Xin lỗi, bạn nhắn lại giúp mình nhé?";
+
+    // Feed the learned global cache (same never-wrong write policy as the web
+    // route): a safe, tool-free answer here serves the NEXT asker in ~1ms.
+    const { storeAnswer } = await import("./answer-cache");
+    void storeAnswer(text, reply, {
+      toolCallCount: result.steps.flatMap((step) => step.toolCalls ?? []).length,
+      customerId,
+    });
 
     // Durable turn log (fire-and-forget — never blocks or breaks the reply).
     const { logTurn } = await import("./turn-log");
