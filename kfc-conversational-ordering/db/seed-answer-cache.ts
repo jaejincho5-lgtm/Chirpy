@@ -222,6 +222,292 @@ const SEEDS: Array<{ q: string; a: string }> = [
     q: "gợi ý giúp mình món ngon",
     a: "Dạ ngay đây ạ! Anh/chị cho em biết ăn mấy người và khẩu vị (cay/không cay), em ghép phần ngon và lợi nhất liền nhé!",
   },
+  // ── menu facts, round 3 ─────────────────────────────────────────────────────
+  {
+    q: "kfc có những món gì",
+    a: "Dạ đủ cả ạ: gà rán, gà quay, burger, cơm gà, mì ý, khoai tây, salad, súp, bánh trứng và nước ngọt. Anh/chị thèm nhóm nào để em kể chi tiết nhé?",
+  },
+  {
+    q: "menu có gì",
+    a: "Dạ menu có gà rán, gà quay, burger, cơm gà, mì ý, món ăn vặt, tráng miệng và nước ạ. Anh/chị muốn xem nhóm nào trước nhé?",
+  },
+  {
+    q: "có gà sốt tỏi không",
+    a: "Dạ có Gà Sốt Tỏi mới ra mắt ạ, đậm đà kiểu nước mắm tỏi rất bắt cơm. Anh/chị thử một miếng nhé?",
+  },
+  {
+    q: "có gà tiêu chanh không",
+    a: "Dạ có Gà Rán Tiêu Chanh mới ạ — vị tiêu đen chanh tươi lạ miệng lắm. Anh/chị muốn ăn lẻ hay kèm cơm ạ?",
+  },
+  {
+    q: "gà tiêu chanh là món gì",
+    a: "Dạ là gà rán phủ sốt tiêu đen và chanh tươi ạ — chua nhẹ, thơm tiêu, đang là vị mới hot nhất bên em. Anh/chị thử nhé?",
+  },
+  {
+    q: "có pepsi không đường không",
+    a: "Dạ có Pepsi Zero không đường ạ, đủ cỡ luôn. Anh/chị lấy ly nào để em thêm nhé?",
+  },
+  {
+    q: "có trà không",
+    a: "Dạ có trà Lipton ạ, mát lạnh đủ cỡ. Anh/chị thêm một ly nhé?",
+  },
+  {
+    q: "có cơm thêm không",
+    a: "Dạ có cơm thêm ạ, gọi kèm món mặn nào cũng được. Anh/chị lấy mấy phần cơm để em ghi nhé?",
+  },
+  {
+    q: "burger gà yo là gì",
+    a: "Dạ Burger Gà Yo là burger gà nhỏ gọn giá mềm ạ, có vị cay và không cay. Ăn lót dạ hay kèm combo đều hợp — anh/chị thử không ạ?",
+  },
+  {
+    q: "mì ý có mấy loại",
+    a: "Dạ có ba loại ạ: mì ý xúc xích, mì ý gà popcorn và mì ý gà rán. Anh/chị chọn loại nào để em thêm nhé?",
+  },
+  {
+    q: "popcorn có mấy cỡ",
+    a: "Dạ gà popcorn có cỡ vừa và cỡ lớn ạ, còn có vị lắc phô mai với bơ tỏi nữa. Anh/chị lấy cỡ nào ạ?",
+  },
+  {
+    q: "bánh trứng có set không",
+    a: "Dạ có ạ — mua lẻ một cái hoặc set 4 cái tiết kiệm hơn. Anh/chị lấy set cho cả nhà nhé?",
+  },
+  {
+    q: "có xúc xích không",
+    a: "Dạ xúc xích nằm trong món mì ý xúc xích ạ, thơm béo rất được lòng các bé. Anh/chị thử một phần không ạ?",
+  },
+  {
+    q: "có món ăn vặt không",
+    a: "Dạ nhiều lắm ạ: gà popcorn, phô mai viên, khoai tây chiên, khoai tây nghiền và bánh trứng. Anh/chị nhấm nháp món nào nhé?",
+  },
+  {
+    q: "salad có mấy loại",
+    a: "Dạ có ba loại ạ: salad bắp cải trộn, salad mè nướng và salad popcorn. Anh/chị lấy loại nào để em thêm nhé?",
+  },
+  {
+    q: "súp rong biển là món gì",
+    a: "Dạ là súp nóng nấu rong biển ạ — thanh nhẹ, ăn khai vị hay kèm cơm gà đều hợp. Anh/chị thêm một chén nhé?",
+  },
+  {
+    q: "coleslaw là gì",
+    a: "Dạ coleslaw là salad bắp cải trộn sốt kem mát giòn ạ — món kèm kinh điển của KFC, ăn với gà rán đỡ ngán lắm. Anh/chị thử nhé?",
+  },
+  {
+    // NOT "nanban là gì" — that contains "ban la gi", an identity FAQ trigger.
+    q: "nanban là món gì",
+    a: "Dạ Nanban là cơm gà popcorn sốt chua ngọt kiểu Nhật ạ — vị lạ miệng mà giá rất mềm. Anh/chị thử một phần không ạ?",
+  },
+  {
+    q: "khoai tây lắc phô mai là gì",
+    a: "Dạ là khoai tây chiên lắc bột phô mai ạ, mặn ngọt beo béo — còn có vị bơ tỏi nữa. Anh/chị lấy loại nào nhé?",
+  },
+  {
+    q: "gà rán và tenders khác gì nhau",
+    a: "Dạ gà rán là miếng gà có xương da giòn, còn tenders là thăn gà phi-lê không xương ạ. Ăn gọn thì tenders, đã miệng thì gà rán — anh/chị chọn bên nào ạ?",
+  },
+  {
+    q: "gà giòn với gà cay khác nhau chỗ nào",
+    a: "Dạ gà giòn truyền thống vị nguyên bản không cay, còn Hot & Spicy tẩm ớt cay nhẹ đậm đà hơn ạ. Anh/chị đội nào — truyền thống hay cay? 😄",
+  },
+  {
+    q: "phần nào nhiều gà nhất",
+    a: "Dạ nhiều gà nhất là Cheers Combo với 12 miếng gà rán ạ — đúng chuẩn tiệc gà cho hội đông. Anh/chị chiến luôn không ạ? 🍗",
+  },
+  {
+    q: "xô gà lớn nhất là gì",
+    a: "Dạ xô đã nhất là Party Bucket ạ — 9 miếng gà kèm nước cho cả nhóm. Còn thèm nữa thì Cheers Combo 12 miếng luôn. Anh/chị chọn xô nào ạ?",
+  },
+  // ── reco / sizing, round 3 ──────────────────────────────────────────────────
+  {
+    q: "có phần ăn cho một người không",
+    a: "Dạ có nguyên nhóm combo 1 người ạ — gà, khoai, nước đầy đủ mà giá gọn. Anh/chị thích gà rán, burger hay cơm để em chọn combo hợp nhé?",
+  },
+  {
+    q: "combo gia đình có không",
+    a: "Dạ có combo nhóm và xô gà cho gia đình ạ — từ 2 tới 5-6 người đều có cỡ vừa vặn. Nhà mình mấy người để em gợi ý đúng phần nhé?",
+  },
+  {
+    q: "có combo cho cặp đôi không",
+    a: "Dạ có Couple's Bucket và Combo Chill Couple cho hai người ạ — đủ gà, khoai, nước cho buổi hẹn. Anh/chị muốn em xem chi tiết không?",
+  },
+  {
+    q: "hẹn hò nên chọn gì",
+    a: "Dạ hẹn hò thì Couple's Bucket là chuẩn bài ạ — vừa ăn vừa tám, không lo thiếu. Anh/chị muốn em lên đơn cho buổi hẹn không? 😄",
+  },
+  {
+    q: "mua về cho cả nhà thì chọn gì",
+    a: "Dạ cả nhà thì xô gà Party Bucket hoặc Big Combo là vừa đẹp ạ. Nhà mình mấy người để em chọn cỡ cho chuẩn nhé?",
+  },
+  {
+    q: "người già ăn món nào hợp",
+    a: "Dạ ông bà thì gà quay phi-lê mềm, súp rong biển và cơm gà là dễ ăn nhất ạ. Anh/chị muốn em ghép một phần nhẹ nhàng không?",
+  },
+  {
+    q: "bé không ăn cay được thì sao",
+    a: "Dạ khỏi lo ạ! Gà rán truyền thống, tenders, mì ý xúc xích đều không cay, các bé mê lắm. Anh/chị lấy phần nào cho bé nhé?",
+  },
+  {
+    q: "ăn nhẹ thì chọn món nào",
+    a: "Dạ ăn nhẹ thì gà popcorn, phô mai viên hay bánh trứng là vừa xinh ạ. Anh/chị nhấm nháp món nào nhé?",
+  },
+  {
+    q: "buồn miệng ăn gì",
+    a: "Dạ buồn miệng thì gà popcorn lắc phô mai hoặc khoai tây lắc bơ tỏi là hết buồn liền ạ 😄 Em thêm một phần nhé?",
+  },
+  {
+    q: "burger và cơm cái nào no hơn",
+    a: "Dạ chắc bụng lâu thì cơm gà, gọn lẹ thì burger ạ. Đói cỡ nào rồi — để em chọn giúp luôn nhé? 😄",
+  },
+  {
+    q: "trưa nay ăn gì",
+    a: "Dạ trưa thì cơm gà rán hoặc combo 1 người là gọn đẹp ạ — có gà, khoai, nước đầy đủ. Anh/chị muốn em lên đơn ăn trưa không?",
+  },
+  {
+    q: "tối nay ăn gì",
+    a: "Dạ tối thì làm xô gà giòn chia cả nhà, hay combo burger cho gọn ạ? Anh/chị ăn mấy người để em gợi ý chuẩn nhé?",
+  },
+  {
+    q: "khát nước quá",
+    a: "Dạ giải khát liền ạ! Có Pepsi, 7Up, Lipton mát lạnh — anh/chị lấy ly nào, sẵn em gợi ý thêm miếng gà nhé? 😄",
+  },
+  {
+    q: "giá cả thế nào",
+    a: "Dạ từ món lẻ vài chục nghìn tới combo và xô gà cho nhóm ạ. Anh/chị cho em ngân sách và số người, em ghép phần lợi nhất liền nhé!",
+  },
+  // ── logistics / service, round 3 ────────────────────────────────────────────
+  {
+    q: "có giao buổi tối không",
+    a: "Dạ có ạ, bên em giao tới khoảng 22h theo giờ cửa hàng. Anh/chị đặt sớm chút buổi tối là đẹp nhất nhé!",
+  },
+  {
+    q: "giờ trưa có đông không",
+    a: "Dạ trưa 11h30–13h là cao điểm ạ. Anh/chị đặt trước qua em là né được cảnh chờ, tới nơi có đồ liền nhé!",
+  },
+  {
+    q: "đặt cho ngày mai được không",
+    a: "Dạ anh/chị cứ nói món và giờ muốn nhận ngày mai, em ghi nhớ sẵn — tới lúc đó chỉ cần xác nhận là em lên đơn liền ạ!",
+  },
+  {
+    q: "đổi địa chỉ giao được không",
+    a: "Dạ được nếu đơn chưa đi ạ — anh/chị nhắn em địa chỉ mới càng sớm càng tốt, em cập nhật giúp mình nhé.",
+  },
+  {
+    q: "giao trễ thì sao",
+    a: "Dạ nếu đơn tới trễ hơn dự kiến, anh/chị nhắn em ngay nhé — em kiểm tra với cửa hàng và đội hỗ trợ xử lý cho mình ạ. 🙏",
+  },
+  {
+    q: "đồ ăn có gói kỹ không",
+    a: "Dạ đồ được đóng hộp kín trong túi giấy KFC ạ, gà giữ nóng, nước ly riêng chống đổ. Anh/chị yên tâm nhé!",
+  },
+  {
+    q: "có muỗng nĩa kèm không",
+    a: "Dạ có kèm dụng cụ ăn và khăn giấy ạ. Cần thêm bộ nào anh/chị cứ dặn em khi chốt đơn nhé!",
+  },
+  {
+    q: "lấy thêm tương ớt được không",
+    a: "Dạ được ạ! Anh/chị dặn em khi chốt đơn là bên em bỏ thêm tương ớt, tương cà cho mình nhé.",
+  },
+  {
+    q: "có chỗ đậu xe không",
+    a: "Dạ tuỳ chi nhánh ạ — nhiều cửa hàng có chỗ để xe máy, ô tô thì anh/chị xem chi nhánh lớn nhé. Hoặc đặt giao tận nơi khỏi lo đậu xe luôn ạ! 😄",
+  },
+  {
+    q: "mang thú cưng vào được không",
+    a: "Dạ chính sách thú cưng tuỳ chi nhánh ạ, anh/chị hỏi nhân viên cửa hàng trước khi ghé nhé. Hoặc đặt giao về nhà ăn cùng boss cũng ấm cúng ạ! 🐶",
+  },
+  {
+    q: "có phòng sinh nhật riêng không",
+    a: "Dạ một số chi nhánh lớn có khu vực tổ chức sinh nhật ạ. Anh/chị liên hệ cửa hàng gần mình để giữ chỗ, còn phần gà tiệc thì em lo được nhé! 🎂",
+  },
+  {
+    q: "hóa đơn điện tử có không",
+    a: "Dạ có ạ, KFC hỗ trợ hoá đơn điện tử — anh/chị để lại thông tin xuất hoá đơn khi nhận hàng hoặc tại quầy nhé!",
+  },
+  {
+    q: "đồ chơi kèm phần ăn có không",
+    a: "Dạ tuỳ chương trình từng đợt ạ — có đợt kèm quà cho bé. Anh/chị hỏi nhân viên tại quầy đợt này có quà gì nhé!",
+  },
+  // ── payment / promo, round 3 ────────────────────────────────────────────────
+  {
+    q: "chuyển khoản được không",
+    a: "Dạ được ạ, thanh toán online có hỗ trợ chuyển khoản và ví điện tử. Anh/chị chọn cách trả lúc chốt đơn nhé!",
+  },
+  {
+    q: "thẻ nào cũng quẹt được hả",
+    a: "Dạ hầu hết thẻ ATM nội địa và thẻ quốc tế Visa/Master đều dùng được ạ. Anh/chị quẹt tại quầy hay trả khi nhận hàng đều ổn nhé!",
+  },
+  {
+    q: "mua nhiều có bớt không",
+    a: "Dạ đơn nhóm thì combo và xô gà đã là giá gộp tiết kiệm sẵn ạ, cộng thêm mã giảm giá nếu có nữa. Anh/chị nói số người, em ghép phương án lợi nhất nhé!",
+  },
+  {
+    q: "sinh viên có khuyến mãi riêng không",
+    a: "Dạ ưu đãi thay đổi theo đợt ạ. Ví tiền sinh viên thì em gợi ý combo tiết kiệm với món giá mềm là chuẩn nhất — em kê một phần 'ngon-bổ-rẻ' nhé?",
+  },
+  {
+    q: "mã giảm giá dùng sao",
+    a: "Dạ dễ lắm ạ — anh/chị đọc mã cho em lúc chốt đơn, em áp vào và báo ngay tiết kiệm được bao nhiêu nhé!",
+  },
+  // ── trivia & personality, round 3 ───────────────────────────────────────────
+  {
+    q: "gà rán kfc ra đời năm nào",
+    a: "Dạ công thức gà rán của Đại tá Sanders có từ năm 1940, và nhà hàng nhượng quyền KFC đầu tiên mở năm 1952 ạ!",
+  },
+  {
+    q: "đại tá sanders mở kfc năm bao nhiêu tuổi",
+    a: "Dạ ông khởi nghiệp nhượng quyền KFC ở tuổi 62 đó ạ — không bao giờ là quá muộn để bắt đầu, đúng không anh/chị? 😄",
+  },
+  {
+    q: "kfc có mặt ở bao nhiêu nước",
+    a: "Dạ KFC có mặt ở hơn 145 quốc gia và vùng lãnh thổ ạ — đi đâu cũng gặp được ông Đại tá đó ạ! 🌎",
+  },
+  {
+    q: "khẩu hiệu của kfc là gì",
+    a: "Dạ là \"Finger Lickin' Good\" — Vị ngon trên từng ngón tay ạ! Ăn xong mút ngón tay là hiểu liền đó ạ 😄",
+  },
+  {
+    q: "gà kfc chiên bằng gì",
+    a: "Dạ gà được chiên bằng nồi áp suất theo chuẩn KFC toàn cầu ạ — bí quyết giúp da giòn rụm mà thịt bên trong vẫn mọng mềm đó ạ!",
+  },
+  {
+    q: "tại sao gà kfc ngon vậy",
+    a: "Dạ nhờ công thức 11 loại thảo mộc gia vị bí mật cộng với chiên áp suất chuẩn toàn cầu ạ — da giòn, thịt mọng, thơm khó cưỡng đó ạ! 🍗",
+  },
+  {
+    q: "sao gọi là gà rán kentucky",
+    a: "Dạ vì Đại tá Sanders bắt đầu bán gà ở bang Kentucky nước Mỹ ạ — tên bang thành tên thương hiệu luôn đó ạ!",
+  },
+  {
+    q: "kfc khác gì lotteria",
+    a: "Dạ em không dám chê bạn nào ạ 😄 Em chỉ biết gà KFC có công thức 11 gia vị độc quyền với chiên áp suất giòn rụm — anh/chị thử rồi tự chấm điểm nhé!",
+  },
+  {
+    q: "em mấy tuổi",
+    a: "Dạ em là gà AI nên tính tuổi bằng phiên bản ạ 🐔 Còn trẻ còn khoẻ, gọi món cho anh/chị nhanh như chớp luôn!",
+  },
+  {
+    q: "em có ăn được gà không",
+    a: "Dạ em xin phép không trả lời câu hỏi nhạy cảm này ạ 🐔😅 Nhưng em cam đoan gà bên em ngon — anh/chị ăn giúp phần của em luôn nhé!",
+  },
+  {
+    q: "em người miền nào",
+    a: "Dạ quê gốc em ở Kentucky nước Mỹ, nhưng em nói giọng Việt và rành menu Việt Nam lắm ạ 🐔 Anh/chị muốn ăn gì để em tư vấn nhé?",
+  },
+  {
+    q: "nói chuyện được không",
+    a: "Dạ được chứ ạ! Em vừa tám vừa gọi món được luôn. Mà tám về gà thì em là chuyên gia đó — anh/chị muốn hỏi gì nào? 😄",
+  },
+  {
+    q: "kể chuyện cười đi",
+    a: "Dạ nè: Con gà đi qua đường để làm gì ạ? — Để tới KFC bên kia đường cho nhanh đó ạ! 🐔😄 Giờ tới lượt anh/chị: ăn gì nào?",
+  },
+  {
+    q: "hôm nay trời đẹp quá",
+    a: "Dạ trời đẹp vậy làm bữa gà giòn là tròn vị luôn ạ! Anh/chị muốn em gợi ý phần nào hợp hôm nay không? 🍗",
+  },
+  {
+    q: "cho hỏi có cơm gà không",
+    a: "Dạ có ạ! Cơm gà rán, cơm gà quay phi-lê và cơm gà popcorn đều sẵn sàng. Anh/chị chọn loại nào để em thêm nhé?",
+  },
 ];
 
 const store = getAnswerCacheStore();
