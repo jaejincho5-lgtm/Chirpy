@@ -1,0 +1,169 @@
+{
+  "source": "https://kfcvietnam.com.vn/en/menu",
+  "market": "Vietnam",
+  "currency": "VND",
+  "currency_symbol": "₫",
+  "date_pulled": "2026-07-06",
+  "size_key": {
+    "STD": "Standard",
+    "R": "Regular",
+    "M": "Medium",
+    "L": "Large",
+    "J": "Jumbo",
+    "FF": "French Fries",
+    "COB": "combo portion"
+  },
+  "notes": "Official online-order prices; may vary by store, channel (dine-in/takeaway/delivery) and ongoing promotions.",
+  "menu": {
+    "hot_deals": [
+      { "name": "Combo 99K", "price": 99000, "original_price": null, "includes": "3 Fried Chicken + 1 Shrimp Burger" },
+      { "name": "Combo 129K", "price": 129000, "original_price": null, "includes": "5 Fried Chicken + 2 Pepsi (STD)" },
+      { "name": "Crispy Bucket 159k", "price": 159000, "original_price": 179000, "includes": "Bucket 5 Fried Chicken" },
+      { "name": "Happy Bucket 139k", "price": 139000, "original_price": 159000, "includes": "Bucket 12 Tenders" },
+      { "name": "Crispy Bucket 179k", "price": 179000, "original_price": null, "includes": "Bucket 5 Fried Chicken" },
+      { "name": "Happy Bucket 159k", "price": 159000, "original_price": null, "includes": "Bucket 12 Tenders" },
+      { "name": "Couple's Bucket 189k", "price": 189000, "original_price": 239000, "includes": "Bucket 5 Fried Chicken + 1 French Fries (R) + 2 Pepsi (M)" },
+      { "name": "Party Bucket 269k", "price": 269000, "original_price": 404000, "includes": "Bucket 5 Fried Chicken + 4 Fried Chicken + 3 Pepsi (M)" },
+      { "name": "Combo Tieu Tung Chill 85k", "price": 85000, "original_price": null, "includes": "1 Fried Chicken + 1 LimePepper COB + 1 Pepsi Zero (J)" },
+      { "name": "Combo Chanh Sang Chanh 140k", "price": 140000, "original_price": null, "includes": "2 LimePepper COB + 1 Fried Chicken + 1 French Fries (R) + 2 Pepsi Zero (M)" },
+      { "name": "Combo Ga Rom Ra 245k", "price": 245000, "original_price": null, "includes": "3 LimePepper COB + 3 Fried Chicken + 3 Pepsi Zero (M)" },
+      { "name": "Combo Ga Rom Ra 245k (Zestival)", "price": 245000, "original_price": null, "includes": "3 LimePepper COB + 3 Fried Chicken + 3 Pepsi Zero (M) + 1 KFC Zestival Ticket (Khuay Dao Zone)", "note": "Limited stock" },
+      { "name": "Together Combo", "price": 199000, "original_price": 210000, "includes": "6 Fried Chicken + free 3 Pepsi can" },
+      { "name": "Cheers Combo", "price": 369000, "original_price": 444000, "includes": "12 Fried Chicken + free 4 Pepsi (J)" }
+    ],
+    "new_products": [
+      { "name": "1 pc Black Pepper & Lime Fried Chicken", "price": 40000 },
+      { "name": "2 pcs Black Pepper & Lime Fried Chicken", "price": 79000 },
+      { "name": "3 pcs Black Pepper & Lime Fried Chicken", "price": 116000 },
+      { "name": "1 pc Black Pepper & Lime Fried Chicken Rice", "price": 52000 },
+      { "name": "Cheese Shake Fries (L)", "price": 32000 },
+      { "name": "Garlic Butter Shake Fries (L)", "price": 32000 },
+      { "name": "Cheese Shake Popcorn (R)", "price": 42000 },
+      { "name": "Garlic Butter Shake Popcorn (R)", "price": 42000 },
+      { "name": "1 Garlic Fish Sauce Chicken", "price": 40000 },
+      { "name": "2 Garlic Fish Sauce Chicken", "price": 79000 },
+      { "name": "3 Garlic Fish Sauce Chicken", "price": 116000 },
+      { "name": "1 Garlic Fish Sauce Chicken with Rice", "price": 52000 }
+    ],
+    "combo_for_1": [
+      { "name": "Combo 1 Fried Chicken", "price": 59000, "includes": "1 Fried Chicken + 1 French Fries (R) + 1 Pepsi (STD)" },
+      { "name": "Combo Chill Single", "price": 91000, "includes": "1 Fried Chicken + 1 Pasta + 1 French Fries (R) + 1 Pepsi (STD)" },
+      { "name": "Combo 2 Fried Chicken", "price": 91000, "includes": "2 Fried Chicken + 1 French Fries (R) + 1 Pepsi (STD)" },
+      { "name": "Combo Pasta Solo", "price": 71000, "includes": "1 Sausage Pasta COB + 1 Pepsi (STD)" },
+      { "name": "Combo Pasta & Tenders", "price": 79000, "includes": "1 Sausage Pasta + 3 Tenders + 1 Pepsi (STD)" },
+      { "name": "Combo Rice Fried Chicken", "price": 56000, "includes": "1 Fried Chicken Rice + 1 Pepsi (STD)" },
+      { "name": "Combo Rice & Soup", "price": 69000, "includes": "1 Fried Chicken Rice + Seaweed Soup + 1 Pepsi (STD)" },
+      { "name": "Combo Rice Flava", "price": 59000, "includes": "1 Roasted Fillet Chicken Rice + 1 Pepsi (STD)" },
+      { "name": "Combo Rice Nanban", "price": 46000, "includes": "1 Nanban Popcorn Chicken Rice + 1 Pepsi (STD)" },
+      { "name": "Combo Burger Zinger", "price": 79000, "includes": "1 Zinger Chicken Burger + 1 French Fries (R) + 1 Pepsi (STD)" },
+      { "name": "Combo Burger Shrimp", "price": 69000, "includes": "1 Shrimp Burger + 1 French Fries (R) + 1 Pepsi (STD)" },
+      { "name": "Combo Burger Flava", "price": 79000, "includes": "1 Roasted Fillet Chicken Burger + 1 French Fries (R) + 1 Pepsi (STD)" }
+    ],
+    "combo_for_sharing": [
+      { "name": "Combo Group 2", "price": 169000, "includes": "4 Fried Chicken + 1 French Fries (R) + 2 Pepsi (STD)" },
+      { "name": "Combo Group 3", "price": 239000, "includes": "5 Fried Chicken + 1 Popcorn Chicken (R) + 3 Pepsi (STD)" },
+      { "name": "Combo Burger GaYo & Fried Chicken", "price": 129000, "includes": "Burger Ga Yo + 2 Fried Chicken + French Fries (R) + 2 Pepsi (M)" },
+      { "name": "Combo Group 2 (Pasta)", "price": 159000, "includes": "3 Fried Chicken + 1 Popcorn Chicken Pasta + 1 French Fries (R) + 2 Pepsi (STD)" },
+      { "name": "Combo Chill Couple", "price": 146000, "includes": "2 Sausage Pasta + 2 Fried Chicken + 1 French Fries (R) + 2 Pepsi (STD)" },
+      { "name": "Big Combo 199k", "price": 199000, "includes": "3 Fried Chicken + 2 Sausage Pasta + 1 French Fries (R) + 3 Pepsi (STD)" },
+      { "name": "Big Combo 279k", "price": 279000, "includes": "4 Fried Chicken + 2 Zinger Chicken Burger + 1 French Fries (R) + 4 Pepsi (STD)" }
+    ],
+    "fried_and_roasted": [
+      { "name": "1 Fried Chicken", "price": 37000, "includes": "1 Fried Chicken + 1 sachet (tomato/chili sauce)" },
+      { "name": "2 Fried Chicken", "price": 74000, "includes": "2 Fried Chicken + 2 sachets" },
+      { "name": "3 Fried Chicken", "price": 105000, "includes": "3 Fried Chicken + 3 sachets" },
+      { "name": "6 Fried Chicken", "price": 210000, "includes": "6 Fried Chicken + 6 sachets" },
+      { "name": "1 Roasted Fillet Chicken", "price": 43000, "includes": "1 Roasted Fillet Chicken" },
+      { "name": "3 Tenders Chicken", "price": 42000, "includes": "3 Tenders Chicken + 1 sachet" },
+      { "name": "5 Tenders Chicken", "price": 68000, "includes": "5 Tenders Chicken + 2 sachets" }
+    ],
+    "rice_burger_pasta": [
+      { "name": "Burger Yo (Chicken)", "price": 30000, "includes": "Burger Ga Yo spicy or non-spicy" },
+      { "name": "Roasted Fillet Chicken Burger", "price": 56000 },
+      { "name": "Burger Shrimp", "price": 45000 },
+      { "name": "Burger Zinger", "price": 56000 },
+      { "name": "Sausage Chicken Pasta", "price": 38000 },
+      { "name": "Popcorn Chicken Pasta", "price": 43000 },
+      { "name": "Fried Chicken Pasta", "price": 68000 },
+      { "name": "Fried Chicken Rice", "price": 49000 },
+      { "name": "Nanban Popcorn Chicken Rice", "price": 40000 },
+      { "name": "Roasted Fillet Chicken Rice", "price": 54000 }
+    ],
+    "snacks": [
+      { "name": "Roasted Sesame Salad", "price": 22000 },
+      { "name": "Popcorn Salad", "price": 37000 },
+      { "name": "4 Chewy Cheese", "price": 38000 },
+      { "name": "6 Chewy Cheese", "price": 53000 },
+      { "name": "Popcorn (L)", "price": 67000 },
+      { "name": "Popcorn (R)", "price": 40000 },
+      { "name": "Coleslaw (J)", "price": 32000 },
+      { "name": "Coleslaw (L)", "price": 23000 },
+      { "name": "Coleslaw (R)", "price": 13000 },
+      { "name": "French Fries (J)", "price": 40000 },
+      { "name": "French Fries (L)", "price": 30000 },
+      { "name": "French Fries (R)", "price": 20000 },
+      { "name": "Mashed Potato (J)", "price": 32000 },
+      { "name": "Mashed Potato (L)", "price": 23000 },
+      { "name": "Mashed Potato (R)", "price": 13000 },
+      { "name": "Rice", "price": 12000 },
+      { "name": "Seaweed Soup", "price": 20000 }
+    ],
+    "dessert_and_drinks": [
+      { "name": "1 Eggtart", "price": 20000 },
+      { "name": "4 Eggtarts", "price": 72000 },
+      { "name": "Pepsi (STD)", "price": 13000 },
+      { "name": "Pepsi (M)", "price": 17000 },
+      { "name": "Pepsi (J)", "price": 20000 },
+      { "name": "7Up (STD)", "price": 13000 },
+      { "name": "7Up (M)", "price": 17000 },
+      { "name": "7Up (J)", "price": 20000 },
+      { "name": "Lipton (STD)", "price": 13000 },
+      { "name": "Lipton (M)", "price": 17000 },
+      { "name": "Lipton (J)", "price": 20000 },
+      { "name": "Pepsi Zero (STD)", "price": 13000 },
+      { "name": "Pepsi No Sugar (M)", "price": 17000 },
+      { "name": "Pepsi No Sugar (J)", "price": 20000 },
+      { "name": "Pepsi (Can)", "price": 20000 },
+      { "name": "7Up (Can)", "price": 20000 },
+      { "name": "Pepsi No Sugar (Can)", "price": 20000 }
+    ]
+  },
+  "promotions": {
+    "active": [
+      {
+        "name": "Thêm Gà, Tiệc Thêm Vui (More Chicken, More Party) — Big Order",
+        "start_date": "2026-07-01",
+        "end_date": "2026-07-31",
+        "type": "big_order",
+        "description": "Tiered discounts plus gifts on large orders, with free delivery and a custom-designed menu.",
+        "tiers": [
+          { "order_value": "1,000,000 – under 2,500,000 VND", "gifts": "6 Pepsi cans, 2 VietGoal vouchers, 2 GreenSM vouchers, 2 Shopee VIP vouchers, 1 Dong Luc Sport voucher" },
+          { "order_value": "2,500,000 – under 5,000,000 VND", "gifts": "12 Pepsi cans, 5 VietGoal, 5 GreenSM, 5 Shopee VIP, 1 Dong Luc Sport voucher" },
+          { "order_value": "5,000,000 VND and above", "gifts": "24 Pepsi cans, 10 VietGoal, 10 GreenSM, 10 Shopee VIP, 1 Dong Luc Sport voucher" }
+        ],
+        "hotline": "1900 6886",
+        "url": "https://kfcvietnam.com.vn/big-order"
+      },
+      {
+        "name": "KFC Rewards — Membership Program",
+        "start_date": "2026-05-27",
+        "end_date": "2026-08-31",
+        "type": "loyalty",
+        "description": "New loyalty program. Sign-up welcome deal: 1 Crispy Chicken + 1 Pepsi (STD) for 25,000 VND. Members earn 3% points back per order, redeem rewards from KFC and partners, and get exclusive offers on the 15th of each month.",
+        "welcome_deal_price": 25000,
+        "url": "https://membership.kfcvietnam.com.vn/login"
+      },
+      {
+        "name": "KFC Zestival (in-menu tie-in)",
+        "type": "event",
+        "description": "Select Hot Deal combos (e.g. Combo Ga Rom Ra 245k) include a free KFC Zestival Ticket (Khuay Dao Zone) while stocks last."
+      }
+    ],
+    "expired_recent": [
+      { "name": "KFC Big Order — Đơn Lớn Quà To", "start_date": "2026-06-01", "end_date": "2026-06-30", "description": "10–20% off + Pepsi, KFC/VietGoal/GreenSM/Shopee vouchers by order tier." },
+      { "name": "Đặt Đơn Lớn Rinh Ưu Đãi To", "start_date": "2026-04-01", "end_date": "2026-04-30", "description": "10–20% off + Pepsi, UrBox, KFC, VietGoal vouchers." },
+      { "name": "Gà Giòn Thay Hoa (Women's month)", "start_date": "2026-03-01", "end_date": "2026-03-31", "description": "10–20% off + Pepsi, KFC, UrBox vouchers." },
+      { "name": "Free Eggtart via Kiosk", "start_date": "2026-01-01", "end_date": "2026-01-31", "description": "Free 1 Eggtart on bills of 99,000 VND or more, kiosk orders only, selected customers." }
+    ]
+  }
+}

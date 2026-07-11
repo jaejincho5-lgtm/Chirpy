@@ -1,0 +1,32 @@
+{
+  "name": "kfc-conversational-ordering",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "test": "tsx tests/order.test.ts && tsx tests/profile.test.ts && tsx tests/suggest.test.ts && tsx tests/combos.test.ts && tsx tests/cravings.test.ts && tsx tests/oos.test.ts && tsx tests/oms-store.test.ts && tsx tests/worldstate.test.ts && tsx tests/otp-limits.test.ts && tsx tests/verbosity.test.ts && tsx tests/reengage.test.ts && tsx tests/vouchers-auto.test.ts && tsx tests/reorder.test.ts && tsx tests/answer-cache.test.ts && tsx tests/contact.test.ts && tsx tests/voice-links.test.ts",
+    "eval": "tsx eval/run.ts",
+    "eval:channel": "tsx eval/channel.ts"
+  },
+  "dependencies": {
+    "@ai-sdk/react": "^2.0.0",
+    "@supabase/supabase-js": "^2.45.0",
+    "ai": "^5.0.0",
+    "next": "^16.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "three": "^0.180.0",
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@types/three": "^0.180.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0"
+  }
+}
