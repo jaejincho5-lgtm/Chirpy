@@ -21,9 +21,21 @@ if (first.ok) {
   assert.equal(first.conversationKey, "messenger:demo_linh");
 }
 
-const second = await redeemVoiceLink(minted.token);
-assert.equal(second.ok, false, "a used token cannot be redeemed again");
-if (!second.ok) assert.equal(second.reason, "used");
+// Messenger's URL scanner burns the first redemption ~1s after mint, so a
+// token stays redeemable for a 2-minute grace window (the human's click),
+// then hard-locks.
+const graceRedeem = await redeemVoiceLink(minted.token);
+assert.equal(graceRedeem.ok, true, "re-redemption inside the grace window succeeds (link-scanner survival)");
+
+const mintedAt = Date.parse("2026-07-11T00:00:00Z");
+const scanned = await mintVoiceLink("msgr_scan", "messenger:scan", mintedAt);
+const scanner = await redeemVoiceLink(scanned.token, mintedAt + 700); // scanner hits at +0.7s
+assert.equal(scanner.ok, true);
+const human = await redeemVoiceLink(scanned.token, mintedAt + 30_000); // human clicks at +30s
+assert.equal(human.ok, true, "human click 30s after the scanner still adopts the identity");
+const late = await redeemVoiceLink(scanned.token, mintedAt + 700 + 2 * 60 * 1000 + 1);
+assert.equal(late.ok, false, "past the grace window the token is locked");
+if (!late.ok) assert.equal(late.reason, "used");
 
 // --- unknown + expired tokens ------------------------------------------------
 

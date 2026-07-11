@@ -19,6 +19,13 @@ import { createClient } from "@supabase/supabase-js";
 
 const TTL_MS = 10 * 60 * 1000; // link valid 10 minutes
 const ECHO_TTL_MS = 30 * 60 * 1000; // signed channelEcho valid 30 minutes post-redeem
+// Messenger's URL scanner opens links (JS included) within ~1s of the bot
+// sending them, redeeming the token before the human can click (observed live
+// 2026-07-11: every used_at landed <1s after mint). Strict single-use would
+// brick every link, so a token stays redeemable for a short grace window after
+// first use. The window is small and the token is still unguessable + bound to
+// one customer, so replay risk stays negligible.
+const REUSE_GRACE_MS = 2 * 60 * 1000;
 
 export type VoiceLink = {
   token: string;
@@ -119,13 +126,18 @@ export async function mintVoiceLink(
   return { token, expiresAt };
 }
 
-/** Redeem a token: valid only if it exists, is unexpired, and is unused. Single-use. */
+/**
+ * Redeem a token: valid if it exists, is unexpired, and is either unused or
+ * first-used within REUSE_GRACE_MS (Messenger's link scanner burns the first
+ * redemption ~1s after mint; the human click must still succeed).
+ */
 export async function redeemVoiceLink(token: string, now = Date.now()): Promise<RedeemResult> {
   const link = await getStore().get(token);
   if (!link) return { ok: false, reason: "not_found" };
-  if (link.usedAt) return { ok: false, reason: "used" };
+  if (link.usedAt && now - Date.parse(link.usedAt) > REUSE_GRACE_MS) return { ok: false, reason: "used" };
   if (now > Date.parse(link.expiresAt)) return { ok: false, reason: "expired" };
-  await getStore().markUsed(token, new Date(now).toISOString());
+  // used_at records the FIRST redemption; grace re-redeems don't extend it.
+  if (!link.usedAt) await getStore().markUsed(token, new Date(now).toISOString());
   return { ok: true, customerId: link.customerId, conversationKey: link.conversationKey };
 }
 
