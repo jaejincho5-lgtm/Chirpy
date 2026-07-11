@@ -56,7 +56,9 @@ export async function POST(req: Request) {
     return new Response(null, { status: 503 });
   }
 
-  const voiceId = process.env.ELEVENLABS_VOICE_ID || "21m00Tcm4TlvDq8ikWAM"; // multilingual default
+  // Default: Jessica (premade, in every workspace — free plan can use it via API).
+  // Rachel (21m00Tcm4TlvDq8ikWAM) is a LIBRARY voice → 402 paid_plan_required on free.
+  const voiceId = process.env.ELEVENLABS_VOICE_ID || "cgSgspJ2msm6clMCkdW9";
   try {
     const upstream = await fetch(
       `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}?output_format=mp3_44100_64`,
@@ -67,7 +69,8 @@ export async function POST(req: Request) {
       },
     );
     if (!upstream.ok) {
-      console.warn(`[tts] ElevenLabs responded ${upstream.status} — falling back to browser voice`);
+      const reason = await upstream.text().then((t) => t.slice(0, 300)).catch(() => "");
+      console.warn(`[tts] ElevenLabs responded ${upstream.status} — falling back to browser voice. ${reason}`);
       return new Response(null, { status: 503 });
     }
     const buf = Buffer.from(await upstream.arrayBuffer());
