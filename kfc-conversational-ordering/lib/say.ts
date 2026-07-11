@@ -28,7 +28,7 @@ function extractProse(text: string): string {
   // Unfenced trailing contract: prose followed by a raw {"say": ...} object.
   const marker = trimmed.search(/\{\s*"say"\s*:/);
   if (marker > 0) {
-    const prose = trimmed.slice(0, marker).trim();
+    const prose = stripFenceArtifacts(trimmed.slice(0, marker));
     const tail = trimmed.slice(marker);
     try {
       const parsed = JSON.parse(tail.slice(0, tail.lastIndexOf("}") + 1)) as { say?: string };
@@ -37,6 +37,7 @@ function extractProse(text: string): string {
       // fall through to prose
     }
     if (prose) return prose;
+    return salvageSay(tail) ?? "";
   }
   if (trimmed.startsWith("{")) {
     try {
@@ -45,6 +46,25 @@ function extractProse(text: string): string {
     } catch {
       // fall through
     }
+    return salvageSay(trimmed) ?? text;
   }
-  return text;
+  return stripFenceArtifacts(trimmed) ? text : "";
+}
+
+// A reply cut off inside the contract leaves a dangling fence opener before the
+// JSON — that opener is never prose, and speaking "json" aloud kills the voice.
+function stripFenceArtifacts(text: string): string {
+  return text.replace(/```(?:json)?\s*$/i, "").trim();
+}
+
+// Last-resort for a contract truncated mid-stream: pull the say string value
+// out of unparseable JSON so the voice never reads raw JSON or fence markers.
+function salvageSay(text: string): string | null {
+  const match = text.match(/"say"\s*:\s*"((?:[^"\\]|\\.)*)/);
+  if (!match) return null;
+  try {
+    return JSON.parse(`"${match[1]}"`) as string;
+  } catch {
+    return null;
+  }
 }
