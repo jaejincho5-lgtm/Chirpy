@@ -465,6 +465,9 @@ export async function matchOrderOpener(text: string): Promise<FaqHit | null> {
 
   const cat = detectSingleCategory(norm);
   if (!cat) return null;
+  // A digit AFTER the category word is a product name ("combo 1" → Combo 1 Fried
+  // Chicken), not a quantity — that's already specific, never a bare opener.
+  if (cat.words.some((w) => new RegExp(`\\b${w}\\s+\\d`).test(norm))) return null;
   if (!isBareOpener(norm, cat)) return null; // specific request → let the model add it
 
   const { matches } = await searchMenuGrounded(cat.query, 6);

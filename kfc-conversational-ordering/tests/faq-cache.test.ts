@@ -74,6 +74,10 @@ assert.ok(burgerOpener?.say.includes("Burger Zinger"), "clarifier lists real bur
 assert.ok(burgerOpener?.say.includes("56.000 VND"), "clarifier includes real catalog prices");
 
 assert.equal(await matchOrderOpener("cho mình 1 burger zinger"), null, "specific burger order falls through");
+assert.equal(await matchOrderOpener("cho 1 combo 1"), null, "numbered combo (Combo 1) is specific, falls through");
+assert.equal(await matchOrderOpener("cho 2 combo 3"), null, "quantity + numbered combo falls through");
+const bareComboOpener = await matchOrderOpener("cho 1 combo");
+assert.equal(bareComboOpener?.id, "opener-combo", "bare combo opener still gets the grounded clarifier");
 assert.equal(await matchOrderOpener("cho mình 1 burger và 1 pepsi"), null, "compound order falls through");
 assert.equal(await matchOrderOpener("mấy giờ mở cửa"), null, "non-order FAQ is not an order opener");
 assert.equal(await matchOrderOpener("áp mã KFC20"), null, "voucher command is not an order opener");
