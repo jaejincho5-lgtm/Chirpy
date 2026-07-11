@@ -346,9 +346,14 @@ export default function VoicePage() {
         .map((result) => result[0]?.transcript ?? "")
         .join("")
         .trim();
+      // Re-arm the silence window only when the words actually changed: some
+      // Chrome builds re-emit identical interim results indefinitely, which
+      // kept resetting the 1400ms timer so finalization never fired (the
+      // "it never knows when I'm done talking" bug, seen live 2026-07-11).
+      const changed = transcript !== finalTextRef.current;
       finalTextRef.current = transcript;
       setInterim(transcript);
-      armSilenceTimer();
+      if (changed || !silenceTimerRef.current) armSilenceTimer();
     };
     recognition.onend = () => {
       clearSilenceTimer();

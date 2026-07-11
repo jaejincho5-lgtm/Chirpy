@@ -170,9 +170,11 @@ async function interceptOptOut(
 // identity. Intercepted BEFORE the LLM (same placement/zero-cost as the "dừng"
 // opt-out), and deliberately conservative so it can never hijack a real order.
 function baseAppUrl(): string {
-  if (process.env.NEXT_PUBLIC_APP_URL) return process.env.NEXT_PUBLIC_APP_URL;
-  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
-  return "http://localhost:3000";
+  // Trailing slash stripped: NEXT_PUBLIC_APP_URL set as "https://x.app/" would
+  // mint ".../​/voice?t=..." and Next's redirect to /voice DROPS the token, so
+  // the chirpy link silently loses the customer's identity (seen live 2026-07-11).
+  const configured = process.env.NEXT_PUBLIC_APP_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "");
+  return (configured || "http://localhost:3000").replace(/\/+$/, "");
 }
 
 async function interceptChirpy(channel: "messenger", senderId: string, text: string): Promise<string | null> {
