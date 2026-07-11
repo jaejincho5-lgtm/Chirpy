@@ -1,4 +1,4 @@
-# OPUS-WORKPLAN — Project COLONEL upgrade, 6 tracks in one day
+# OPUS-WORKPLAN — Project Chirpy upgrade, 6 tracks in one day
 
 Written by Fable 5 on 2026-07-07 after full codebase exploration + user interview.
 **Audience: Claude Opus executing autonomously.** Every decision is already made —
@@ -11,7 +11,7 @@ message given in that track. All paths are relative to
 
 ## 0. Context you must load into your head first
 
-**Product:** "Project COLONEL" — KFC Vietnam conversational ordering agent
+**Product:** "Project Chirpy" — KFC Vietnam conversational ordering agent
 (hackathon: Agentic AI Build Week 2026, HCMC). Customer chats in Vietnamese on
 `/user` (Messenger-style web mock) or **real Facebook Messenger** (webhook is
 live). An AI-SDK v5 agent loop (`streamText`/`generateText`, `stopWhen:
@@ -260,7 +260,7 @@ import { getOmsStore, OMS_STAGE_FLOW, type OmsStage } from "@/lib/oms-store";
   `placed → completed` returns error, `latestForCustomer` finds it, events
   length === 4. Add it to the `test` script chain in `package.json`.
 
-**Commit:** `feat(colonel): real OMS — durable orders, lifecycle events, status tool + API`
+**Commit:** `feat(chirpy): real OMS — durable orders, lifecycle events, status tool + API`
 
 ---
 
@@ -299,7 +299,7 @@ its own tool. (Scope control.)
   server + env), POST create a `TEST10` voucher, `apply_voucher` path picks it
   up after cache expiry (or restart), toggle it off, verify it stops applying.
 
-**Commit:** `feat(colonel): loyalty members + voucher management APIs (DB-backed rules live)`
+**Commit:** `feat(chirpy): loyalty members + voucher management APIs (DB-backed rules live)`
 
 ---
 
@@ -436,7 +436,7 @@ read it; if it takes weather from the request/demo store, apply the same
   check server log line for Open-Meteo fetch happening once per 10 min, not
   per turn.
 
-**Commit:** `feat(colonel): live world signals — Open-Meteo HCMC weather + VN calendar in agent context`
+**Commit:** `feat(chirpy): live world signals — Open-Meteo HCMC weather + VN calendar in agent context`
 
 ---
 
@@ -553,7 +553,7 @@ helper approach, zero clock-mocking). Add to `package.json` test chain.
   env** (mock path). If the user has provided Twilio keys in `.env.local`,
   ALSO do one live send to their own phone and confirm `smsSent: true`.
 
-**Commit:** `feat(colonel): OTP hardening — Twilio SMS behind provider interface, resend cooldown + request window`
+**Commit:** `feat(chirpy): OTP hardening — Twilio SMS behind provider interface, resend cooldown + request window`
 
 ---
 
@@ -637,7 +637,7 @@ to Live.
   advance it placed→preparing→ready→completed, confirm buttons disable at
   terminal stages, toggle a voucher off and back.
 
-**Commit:** `feat(colonel): backend console reorganized into Odoo-style modules (orders/customers/vouchers/stock/agent)`
+**Commit:** `feat(chirpy): backend console reorganized into Odoo-style modules (orders/customers/vouchers/stock/agent)`
 
 ---
 
@@ -778,7 +778,7 @@ export function getSpeaker(): Speaker  // BrowserSpeaker now; ElevenLabs drops i
   full loop by typing via the escape-hatch input: reply arrives → TTS speaks
   (audible) → mouth flaps.
 
-**Commit:** `feat(colonel): /voice — VRM virtual ambassador with vi-VN STT/TTS, lip-sync, same agent underneath`
+**Commit:** `feat(chirpy): /voice — VRM virtual ambassador with vi-VN STT/TTS, lip-sync, same agent underneath`
 
 ---
 
@@ -812,7 +812,7 @@ export function getSpeaker(): Speaker  // BrowserSpeaker now; ElevenLabs drops i
    live weather, OTP limits/Twilio, /voice), new routes list, env var table
    additions. Update `docs/PLAN.md` P0 list — mark these tracks landed with
    date 2026-07-07.
-7. Final commit: `docs(colonel): README + plan refresh for OMS/loyalty/world/OTP/voice drop`
+7. Final commit: `docs(chirpy): README + plan refresh for OMS/loyalty/world/OTP/voice drop`
 8. Deploy only if the user asks (vercel:deploy skill).
 
 ### Env vars (full set after this plan)

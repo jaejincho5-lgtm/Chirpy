@@ -110,7 +110,7 @@ export default function BackendConsole() {
             <KfcMark />
           </div>
           <div>
-            <b>COLONEL · Backend</b>
+            <b>Chirpy · Backend</b>
             <small>Bàn điều khiển vận hành, mô-đun hóa</small>
           </div>
         </div>

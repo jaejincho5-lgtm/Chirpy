@@ -1,4 +1,4 @@
-# PLAN — Project COLONEL: next actions through demo day
+# PLAN — Project Chirpy: next actions through demo day
 
 **Written:** 2026-07-04, against commit `17d8446` · **Event:** AABW build week Jul 8–12, HCMC
 **State:** WP-0–9 delivered · keyless gate green · Suite 3 lift +9.6pp · demo split into `/user` + `/backend` ·
@@ -112,7 +112,7 @@ The single most overdue measurement. Everything so far ran on rate-limited free-
 Prereq: P0-3 deployed URL. Steps (also in README "Going live on Messenger"):
 
 1. developers.facebook.com → create **Business** app + a Facebook Page (name it like a demo store,
-   e.g. "KFC VN Demo — COLONEL").
+   e.g. "KFC VN Demo — Chirpy").
 2. Add Messenger product → generate **Page access token** → Vercel env `MESSENGER_TOKEN`.
 3. Webhooks → URL `https://<prod-domain>/api/webhook/messenger`, verify token = your choice →
    also set as `MESSENGER_VERIFY_TOKEN` in Vercel env → subscribe to `messages`.

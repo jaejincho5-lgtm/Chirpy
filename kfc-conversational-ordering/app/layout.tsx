@@ -26,7 +26,7 @@ const mono = IBM_Plex_Mono({
 });
 
 export const metadata = {
-  title: "COLONEL · KFC Việt Nam ordering agent",
+  title: "Chirpy · KFC Việt Nam ordering agent",
   description: "Conversational ordering agent that learns your taste. AABW 2026, KFC Vietnam track.",
 };
 

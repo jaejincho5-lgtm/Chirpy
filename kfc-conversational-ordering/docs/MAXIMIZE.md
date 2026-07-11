@@ -1,4 +1,4 @@
-# MAXIMIZE — Project COLONEL: the full-court press, Jul 6 → Jul 12
+# MAXIMIZE — Project Chirpy: the full-court press, Jul 6 → Jul 12
 
 **Written:** 2026-07-06 · Companion to [`PLAN.md`](./PLAN.md) (P0 sequence), [`OPTIMIZATIONS.md`](./OPTIMIZATIONS.md)
 (backlog detail), [`SCORECARD.md`](./SCORECARD.md) (the grades we're moving). This document is the
@@ -78,7 +78,7 @@ deck numbers are copy-pasted from JSON, not invented. **Acceptance:** returns be
 full demo rehearsal.
 
 ### 2.2 The counterfactual slide (user + agent, FREE, Day 1)
-One sentence, agreed and frozen: *"Một đơn Messenger hôm nay cần ~4 phút nhân viên CSR; COLONEL: 0 phút
+One sentence, agreed and frozen: *"Một đơn Messenger hôm nay cần ~4 phút nhân viên CSR; Chirpy: 0 phút
 người, chi phí AI ~300–500₫/đơn (đo thật — dòng chi phí trên /backend)."* If AABW/KFC partner can supply
 a real handle-time number on Day 1–2, swap it in and cite them — instant credibility.
 

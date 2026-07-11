@@ -1,4 +1,4 @@
-/* COLONEL demo stage — KFC Việt Nam conversational ordering.
+/* Chirpy demo stage — KFC Việt Nam conversational ordering.
    Scene: bright hackathon hall, projector at 3-10m + judges' own phones.
    Strategy: committed KFC red on a warm cream canvas; Zalo blue lives only
    inside the chat so the phone reads as the customer's real channel. */
@@ -1603,7 +1603,7 @@ button:disabled { cursor: default; }
 }
 
 /* ============================ /voice ambassador ============================ */
-/* Immersive committed-red stage. The rest of COLONEL is cream-on-white; the
+/* Immersive committed-red stage. The rest of Chirpy is cream-on-white; the
    ambassador inverts to a KFC-red room so the 3D chicken reads as the hero.
    Same design tokens (red-deep, font-display/mono, ease-out, shadow-card) so
    it stays part of the same product, not a separate skin. */

@@ -1,4 +1,4 @@
-# OPTIMIZATIONS — Project COLONEL: the "unfair advantage" backlog
+# OPTIMIZATIONS — Project Chirpy: the "unfair advantage" backlog
 
 **Written:** 2026-07-05, against commit `8fdddc7` · Companion to [`PLAN.md`](./PLAN.md) (P0s live there —
 prompt discipline, top-up + Opus baseline, prod deploy, Messenger go-live). This file is everything

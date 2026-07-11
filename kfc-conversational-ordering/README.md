@@ -163,7 +163,7 @@ measured a regex, not the agent. The items below have now been addressed.
 
 ---
 
-## Project COLONEL Delivery Notes
+## Project Chirpy Delivery Notes
 
 ### What's Real / What's Synthetic
 

@@ -11,7 +11,7 @@ import type { Order } from "@/lib/order";
 
 /* ---------- bus protocol ---------- */
 
-export const DEMO_BUS = "colonel-demo";
+export const DEMO_BUS = "chirpy-demo";
 
 export type DemoSettings = {
   customerId: string;

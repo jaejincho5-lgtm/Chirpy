@@ -1,4 +1,4 @@
-# SCORECARD — Project COLONEL, marked harshly
+# SCORECARD — Project Chirpy, marked harshly
 
 **Written:** 2026-07-05, post P0-1 + prompt-caching + eval-triage · Companion to [`PLAN.md`](./PLAN.md) and [`OPTIMIZATIONS.md`](./OPTIMIZATIONS.md).
 Criteria: operational ROI, automation accuracy, cycle-time reduction, upsell/forecasting impact. Graded against
@@ -25,7 +25,7 @@ No counterfactual is defined (staff handle-time? app funnel conversion?), so ROI
 **Improve:**
 - **C9 cost-per-order** (1–2 h): `totalUsage` → `kfc_order_events` → "Chi phí AI đơn này: ~X₫" on `/backend`.
 - **C10 `/api/stats`**: deck numbers from real Supabase rows.
-- Define the counterfactual in one sentence pre-demo ("a human CSR takes ~4 min per Messenger order; COLONEL takes
+- Define the counterfactual in one sentence pre-demo ("a human CSR takes ~4 min per Messenger order; Chirpy takes
   0 human-minutes") and openly gate the revenue side on a pilot. Judges punish fake ROI harder than absent ROI.
 
 ## 2. Automation accuracy — C−

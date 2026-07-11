@@ -9,7 +9,7 @@ import { suggestAddons } from "@/lib/reco/suggest";
 import { getCatalogEntry } from "@/lib/menu";
 import type { OrderContext } from "@/lib/reco/context";
 
-export const metadata = { title: "COLONEL · Ma trận quyết định" };
+export const metadata = { title: "Chirpy · Ma trận quyết định" };
 
 // Fixed identity→color assignment (validated 6-slot categorical palette; light
 // mode; contrast WARN on slots 2–3 is relieved by visible labels everywhere).

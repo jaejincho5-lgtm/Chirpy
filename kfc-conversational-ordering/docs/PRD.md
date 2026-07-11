@@ -1,4 +1,4 @@
-# PRD — Project COLONEL (implementation spec v2)
+# PRD — Project Chirpy (implementation spec v2)
 ## The KFC ordering agent that learns you
 
 **Event:** Agentic AI Build Week 2026 · HCMC · Jul 8–12
@@ -763,11 +763,11 @@ Every beat's tool trace must be visible in the rail. Record a fallback capture o
       `package.json` (test script chain), `README.md` (new "What's real / what's synthetic" section
       + Suite 3 headline numbers).
 - [ ] README updated with the printed Suite 3 numbers (paste actual output, not aspirations).
-- [ ] Commit per WP (`feat(colonel): WP-N — <name>`), Co-Authored-By footer per repo convention.
+- [ ] Commit per WP (`feat(chirpy): WP-N — <name>`), Co-Authored-By footer per repo convention.
 - [ ] Nothing from `../kfc-kiosk-recommendations/` modified — copy, don't move.
 
 ## 16. Explicitly OUT of scope for this build (do not attempt)
 
-Group ordering (F7) · proactive nudges (F10) · Colonel Console (F11) · voice transcription ·
+Group ordering (F7) · proactive nudges (F10) · Chirpy Console (F11) · voice transcription ·
 real Zalo/Messenger send APIs · payments · Redis OTP. These are build-week stretch goals gated on
 the checklist above being fully green first.

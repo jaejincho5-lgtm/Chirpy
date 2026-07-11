@@ -1,6 +1,6 @@
 // Association-rule (co-purchase) mining.
 //
-// This is the single affinity computation for Project COLONEL. The live
+// This is the single affinity computation for Project Chirpy. The live
 // suggestion engine consumes rules mined here from the synthetic POS world.
 
 import type { PosOrder } from "./pos-sim";

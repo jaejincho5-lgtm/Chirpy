@@ -13,7 +13,7 @@ export default function Launcher() {
           <KfcMark />
         </div>
         <div>
-          <b>COLONEL</b>
+          <b>Chirpy</b>
           <small>Đặt món qua chat, nhớ khẩu vị của bạn · KFC Việt Nam · AABW 2026</small>
         </div>
       </div>

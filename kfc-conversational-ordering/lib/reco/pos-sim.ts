@@ -1,4 +1,4 @@
-// Independent synthetic POS-log generator for Project COLONEL.
+// Independent synthetic POS-log generator for Project Chirpy.
 //
 // This is the hand-authored "world" used for mining and held-out evaluation.
 // It never consumes the recommendation engine.
