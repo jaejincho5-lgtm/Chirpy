@@ -34,6 +34,41 @@ const ACTION_LABEL: Record<OmsStage, string> = {
 
 const STAGE_ORDER: OmsStage[] = ["placed", "preparing", "ready", "completed", "cancelled"];
 
+// FNV-1a over the order id — a stable, unique-per-order hex digest so the fake
+// OMS payload carries a distinct trace/signature for every đơn hàng.
+function fnv1a(seed: string): string {
+  let h = 0x811c9dc5;
+  for (let i = 0; i < seed.length; i++) {
+    h ^= seed.charCodeAt(i);
+    h = Math.imul(h, 0x01000193);
+  }
+  return (h >>> 0).toString(16).padStart(8, "0");
+}
+
+// The payload we "send" to the OMS dashboard. Purely presentational — the demo
+// shows each order syncing over as its own unique JSON document.
+function omsPayload(order: OmsOrderRow) {
+  const sig = fnv1a(order.id);
+  const sig2 = fnv1a(order.id + order.updatedAt);
+  return {
+    event: "order.sync",
+    source: "kfc-ai-agent",
+    target: "oms-dashboard",
+    oms_order_number: order.omsOrderNumber,
+    order_id: order.id,
+    channel: order.channel,
+    customer_id: order.customerId ?? "guest",
+    stage: order.stage,
+    items: order.itemsSummary && order.itemsSummary !== "—" ? order.itemsSummary.split(/,\s*/) : [],
+    total_vnd: order.totalVnd,
+    currency: "VND",
+    placed_at: order.createdAt,
+    updated_at: order.updatedAt,
+    trace_id: `trc_${sig}${sig2}`,
+    signature: `hmac-sha256=${sig2}${sig}`,
+  };
+}
+
 export function OrdersModule() {
   const [orders, setOrders] = useState<OmsOrderRow[] | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
@@ -41,6 +76,9 @@ export function OrdersModule() {
   // Order ids we've just notified the customer about — drives the "đã nhắn
   // khách" chip so the operator sees the proactive push landed.
   const [notified, setNotified] = useState<Record<string, string>>({});
+  // Clicked order → JSON inspector modal ("fake" API call to the OMS dashboard).
+  const [inspect, setInspect] = useState<OmsOrderRow | null>(null);
+  const [syncState, setSyncState] = useState<"sending" | "copied">("sending");
   const busRef = useRef<BroadcastChannel | null>(null);
 
   useEffect(() => {
@@ -64,6 +102,24 @@ export function OrdersModule() {
     const timer = setInterval(load, 4000);
     return () => clearInterval(timer);
   }, [load]);
+
+  // Inspector lifecycle: brief "sending" beat sells the fake OMS call, then
+  // flips to "copied to dashboard". Escape closes; the JSON also lands on the
+  // real clipboard as a bonus (best-effort, ignored if blocked).
+  useEffect(() => {
+    if (!inspect) return;
+    setSyncState("sending");
+    const beat = setTimeout(() => setSyncState("copied"), 700);
+    navigator.clipboard?.writeText(JSON.stringify(omsPayload(inspect), null, 2)).catch(() => {});
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setInspect(null);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => {
+      clearTimeout(beat);
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [inspect]);
 
   async function advance(order: OmsOrderRow, toStage: OmsStage) {
     setBusyId(order.id);
@@ -125,7 +181,20 @@ export function OrdersModule() {
       <div className="oms-list">
         {orders.length ? (
           orders.map((order) => (
-            <div className={`oms-row oms-row--${order.stage}`} key={order.id}>
+            <div
+              className={`oms-row oms-row--${order.stage} oms-row--clickable`}
+              key={order.id}
+              role="button"
+              tabIndex={0}
+              title="Xem JSON gửi sang OMS"
+              onClick={() => setInspect(order)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  setInspect(order);
+                }
+              }}
+            >
               <div className="oms-row__head">
                 <b className="oms-row__num">{order.omsOrderNumber}</b>
                 <ChannelBadge channel={order.channel} />
@@ -148,7 +217,10 @@ export function OrdersModule() {
                       type="button"
                       disabled={busyId === order.id}
                       className={`oms-btn oms-btn--${next}`}
-                      onClick={() => advance(order, next)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        advance(order, next);
+                      }}
                     >
                       {ACTION_LABEL[next]}
                     </button>
@@ -162,6 +234,25 @@ export function OrdersModule() {
           <p className="ops__empty">Chưa có đơn nào. Đặt một đơn ở /user để thấy nó xuất hiện ở đây.</p>
         )}
       </div>
+      {inspect ? (
+        <div className="oms-modal-backdrop" onClick={() => setInspect(null)}>
+          <div className="oms-modal" role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
+            <div className="oms-modal__head">
+              <div>
+                <b className="oms-modal__num">{inspect.omsOrderNumber}</b>
+                <code className="oms-modal__endpoint">POST https://oms.kfc.vn/api/v2/orders/sync</code>
+              </div>
+              <button type="button" className="oms-modal__close" onClick={() => setInspect(null)} aria-label="Đóng">
+                ✕
+              </button>
+            </div>
+            <pre className="oms-modal__json">{JSON.stringify(omsPayload(inspect), null, 2)}</pre>
+            <p className={`oms-modal__status oms-modal__status--${syncState}`}>
+              {syncState === "sending" ? "⏳ Đang gửi payload sang OMS…" : "✓ Copied to OMS dashboard"}
+            </p>
+          </div>
+        </div>
+      ) : null}
     </section>
   );
 }

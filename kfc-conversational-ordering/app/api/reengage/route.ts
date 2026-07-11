@@ -40,9 +40,11 @@ const bodySchema = z.discriminatedUnion("action", [
   z.object({
     action: z.literal("simulate"),
     seed: z.number().int().optional().default(4207),
-    days: z.number().int().min(3).max(14).optional().default(8),
+    // Ranges must match what the /backend sim controls allow (days 2-30,
+    // noise 0-180) — a stricter cap here made valid-looking inputs 400.
+    days: z.number().int().min(2).max(30).optional().default(8),
     trueHour: z.number().min(0).max(24).optional().default(11.5),
-    noiseMinutes: z.number().int().min(5).max(120).optional().default(25),
+    noiseMinutes: z.number().int().min(0).max(180).optional().default(25),
     gapDays: z.number().min(0.5).max(7).optional().default(1),
   }),
 ]);

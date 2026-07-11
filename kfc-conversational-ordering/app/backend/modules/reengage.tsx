@@ -195,7 +195,7 @@ export function ReengageModule() {
   return (
     <section className="ops">
       <div className="ops__head">
-        <p className="rail-title">Nudge v2 · Tái kích hoạt</p>
+        <p className="rail-title">Nudge v2 · Nhắc đơn thông minh</p>
         <small className="ops__subnote">Dự đoán giờ đặt món, cổng gửi và lịch sử thông báo theo từng khách</small>
       </div>
 
@@ -359,24 +359,45 @@ export function ReengageModule() {
 
         {simError ? <p className="ops__empty">Không chạy được mô phỏng hội tụ.</p> : null}
         {simResult ? (
-          <div className="reng-sim__chart">
-            {simResult.days.map((day) => {
-              const personalHeight = `${Math.max(3, ((day.errorMinutes ?? 0) / maxSimError) * 100)}%`;
-              const genericHeight = `${Math.max(3, (day.genericErrorMinutes / maxSimError) * 100)}%`;
-              const unlocked = unlockDay === day.day;
-              return (
-                <div className="reng-sim__day" key={day.day}>
-                  <div className="reng-sim__bars" title={`Ngày ${day.day} · ${day.orderTimeLabel}`}>
-                    {unlocked ? <span className="reng-unlock">mở khóa gửi</span> : null}
-                    <span className="reng-bar reng-bar--personal" style={{ height: personalHeight }} />
-                    <span className="reng-bar reng-bar--generic" style={{ height: genericHeight }} />
+          <>
+            <div className="reng-sim__legend">
+              <span>
+                <i className="reng-bar--personal" /> Sai số cá nhân hóa (phút)
+              </span>
+              <span>
+                <i className="reng-bar--generic" /> Sai số blast 12:00 (phút)
+              </span>
+            </div>
+            <div className="reng-sim__chart">
+              {simResult.days.map((day) => {
+                // sqrt scale — the generic-blast error can be 50× the personal
+                // one; on a linear scale the red bars vanish into dots.
+                const scale = (minutes: number) => Math.max(4, Math.sqrt(minutes / maxSimError) * 100);
+                const unlocked = unlockDay === day.day;
+                return (
+                  <div className="reng-sim__day" key={day.day}>
+                    <div
+                      className="reng-sim__bars"
+                      title={`Ngày ${day.day} · đặt lúc ${day.orderTimeLabel} · cá nhân hóa lệch ${day.errorMinutes ?? "—"} phút, blast lệch ${day.genericErrorMinutes} phút`}
+                    >
+                      {unlocked ? <span className="reng-unlock">mở khóa gửi</span> : null}
+                      <span className="reng-bar reng-bar--personal" style={{ height: `${scale(day.errorMinutes ?? 0)}%` }}>
+                        <em>{day.errorMinutes ?? "—"}</em>
+                      </span>
+                      <span className="reng-bar reng-bar--generic" style={{ height: `${scale(day.genericErrorMinutes)}%` }} />
+                    </div>
+                    <b>Ngày {day.day}</b>
+                    <small>{percent(day.confidence)}%</small>
                   </div>
-                  <b>Ngày {day.day}</b>
-                  <small>{percent(day.confidence)}%</small>
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
+            <p className="reng-sim__verdict">
+              Sau {simResult.days.length} ngày: gửi theo cá nhân hóa lệch{" "}
+              <b>{simResult.days[simResult.days.length - 1].errorMinutes ?? "—"} phút</b> so với giờ khách thật sự đặt —
+              blast cố định 12:00 lệch <b>{simResult.days[simResult.days.length - 1].genericErrorMinutes} phút</b>.
+            </p>
+          </>
         ) : (
           <p className="ops__empty">Chạy mô phỏng để xem sai số cá nhân hóa thu hẹp khi đủ lịch sử.</p>
         )}

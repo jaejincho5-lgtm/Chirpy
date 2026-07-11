@@ -184,8 +184,8 @@ export function AgentOpsModule() {
             Lượt hội thoại gần nhất <em>(tool calls · token · độ trễ · chi phí)</em>
           </p>
           <div className="tx-list">
-            {visibleTurns.map((turn) => (
-              <div className={`tx ${turn.placedOrder ? "tx--placed" : ""}`} key={turn.at + turn.customerId}>
+            {visibleTurns.map((turn, index) => (
+              <div className={`tx ${turn.placedOrder ? "tx--placed" : ""}`} key={`${turn.at}${turn.customerId}${index}`}>
                 <div className="tx__meta">
                   <span className="tx__time">{time(turn.at)}</span>
                   <ChannelBadge channel={turn.channel} synthetic={turn.synthetic} />

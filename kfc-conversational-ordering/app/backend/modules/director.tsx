@@ -11,7 +11,6 @@ import {
   DEMO_BUS,
   Receipt,
   TraceConsole,
-  demoBeats,
   type DemoBusMessage,
   type DemoSettings,
   type ToolTrace,
@@ -152,19 +151,6 @@ export function DirectorModule() {
   return (
     <div className="backend-grid">
       <aside className="director-rail">
-        <p className="rail-title">Kịch bản demo</p>
-        <div className="beats">
-          {demoBeats.map((beat, index) => (
-            <div className="beat" key={beat.label}>
-              <span className="beat__num">{index + 1}</span>
-              <span className="beat__label">
-                {beat.label}
-                <small>{beat.hint}</small>
-              </span>
-            </div>
-          ))}
-        </div>
-
         <p className="rail-title">Bàn điều khiển</p>
         <div className="controls">
           <label className="control">

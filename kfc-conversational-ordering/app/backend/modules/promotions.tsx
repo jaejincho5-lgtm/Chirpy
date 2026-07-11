@@ -10,6 +10,11 @@ import { useEffect, useRef, useState } from "react";
 import { vnd, type VoucherRow } from "./shared";
 import { DEMO_BUS, type DemoBusMessage } from "../../demo-shared";
 
+// One-click demo blast: pre-written "suggestion of the day" so the operator
+// can fire a believable promo without typing anything on stage.
+const SUGGESTED_PROMO =
+  "🌤️ Trưa nay nắng nóng, lười ra đường? Combo gà rán giòn cay + Pepsi mát lạnh giao tận nơi trong 30 phút. Nhập mã KFC20 giảm 20% (tối đa 60k) cho đơn từ 80k. Nhắn “combo” để đặt ngay nhé! 🍗";
+
 const TEMPLATES = [
   "🔥 Thứ Ba vui vẻ! Combo Gà Rán chỉ 79k hôm nay, nhắn “combo” để đặt ngay nhé!",
   "Trời mưa rồi ☔ Gà nóng giao tận nơi, đặt qua chat trong 30 giây. Bạn thèm gì?",
@@ -42,9 +47,12 @@ export function PromotionsModule() {
       .catch(() => null);
   }, []);
 
-  async function send() {
-    const text = message.trim();
+  // Accepts an override so the suggested-promo card can send in one click
+  // without a compose step; the textarea still mirrors what went out.
+  async function send(textOverride?: string) {
+    const text = (textOverride ?? message).trim();
     if (!text) return;
+    if (textOverride) setMessage(textOverride);
     setBusy(true);
     setError(null);
     setResult(null);
@@ -77,6 +85,16 @@ export function PromotionsModule() {
       </div>
       {error ? <p className="oms-error">{error}</p> : null}
 
+      <div className="promo-suggest">
+        <div className="promo-suggest__text">
+          <b>✨ Gợi ý hôm nay · trưa nắng nóng + mã KFC20 đang chạy</b>
+          <p>{SUGGESTED_PROMO}</p>
+        </div>
+        <button type="button" className="promo-suggest__send" disabled={busy} onClick={() => send(SUGGESTED_PROMO)}>
+          {busy ? "Đang gửi…" : "📣 Gửi ngay"}
+        </button>
+      </div>
+
       <div className="promo-compose">
         <textarea
           className="promo-textarea"
@@ -88,7 +106,7 @@ export function PromotionsModule() {
         />
         <div className="promo-meta">
           <span>{message.length}/1800</span>
-          <button type="button" onClick={send} disabled={busy || !message.trim()}>
+          <button type="button" onClick={() => send()} disabled={busy || !message.trim()}>
             {busy ? "Đang gửi…" : "📣 Gửi tới khách"}
           </button>
         </div>
