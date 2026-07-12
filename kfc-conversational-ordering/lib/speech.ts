@@ -211,7 +211,14 @@ class ElevenLabsSpeaker implements Speaker {
 
 let speaker: Speaker | null = null;
 
+// Pitch-day kill-switch: the browser engine's cancel() is synchronous, so two
+// utterances can never overlap. The ElevenLabs path can double-speak — an
+// in-flight /api/tts fetch survives cancel() and still calls source.start()
+// (seen live 2026-07-12: filler + reply talking at once). Flip back to
+// ElevenLabsSpeaker only after that fetch race is generation-guarded.
+const USE_ELEVENLABS = false;
+
 export function getSpeaker(): Speaker {
-  if (!speaker) speaker = new ElevenLabsSpeaker();
+  if (!speaker) speaker = USE_ELEVENLABS ? new ElevenLabsSpeaker() : new BrowserSpeaker();
   return speaker;
 }
