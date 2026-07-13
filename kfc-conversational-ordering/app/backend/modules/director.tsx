@@ -143,29 +143,29 @@ export function DirectorModule() {
 
   const weatherOptions: Array<{ key: DemoSettings["weather"]; label: string }> = [
     { key: "live", label: "Live ☁️" },
-    { key: "clear", label: "Nắng" },
-    { key: "rainy", label: "Mưa" },
-    { key: "hot", label: "Nóng" },
+    { key: "clear", label: "Clear" },
+    { key: "rainy", label: "Rainy" },
+    { key: "hot", label: "Hot" },
   ];
 
   return (
     <div className="backend-grid">
       <aside className="director-rail">
-        <p className="rail-title">Bàn điều khiển</p>
+        <p className="rail-title">Control panel</p>
         <div className="controls">
           <label className="control">
-            <span>Khách hàng</span>
+            <span>Customers</span>
             <select
               value={settings.customerId}
               onChange={(event) => sendControl({ settings: { customerId: event.target.value } })}
             >
-              <option value="linh">Linh, khách quen</option>
-              <option value="linh_mom">Mẹ Linh, đơn gia đình</option>
-              <option value="guest">Khách mới</option>
+              <option value="linh">Linh, returning customer</option>
+              <option value="linh_mom">Linh's mom, family order</option>
+              <option value="guest">New customer</option>
             </select>
           </label>
           <div className="control">
-            <span>Thời tiết</span>
+            <span>Weather</span>
             <div className="segmented">
               {weatherOptions.map((option) => (
                 <button
@@ -180,47 +180,47 @@ export function DirectorModule() {
             </div>
           </div>
           <div className="control">
-            <span>Thời điểm</span>
+            <span>Time of day</span>
             <div className="segmented">
               <button
                 type="button"
                 className={settings.hour === 12 ? "is-active" : ""}
                 onClick={() => sendControl({ settings: { hour: 12 } })}
               >
-                Trưa
+                Lunch
               </button>
               <button
                 type="button"
                 className={settings.hour === 19 ? "is-active" : ""}
                 onClick={() => sendControl({ settings: { hour: 19 } })}
               >
-                Tối
+                Evening
               </button>
             </div>
           </div>
           <div className="control">
-            <span>Đồng hồ demo</span>
+            <span>Demo clock</span>
             <div className="segmented">
               <button
                 type="button"
                 className={settings.daysAhead === 0 ? "is-active" : ""}
                 onClick={() => sendControl({ settings: { daysAhead: 0 } })}
               >
-                Hôm nay
+                Today
               </button>
               <button
                 type="button"
                 className={settings.daysAhead === 1 ? "is-active" : ""}
                 onClick={() => sendControl({ settings: { daysAhead: 1 } })}
               >
-                Ngày mai
+                Tomorrow
               </button>
               <button
                 type="button"
                 className={settings.daysAhead === 7 ? "is-active" : ""}
                 onClick={() => sendControl({ settings: { daysAhead: 7 } })}
               >
-                Tuần sau
+                Next week
               </button>
             </div>
           </div>
@@ -230,14 +230,14 @@ export function DirectorModule() {
               className="btn-nudge"
               onClick={() => busRef.current?.postMessage({ kind: "nudge" } satisfies DemoBusMessage)}
             >
-              Gửi tin chủ động (nudge)
-              <small>opt-in · tối đa 1/tuần · tự tắt sau 2 lần bỏ qua</small>
+              Send proactive nudge
+              <small>opt-in · max 1/week · auto-mutes after 2 ignores</small>
             </button>
             <button type="button" className="btn-return" onClick={() => sendControl({ reset: true })}>
-              Khách quay lại, chat mới
+              Returning customer, new chat
             </button>
             <button type="button" className={`btn-oos ${pepsiOos ? "is-active" : ""}`} onClick={togglePepsiOos}>
-              {pepsiOos ? "Pepsi hết hàng, đang bật" : "Kịch bản: Pepsi hết hàng"}
+              {pepsiOos ? "Pepsi out of stock, on" : "Scenario: Pepsi out of stock"}
             </button>
           </div>
         </div>
@@ -245,7 +245,7 @@ export function DirectorModule() {
 
       <div>
         <div className="transcript-head">
-          <p className="rail-title">Hội thoại (đồng bộ trực tiếp)</p>
+          <p className="rail-title">Conversation (live sync)</p>
           <div className="segmented segmented--mini">
             <button
               type="button"
@@ -259,60 +259,60 @@ export function DirectorModule() {
               className={mirrorSource === "messenger" ? "is-active" : ""}
               onClick={() => setMirrorSource("messenger")}
             >
-              Messenger (thật)
+              Messenger (real)
             </button>
           </div>
         </div>
         {mirrorSource === "messenger" && mirror ? (
           <p className="mirror-meta">
-            {mirror.id} · cập nhật {new Date(mirror.updatedAt).toLocaleTimeString("vi-VN")}
+            {mirror.id} · updated {new Date(mirror.updatedAt).toLocaleTimeString("en-US")}
           </p>
         ) : null}
         <div className="transcript" ref={transcriptRef}>
           {mirrorTranscript.length ? (
             mirrorTranscript.map((line) => (
               <div className={`transcript__line transcript__line--${line.role}`} key={line.id}>
-                <b>{line.role === "user" ? "Khách" : "Agent"}</b>
+                <b>{line.role === "user" ? "Customer" : "Agent"}</b>
                 <span>{line.text}</span>
               </div>
             ))
           ) : (
             <p className="transcript__empty">
               {mirrorSource === "messenger"
-                ? "Chưa có hội thoại Messenger nào, nhắn tin cho Page để bắt đầu."
+                ? "No Messenger conversations yet. Message the Page to start."
                 : linked
-                  ? "Chưa có tin nhắn, thao tác ở tab /user."
-                  : "Mở /user trong tab khác (cùng trình duyệt) để đồng bộ."}
+                  ? "No messages yet. Use the /user tab."
+                  : "Open /user in another tab in the same browser to sync."}
             </p>
           )}
-          {isBusy && mirrorSource === "user" ? <p className="transcript__busy">agent đang trả lời…</p> : null}
+          {isBusy && mirrorSource === "user" ? <p className="transcript__busy">agent is replying...</p> : null}
         </div>
       </div>
 
       <div className="console-col">
         <div>
-          <p className="rail-title">Trạng thái đơn</p>
+          <p className="rail-title">Order status</p>
           <Receipt order={displayedOrder} />
         </div>
         <div>
-          <p className="rail-title">Hồ sơ vị giác, bộ nhớ (live)</p>
+          <p className="rail-title">Taste profile and memory (live)</p>
           <div className="profile-card">
             {feed?.ok ? (
               <>
                 <div className="profile-card__row profile-card__usual">
-                  <span>Món quen</span>
+                  <span>Usual item</span>
                   <b>
                     {feed.profile.usual
                       ? `${feed.profile.usual.name} · ${Math.round(feed.profile.usual.share * 100)}%`
-                      : "chưa đủ dữ liệu"}
+                      : "not enough data"}
                   </b>
                 </div>
                 <div className="profile-card__row">
-                  <span>Vị · Số đơn · Ticket TB</span>
+                  <span>Taste · Orders · Avg ticket</span>
                   <b>
-                    {feed.profile.spice === "spicy" ? "cay" : feed.profile.spice === "original" ? "truyền thống" : "—"}
+                    {feed.profile.spice === "spicy" ? "spicy" : feed.profile.spice === "original" ? "original" : "—"}
                     {" · "}
-                    {feed.profile.orderCount} đơn · {vnd(feed.profile.avgTicketVnd)}
+                    {feed.profile.orderCount} orders · {vnd(feed.profile.avgTicketVnd)}
                   </b>
                 </div>
                 {feed.profile.attachRates.length > 0 ? (
@@ -330,11 +330,11 @@ export function DirectorModule() {
                 ) : null}
                 {feed.profile.declined.length > 0 ? (
                   <p className="profile-declined">
-                    Không gợi ý lại: {feed.profile.declined.map((item) => item.name).join(", ")}
+                    Do not suggest again: {feed.profile.declined.map((item) => item.name).join(", ")}
                   </p>
                 ) : null}
                 <div className="profile-card__row profile-card__take">
-                  <span>Gợi ý được nhận</span>
+                  <span>Accepted suggestions</span>
                   <b>
                     {feed.suggestions.accepted}/{feed.suggestions.accepted + feed.suggestions.declined}
                     {feed.suggestions.acceptedRevenueVnd > 0 ? ` · +${vnd(feed.suggestions.acceptedRevenueVnd)}` : ""}
@@ -342,21 +342,21 @@ export function DirectorModule() {
                 </div>
                 {feed.cost?.estVnd != null ? (
                   <div className="profile-card__row">
-                    <span>Chi phí AI phiên này</span>
-                    <b>~{vnd(feed.cost.estVnd)} · {feed.cost.turns} lượt</b>
+                    <span>AI cost this session</span>
+                    <b>~{vnd(feed.cost.estVnd)} · {feed.cost.turns} turns</b>
                   </div>
                 ) : null}
               </>
             ) : (
-              <p className="profile-card__empty">Chưa có dữ liệu, đặt một đơn ở /user.</p>
+              <p className="profile-card__empty">No data yet. Place an order in /user.</p>
             )}
           </div>
         </div>
         <div>
-          <p className="rail-title">Bên trong agent</p>
+          <p className="rail-title">Inside the agent</p>
           <TraceConsole traces={traces} />
           <p className="console-note" style={{ marginTop: 10 }}>
-            Mỗi dòng là một tool call thật của model, menu, giá, voucher đều lấy từ catalog, không sinh từ LLM.
+            Each row is a real model tool call. Menu, prices, and vouchers come from the catalog, not the LLM.
           </p>
         </div>
       </div>

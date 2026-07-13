@@ -106,7 +106,7 @@ export async function POST(req: Request) {
   const MAX_USER_TURNS = 12;
   if (messages.filter((message) => message.role === "user").length > MAX_USER_TURNS) {
     return Response.json(
-      { ok: false, message: "Phiên chat đã dài, bạn bắt đầu phiên mới giúp mình nhé." },
+      { ok: false, message: "This chat is getting long. Please start a new session." },
       { status: 429 },
     );
   }
@@ -126,7 +126,7 @@ export async function POST(req: Request) {
 
   // --- instant answer cache ------------------------------------------------
   // Two local fast-paths that skip Opus entirely (lib/faq-cache):
-  //   1. matchFaq          — order-neutral info questions ("mấy giờ mở cửa?").
+  //   1. matchFaq          — order-neutral info questions such as opening hours.
   //   2. matchOrderOpener  — a bare category opener ("cho 1 burger") answered
   //      with a grounded "which one?" clarifier from the live catalog.
   // Both are strict + guarded: a miss falls through to the full agent below,
@@ -166,8 +166,8 @@ export async function POST(req: Request) {
     const stream = createUIMessageStream({
       execute: ({ writer }) => {
         const id = `cache-${cached.id}`;
-        // Marks the reply as a cache hit so /user can render the "trả lời tức
-        // thì" badge; /voice ignores unknown data parts.
+        // Marks the reply as a cache hit so /user can render the "instant
+        // badge; /voice ignores unknown data parts.
         writer.write({ type: "data-cache", data: { source: cacheModel } });
         writer.write({ type: "text-start", id });
         writer.write({ type: "text-delta", id, delta: cached.say });
@@ -227,7 +227,7 @@ export async function POST(req: Request) {
 
   // Saved delivery contact for zero-re-entry checkout, injected below AFTER the
   // prompt-cache breakpoint (it is per-customer volatile context). completedOrder
-  // count gates the "Khách quen" trusted-skip hint. Never blocks the turn.
+  // count gates the "Customer quen" trusted-skip hint. Never blocks the turn.
   const [savedContact, priorOrderCount] = await Promise.all([
     getContactStore().getContact(customerId).catch(() => null),
     getHistoryStore()
@@ -308,7 +308,7 @@ export async function POST(req: Request) {
         if (conversationKey?.startsWith("messenger:") && finalOrder.stage === "placed" && finalOrder.placedOrder) {
           const senderId = conversationKey.slice("messenger:".length);
           const items = finalOrder.cart.map((line) => `• ${line.quantity}x ${line.name}`).join("\n");
-          const receipt = `Đơn ${finalOrder.placedOrder.orderNumber} đã đặt ✅\n${items}\nTổng: ${finalOrder.totals.displayTotal}\nĐặt qua giọng nói với Chirpy 🎙️`;
+          const receipt = `Order ${finalOrder.placedOrder.orderNumber} placed ✅\n${items}\nTotal: ${finalOrder.totals.displayTotal}\nPlaced by voice with Chirpy 🎙️`;
           if (senderId) void sendChannelReply("messenger", senderId, receipt).catch(() => {});
         }
       }

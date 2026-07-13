@@ -2,71 +2,71 @@ import assert from "node:assert/strict";
 import { extractSay } from "../lib/say";
 import { speakableText } from "../lib/speech";
 
-// --- speakableText: emoji stripping never mangles Vietnamese ------------------
+// --- speakableText: emoji stripping never mangles English prose --------------
 
-assert.equal(speakableText("Gà rán giòn cay 🍗🔥 ngon lắm ạ!"), "Gà rán giòn cay ngon lắm ạ!", "pictographs stripped, diacritics intact");
-assert.equal(speakableText("Chào anh/chị! 🐔"), "Chào anh/chị!", "trailing emoji leaves no dangling space before punctuation");
-assert.equal(speakableText("Dạ 👍🏻👍🏿 vâng ạ"), "Dạ vâng ạ", "skin-tone modifiers removed with their base");
-assert.equal(speakableText("Cờ 🇻🇳 Việt Nam"), "Cờ Việt Nam", "regional-indicator pairs removed");
-assert.equal(speakableText("Gia đình 👨‍👩‍👧‍👦 vui vẻ"), "Gia đình vui vẻ", "ZWJ sequences fully removed");
-assert.equal(speakableText("Số 1⃣ nhé"), "Số 1 nhé", "combining keycap stripped, digit kept");
+assert.equal(speakableText("Crispy spicy chicken 🍗🔥 is great!"), "Crispy spicy chicken is great!", "pictographs stripped");
+assert.equal(speakableText("Hello there! 🐔"), "Hello there!", "trailing emoji leaves no dangling space before punctuation");
+assert.equal(speakableText("Yes 👍🏻👍🏿 please"), "Yes please", "skin-tone modifiers removed with their base");
+assert.equal(speakableText("Flag 🇺🇸 USA"), "Flag USA", "regional-indicator pairs removed");
+assert.equal(speakableText("Family 👨‍👩‍👧‍👦 meal"), "Family meal", "ZWJ sequences fully removed");
+assert.equal(speakableText("Number 1⃣ please"), "Number 1 please", "combining keycap stripped, digit kept");
 assert.equal(speakableText("🐔🍗🔥"), "", "emoji-only text becomes empty (speaker must no-op)");
 assert.equal(speakableText("   "), "", "whitespace-only text becomes empty");
-assert.equal(speakableText("Ừ … thế à ?"), "Ừ… thế à?", "spaces collapsed before punctuation");
+assert.equal(speakableText("Okay … really ?"), "Okay… really?", "spaces collapsed before punctuation");
 
-// --- extractSay: fenced JSON contract ----------------------------------------
+// --- extractSay: fenced JSON contract ---------------------------------------
 
 assert.equal(
-  extractSay('Dạ có ngay ạ!\n```json\n{"say":"ignored","cart":[]}\n```'),
-  "Dạ có ngay ạ!",
+  extractSay('Right away!\n```json\n{"say":"ignored","cart":[]}\n```'),
+  "Right away!",
   "prose before fence wins",
 );
 assert.equal(
-  extractSay('```json\n{"say":"Dạ em thêm 1 gà giòn rồi ạ 🐔","cart":[]}\n```'),
-  "Dạ em thêm 1 gà giòn rồi ạ 🐔",
+  extractSay('```json\n{"say":"I added 1 crispy chicken 🐔","cart":[]}\n```'),
+  "I added 1 crispy chicken 🐔",
   "fence-only reply falls back to say field",
 );
 assert.equal(
-  extractSay('```json\n{"say":"Nửa chừng'),
-  "Nửa chừng",
+  extractSay('```json\n{"say":"Half done'),
+  "Half done",
   "stream truncated mid-fence: say value is salvaged, fence markers never spoken",
 );
 assert.equal(
-  extractSay('{"say":"Cụt nửa chừng'),
-  "Cụt nửa chừng",
+  extractSay('{"say":"Cut off halfway'),
+  "Cut off halfway",
   "bare contract truncated mid-string: say value salvaged",
 );
 assert.equal(
-  extractSay('{"say":"Xin ch\\u00e0o \\"quý khách\\"'),
-  'Xin chào "quý khách"',
+  extractSay('{"say":"Hello \\"guest\\"'),
+  'Hello "guest"',
   "salvaged say unescapes JSON escapes",
 );
 assert.equal(extractSay("```json"), "", "fence opener alone yields empty, not the literal marker");
 
-// --- extractSay: unfenced trailing contract -----------------------------------
+// --- extractSay: unfenced trailing contract ---------------------------------
 
 assert.equal(
-  extractSay('Em chốt đơn nhé! {"say":"dup","total":45000}'),
-  "Em chốt đơn nhé!",
+  extractSay('Order confirmed! {"say":"dup","total":45000}'),
+  "Order confirmed!",
   "prose before raw JSON object wins",
 );
 assert.equal(
-  extractSay('{"say":"Chỉ có JSON thôi ạ"}'),
-  "Chỉ có JSON thôi ạ",
+  extractSay('{"say":"Only JSON here"}'),
+  "Only JSON here",
   "bare JSON object returns its say",
 );
 assert.equal(extractSay('{"notsay":true}'), '{"notsay":true}', "JSON without say falls through to raw text");
 
-// --- extractSay: markdown stripping + passthrough ------------------------------
+// --- extractSay: markdown stripping + passthrough ---------------------------
 
-assert.equal(extractSay("**Gà Giòn** ngon lắm"), "Gà Giòn ngon lắm", "bold markers stripped");
-assert.equal(extractSay("## Ưu đãi\nMua 1 tặng 1"), "Ưu đãi\nMua 1 tặng 1", "heading markers stripped");
-assert.equal(extractSay("Xin chào!"), "Xin chào!", "plain prose passes through untouched");
+assert.equal(extractSay("**Crispy Chicken** is great"), "Crispy Chicken is great", "bold markers stripped");
+assert.equal(extractSay("## Deals\nBuy 1 get 1"), "Deals\nBuy 1 get 1", "heading markers stripped");
+assert.equal(extractSay("Hello!"), "Hello!", "plain prose passes through untouched");
 assert.equal(extractSay(""), "", "empty input stays empty");
 
-// --- the /voice pipeline: extractSay → speakableText composes safely ----------
+// --- the /voice pipeline: extractSay -> speakableText composes safely --------
 
-const raw = '**Dạ vâng!** Em thêm 1 Gà Giòn Cay 🍗 nha ```json\n{"say":"x"}\n```';
-assert.equal(speakableText(extractSay(raw)), "Dạ vâng! Em thêm 1 Gà Giòn Cay nha", "full pipeline yields clean speakable prose");
+const raw = '**Yes!** I added 1 Crispy Chicken 🍗 now ```json\n{"say":"x"}\n```';
+assert.equal(speakableText(extractSay(raw)), "Yes! I added 1 Crispy Chicken now", "full pipeline yields clean speakable prose");
 
 console.log("speech text pipeline tests passed");

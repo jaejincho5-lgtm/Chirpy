@@ -9,7 +9,7 @@ import { suggestAddons } from "@/lib/reco/suggest";
 import { getCatalogEntry } from "@/lib/menu";
 import type { OrderContext } from "@/lib/reco/context";
 
-export const metadata = { title: "Chirpy · Ma trận quyết định" };
+export const metadata = { title: "Chirpy · Decision matrix" };
 
 // Fixed identity→color assignment (validated 6-slot categorical palette; light
 // mode; contrast WARN on slots 2–3 is relieved by visible labels everywhere).
@@ -64,23 +64,23 @@ function buildPersonas(): Persona[] {
   ];
 
   return [
-    { key: "guest", label: "Khách mới", hint: "chưa có lịch sử, chạy theo mặc định quần thể", profile: null },
+    { key: "guest", label: "New customer", hint: "no history yet, using population defaults", profile: null },
     {
       key: "linh",
-      label: "Linh, nghiện Zinger",
-      hint: "4 đơn zinger cay + pepsi",
+      label: "Linh, Zinger fan",
+      hint: "4 orders zinger spicy + pepsi",
       profile: deriveProfileFromRecords(zingerFan, [], "viz_linh"),
     },
     {
       key: "mom",
-      label: "Mẹ Linh, đơn gia đình",
-      hint: "3 đơn combo 4 người, buổi tối",
+      label: "Linh's mom, family order",
+      hint: "3 family combo orders, evening",
       profile: deriveProfileFromRecords(familyOrders, [], "viz_mom"),
     },
     {
       key: "nosoup",
-      label: "Khách đã chê súp ×2",
-      hint: "như Linh, nhưng từ chối corn soup 2 lần",
+      label: "Customer declined soup twice",
+      hint: "like Linh, but declined corn soup twice",
       profile: deriveProfileFromRecords(soupDecliner, declines, "viz_nosoup"),
     },
   ];
@@ -94,11 +94,11 @@ const COMPLETE_CART = [
 ];
 
 const SCENARIOS: { label: string; hint: string; context: OrderContext; cart: typeof BASE_CART }[] = [
-  { label: "Trưa nắng", hint: "12h · clear", context: { weather: "clear", hour: 12 }, cart: BASE_CART },
-  { label: "Trưa mưa", hint: "12h · rainy", context: { weather: "rainy", hour: 12 }, cart: BASE_CART },
-  { label: "Tối nắng", hint: "19h · clear", context: { weather: "clear", hour: 19 }, cart: BASE_CART },
-  { label: "Tối mưa", hint: "19h · rainy", context: { weather: "rainy", hour: 19 }, cart: BASE_CART },
-  { label: "Giỏ đã đủ combo", hint: "burger + khoai + nước", context: { weather: "clear", hour: 12 }, cart: COMPLETE_CART },
+  { label: "Clear lunch", hint: "12h · clear", context: { weather: "clear", hour: 12 }, cart: BASE_CART },
+  { label: "Rainy lunch", hint: "12h · rainy", context: { weather: "rainy", hour: 12 }, cart: BASE_CART },
+  { label: "Clear evening", hint: "19h · clear", context: { weather: "clear", hour: 19 }, cart: BASE_CART },
+  { label: "Rainy evening", hint: "19h · rainy", context: { weather: "rainy", hour: 19 }, cart: BASE_CART },
+  { label: "Cart already complete", hint: "burger + fries + drink", context: { weather: "clear", hour: 12 }, cart: COMPLETE_CART },
 ];
 
 export default function DecisionsPage() {
@@ -127,10 +127,11 @@ export default function DecisionsPage() {
   return (
     <main className="decisions">
       <header className="decisions__head">
-        <h1>Ma trận quyết định, gợi ý bán kèm</h1>
+        <h1>Decision matrix, add-on suggestions</h1>
         <p>
-          Cùng một giỏ hàng (1 Zinger burger), mỗi ô là output thật của <code>suggestAddons()</code> theo
-          hồ sơ khách × bối cảnh, engine tất định, không gọi LLM. Cột cuối chứng minh kỷ luật im lặng khi giỏ đã đủ.
+          The same cart (1 Zinger burger) runs through the real <code>suggestAddons()</code> output for each customer
+          profile and context. The engine is deterministic and does not call an LLM. The last column proves it stays
+          silent when the cart is already complete.
         </p>
       </header>
 
@@ -143,7 +144,7 @@ export default function DecisionsPage() {
         ))}
         <span className="decisions__legend-item">
           <i className="decisions__legend-silent" />
-          im lặng (không gợi ý)
+          silent, no suggestion
         </span>
       </div>
 
@@ -151,7 +152,7 @@ export default function DecisionsPage() {
         <table className="decisions__table">
           <thead>
             <tr>
-              <th scope="col">Hồ sơ khách</th>
+              <th scope="col">Customer profile</th>
               {SCENARIOS.map((scenario) => (
                 <th scope="col" key={scenario.label}>
                   {scenario.label}
@@ -179,7 +180,7 @@ export default function DecisionsPage() {
                           <i style={{ background: SERIES[cell.catalogId ?? ""] ?? OTHER_COLOR }} />
                           {cell.name}
                         </b>
-                        {cell.priceVnd ? <small>{cell.priceVnd.toLocaleString("vi-VN")}₫</small> : null}
+                        {cell.priceVnd ? <small>{cell.priceVnd.toLocaleString("en-US")} VND</small> : null}
                         {typeof cell.score === "number" ? (
                           <span className="decision-cell__score">
                             <span
@@ -192,8 +193,8 @@ export default function DecisionsPage() {
                         ) : null}
                       </div>
                     ) : (
-                      <div className="decision-cell decision-cell--silent" title="Engine chọn im lặng">
-                        im lặng
+                      <div className="decision-cell decision-cell--silent" title="Engine chose silence">
+                        silent
                       </div>
                     )}
                   </td>
@@ -205,8 +206,9 @@ export default function DecisionsPage() {
       </div>
 
       <p className="decisions__note">
-        Đọc theo hàng: bộ nhớ đổi quyết định (Mẹ Linh nhận gợi ý tráng miệng gia đình; khách chê súp không bao giờ
-        thấy súp nữa). Đọc theo cột: bối cảnh đổi quyết định (mưa → súp nóng). Thanh dưới mỗi ô = điểm tin cậy của engine.
+        Read by row: memory changes the decision, so Linh's mom gets a family dessert suggestion and the soup decliner
+        never sees soup again. Read by column: context changes the decision, such as rain nudging hot soup. The bar under
+        each cell is the engine confidence score.
       </p>
     </main>
   );

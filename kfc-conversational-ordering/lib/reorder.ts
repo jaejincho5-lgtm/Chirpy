@@ -1,4 +1,4 @@
-// One-phrase reorder ("như mọi khi"). A returning customer says "the usual" and
+// One-phrase reorder. A returning customer says "the usual" and
 // the cart fills with their habitual order in ONE turn. Strategy: replay the
 // most recent completed order exactly; if there are none, fall back to the
 // derived TasteProfile.usual. Every line is revalidated against the live catalog
@@ -24,7 +24,7 @@ export type UsualOrderResult =
       lines: UsualLine[];
       /** Item names dropped because they no longer exist / are unavailable. */
       skipped: string[];
-      /** Human summary: item lines + total, e.g. "1x Zinger Burger, 1x Pepsi — 87.000 ₫". */
+      /** Human summary: item lines + total, e.g. "1x Zinger Burger, 1x Pepsi - 87,000 VND". */
       summary: string;
       totalVnd: number;
       displayTotal: string;

@@ -29,14 +29,14 @@ type ModuleKey =
   | "agent";
 
 const MODULES: Array<{ key: ModuleKey; label: string }> = [
-  { key: "director", label: "Đạo diễn" },
-  { key: "orders", label: "Đơn hàng" },
-  { key: "inbox", label: "Hộp thư" },
-  { key: "customers", label: "Khách hàng" },
-  { key: "reengage", label: "Nhắc đơn thông minh" },
+  { key: "director", label: "Director" },
+  { key: "orders", label: "Order" },
+  { key: "inbox", label: "Inbox" },
+  { key: "customers", label: "Customers" },
+  { key: "reengage", label: "Smart Nudges" },
   { key: "vouchers", label: "Voucher" },
-  { key: "promotions", label: "Khuyến mãi" },
-  { key: "stock", label: "Kho" },
+  { key: "promotions", label: "Promotions" },
+  { key: "stock", label: "Stock" },
   { key: "agent", label: "Agent" },
 ];
 
@@ -128,7 +128,7 @@ export default function BackendConsole() {
           </div>
           <div>
             <b>Chirpy · Backend</b>
-            <small>Bàn điều khiển vận hành, mô-đun hóa</small>
+            <small>Modular operations console</small>
           </div>
         </div>
         <nav className="module-nav">

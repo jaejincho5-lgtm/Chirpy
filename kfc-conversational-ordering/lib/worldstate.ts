@@ -104,13 +104,13 @@ export async function getWorldState(): Promise<WorldState> {
   };
 }
 
-/** One compact Vietnamese line describing today's real conditions. */
+/** One compact English line describing today's real conditions. */
 export function describeWorld(state: WorldState): string {
   const parts: string[] = [];
   const temp = state.temperatureC !== null ? ` ${state.temperatureC}°C` : "";
-  if (state.weather === "rainy") parts.push(`Thời tiết TP.HCM: đang mưa${temp}.`);
-  else if (state.weather === "hot") parts.push(`Thời tiết TP.HCM: nắng nóng${temp}.`);
-  else parts.push(`Thời tiết TP.HCM: khô ráo${temp}.`);
+  if (state.weather === "rainy") parts.push(`HCMC weather: raining${temp}.`);
+  else if (state.weather === "hot") parts.push(`HCMC weather: hot${temp}.`);
+  else parts.push(`HCMC weather: dry${temp}.`);
   if (state.calendarNote) parts.push(state.calendarNote);
   return parts.join(" ");
 }

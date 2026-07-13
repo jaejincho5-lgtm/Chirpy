@@ -12,7 +12,7 @@ import { createClient } from "@supabase/supabase-js";
 
 export type ReengagePrefs = {
   customerId: string;
-  /** Customer said "dừng" — hard stop until they opt back in. */
+  /** Customer said "stop notifications": hard stop until they opt back in. */
   optedOut: boolean;
   /** Set by the auto-mute rule (2 consecutive ignored sends); null = active. */
   mutedAt: string | null;

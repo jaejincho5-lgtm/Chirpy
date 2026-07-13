@@ -10,8 +10,8 @@ Three audiences, in priority order:
 1. **Hackathon judges** (AABW pitch day 2026-07-12): watching a projector 3–10m away in a
    bright hall, and trying the live Messenger bot on their own phones. They need to *see the
    agent think* and never see it break.
-2. **Vietnamese KFC customers** on Messenger and the web demo phone: ordering in colloquial
-   Vietnamese (often teencode, no diacritics), on mobile, hungry and impatient.
+2. **KFC customers** on Messenger and the web demo phone: ordering in English on mobile,
+   hungry and impatient.
 3. **KFC store operators** using the /backend console: dense information workers advancing
    orders, toggling stock, watching the live agent-ops feed during the demo.
 
@@ -25,8 +25,7 @@ engine. Success tomorrow = a flawless 60-second demo; success after = a deployab
 
 ## Brand Personality
 
-Warm, quick, trustworthy. "Gà nóng, chat là tới" — colloquial Vietnamese with correct
-anh/chị/em etiquette, never corporate-stiff, at most one emoji per message. The stage
+Warm, quick, trustworthy. Friendly English, never corporate-stiff, at most one emoji per message. The stage
 aesthetic is committed KFC red on a warm cream canvas; Messenger blue lives only inside the
 phone so the chat reads as the customer's real channel. The operator console is calm and
 dense (Odoo-like), not playful.
@@ -45,9 +44,9 @@ dense (Odoo-like), not playful.
 2. **Show the agent thinking**: tool calls, cache hits, and decisions are demo material —
    surface them honestly, never as decoration.
 3. **Never dead-end**: every failure (mic, TTS, API, stock) degrades to a working path with a
-   Vietnamese instruction, on screen.
-4. **Vietnamese is the product**: type and copy must render Vietnamese perfectly (diacritics,
-   line breaking); English only in operator-facing internals where established.
+   English instruction, on screen.
+4. **English is the product language**: type and copy must render clearly with stable line
+   breaking; technical terms are kept where established.
 5. **Demo-safe over ideal**: the night-before bar is "cannot break"; polish is additive, flows
    and interactions stay proven.
 
@@ -55,5 +54,5 @@ dense (Odoo-like), not playful.
 
 WCAG AA contrast for all text; visible keyboard focus on every interactive element;
 `prefers-reduced-motion` respected (already established in globals.css); touch targets
-44px+ on customer surfaces; `aria-live` for chat streams; Vietnamese-complete font subsets
-(IBM Plex Mono swap already made — never reintroduce faces without Vietnamese coverage).
+44px+ on customer surfaces; `aria-live` for chat streams; broad Latin font subsets
+(IBM Plex Mono swap already made, never reintroduce narrow character coverage).

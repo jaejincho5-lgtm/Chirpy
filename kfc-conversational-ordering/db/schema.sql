@@ -132,7 +132,7 @@ alter table public.kfc_conversations enable row level security;
 -- server-only: no anon/authenticated policies (same stance as kfc_orders).
 
 -- Human takeover (lib/takeover-store.ts): operator pauses the agent on one
--- conversation and replies personally from /backend → Hộp thư. Durable so the
+-- conversation and replies personally from /backend Inbox. Durable so the
 -- webhook honors it on any serverless instance; auto-expires in code (60 min
 -- since last operator action) so a forgotten toggle can't strand a customer.
 create table if not exists public.kfc_takeover (
@@ -207,7 +207,7 @@ alter table public.kfc_followups enable row level security;
 -- Saved delivery contact per customer (lib/contact-store.ts): the spine of
 -- zero-re-entry checkout and the trusted OTP-skip. Without this table the
 -- Supabase store throws and every caller silently degrades — contacts never
--- save, so "khách quen" trust can never trigger.
+-- save, so returning-customer trust can never trigger.
 create table if not exists public.kfc_customer_contacts (
   customer_id text primary key,
   name text,
@@ -277,7 +277,7 @@ alter table public.kfc_loyalty_events enable row level security;
 -- existing rows is needed.
 
 -- Nudge v2 — predictive re-engagement (lib/reengage.ts / lib/reengage-store.ts).
--- Prefs hold the explicit opt-out ("dừng") and the auto-mute timestamp (set
+-- Prefs hold the explicit opt-out ("stop notifications") and the auto-mute timestamp (set
 -- after 2 consecutive ignored sends). The notification log powers the weekly
 -- cooldown gate, the ignore counter, and the /backend history panel. There is
 -- deliberately NO "opened" column — Messenger gives no honest open signal.

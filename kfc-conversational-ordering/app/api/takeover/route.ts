@@ -6,7 +6,7 @@ import { logTurn } from "@/lib/turn-log";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-// /api/takeover — human-in-the-loop console behind /backend → Hộp thư.
+// /api/takeover: human-in-the-loop console behind /backend Inbox.
 // Gated by the ops cookie in proxy.ts (same stance as /api/console).
 //
 //   GET                                     → recent conversations + transcript + takeover flags

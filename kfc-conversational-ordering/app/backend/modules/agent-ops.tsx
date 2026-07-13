@@ -45,23 +45,23 @@ function AnswerCacheCard() {
   return (
     <div className="ac-card">
       <p className="ops__subtitle">
-        Bộ nhớ trả lời chung <em>(câu khách A đã hỏi phục vụ khách B tức thì)</em>
+        Shared answer memory <em>(questions from customer A answer customer B instantly)</em>
       </p>
       <div className="kpis">
         <div className="kpi">
-          <small>Câu đã học</small>
+          <small>Learned answers</small>
           <b>{entries}</b>
-          <span>{stats?.lookups ?? 0} lượt tra</span>
+          <span>{stats?.lookups ?? 0} lookup turns</span>
         </div>
         <div className="kpi">
-          <small>Lượt trúng</small>
+          <small>Hits</small>
           <b>{hits}</b>
           <span>0 token · ~1ms</span>
         </div>
         <div className="kpi">
-          <small>Tỉ lệ trúng</small>
+          <small>Hit rate</small>
           <b>{Math.round(hitRate * 100)}%</b>
-          <span>trên các câu hỏi chung</span>
+          <span>on common questions</span>
         </div>
       </div>
       {stats?.topQuestions.length ? (
@@ -74,7 +74,7 @@ function AnswerCacheCard() {
           ))}
         </ol>
       ) : (
-        <p className="ops__empty">Chưa học câu trả lời nào, sẽ đầy dần khi khách hỏi.</p>
+        <p className="ops__empty">No learned answers yet. This fills as customers ask.</p>
       )}
     </div>
   );
@@ -103,8 +103,8 @@ export function AgentOpsModule() {
   if (!feed) {
     return (
       <section className="ops">
-        <p className="rail-title">Giao dịch &amp; phân tích, mọi kênh</p>
-        <p className="ops__empty">Đang tải dữ liệu từ Supabase…</p>
+        <p className="rail-title">Transactions &amp; analytics, all channels</p>
+        <p className="ops__empty">Loading data from Supabase...</p>
       </section>
     );
   }
@@ -115,45 +115,45 @@ export function AgentOpsModule() {
   return (
     <section className="ops">
       <div className="ops__head">
-        <p className="rail-title">Giao dịch &amp; phân tích, mọi kênh (Supabase, live)</p>
+        <p className="rail-title">Transactions &amp; analytics, all channels (Supabase, live)</p>
         <label className="ops__toggle">
           <input type="checkbox" checked={showTests} onChange={(event) => setShowTests(event.target.checked)} />
-          hiện traffic test
+          show test traffic
         </label>
       </div>
 
       <div className="kpis">
         <div className="kpi">
-          <small>Đơn đã đặt</small>
+          <small>Order placed</small>
           <b>{kpis.orders}</b>
-          <span>{kpis.distinctCustomers} khách thật</span>
+          <span>{kpis.distinctCustomers} real customers</span>
         </div>
         <div className="kpi">
-          <small>Giá trị đơn TB</small>
+          <small>Average order value</small>
           <b>{kpis.aovVnd === null ? "—" : vnd(kpis.aovVnd)}</b>
-          <span>trên {kpis.orders} đơn</span>
+          <span>across {kpis.orders} orders</span>
         </div>
         <div className="kpi">
-          <small>Gợi ý được nhận</small>
+          <small>Accepted suggestions</small>
           <b>{kpis.suggestions.takeRate === null ? "—" : `${Math.round(kpis.suggestions.takeRate * 100)}%`}</b>
           <span>
-            {kpis.suggestions.accepted}/{kpis.suggestions.accepted + kpis.suggestions.declined} gợi ý
+            {kpis.suggestions.accepted}/{kpis.suggestions.accepted + kpis.suggestions.declined} suggestions
           </span>
         </div>
         <div className="kpi">
-          <small>Chi phí AI (ước tính)</small>
+          <small>AI cost (est.)</small>
           <b>{kpis.aiCost.vnd === null ? "—" : vnd(kpis.aiCost.vnd)}</b>
-          <span>{kpis.aiCost.usd === null ? "" : `$${kpis.aiCost.usd.toFixed(2)} · ${kpis.aiCost.coveredTurns} lượt`}</span>
+          <span>{kpis.aiCost.usd === null ? "" : `$${kpis.aiCost.usd.toFixed(2)} · ${kpis.aiCost.coveredTurns} turns`}</span>
         </div>
         <div className="kpi">
-          <small>Độ trễ p50 / p95</small>
+          <small>p50 / p95 latency</small>
           <b>
             {secs(kpis.latency.p50Ms)} <em>/ {secs(kpis.latency.p95Ms)}</em>
           </b>
-          <span>trọn lượt (mọi tool call)</span>
+          <span>full turn, all tool calls</span>
         </div>
         <div className="kpi">
-          <small>Lượt hội thoại</small>
+          <small>Conversation turns</small>
           <b>{kpis.turns}</b>
           <span>
             web {kpis.channels.web ?? 0} · messenger {kpis.channels.messenger ?? 0}
@@ -163,25 +163,25 @@ export function AgentOpsModule() {
 
       <div className="ops__cols">
         <div className="ops__orders">
-          <p className="ops__subtitle">Đơn gần nhất</p>
+          <p className="ops__subtitle">Recent orders</p>
           {feed.orders.length ? (
             feed.orders.map((order) => (
               <div className="order-row" key={order.orderId + order.at}>
                 <span className="order-row__time">{time(order.at)}</span>
                 <ChannelBadge channel={order.channel} />
                 <span className="order-row__customer">{order.customerId}</span>
-                <span className="order-row__items">{order.itemCount} món</span>
+                <span className="order-row__items">{order.itemCount} items</span>
                 <b className="order-row__total">{vnd(order.totalVnd)}</b>
               </div>
             ))
           ) : (
-            <p className="ops__empty">Chưa có đơn nào.</p>
+            <p className="ops__empty">No orders yet.</p>
           )}
         </div>
 
         <div className="ops__txs">
           <p className="ops__subtitle">
-            Lượt hội thoại gần nhất <em>(tool calls · token · độ trễ · chi phí)</em>
+            Recent conversation turns <em>(tool calls · tokens · latency · cost)</em>
           </p>
           <div className="tx-list">
             {visibleTurns.map((turn, index) => (
@@ -190,7 +190,7 @@ export function AgentOpsModule() {
                   <span className="tx__time">{time(turn.at)}</span>
                   <ChannelBadge channel={turn.channel} synthetic={turn.synthetic} />
                   <span className="tx__customer">{turn.customerId}</span>
-                  {turn.placedOrder ? <span className="tx__placed">ĐẶT ĐƠN</span> : null}
+                  {turn.placedOrder ? <span className="tx__placed">ORDER PLACED</span> : null}
                   <span className="tx__stats">
                     {secs(turn.latencyMs)}
                     {turn.costVnd !== null ? ` · ~${vnd(turn.costVnd)}` : ""}
@@ -210,7 +210,7 @@ export function AgentOpsModule() {
                 ) : null}
               </div>
             ))}
-            {!visibleTurns.length ? <p className="ops__empty">Chưa có lượt hội thoại nào.</p> : null}
+            {!visibleTurns.length ? <p className="ops__empty">No conversation turns yet.</p> : null}
           </div>
         </div>
       </div>
@@ -218,8 +218,8 @@ export function AgentOpsModule() {
       <AnswerCacheCard />
 
       <p className="console-note" style={{ marginTop: 10 }}>
-        KPI chỉ tính khách thật (loại eval/probe/test). Chi phí ước tính từ token đã lưu, số chính thức là AI Gateway
-        dashboard.
+        KPIs count real customers only, excluding eval/probe/test traffic. Cost is estimated from saved tokens; the
+        official number is in the AI Gateway dashboard.
       </p>
     </section>
   );

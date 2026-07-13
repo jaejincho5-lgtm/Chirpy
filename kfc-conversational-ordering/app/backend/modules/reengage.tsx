@@ -43,15 +43,15 @@ type SimResult = {
 };
 
 const GATE_LABELS: Record<ReengageGate, string> = {
-  ok: "Sẵn sàng gửi",
-  opted_out: "Đã tắt (dừng)",
-  muted: "Tự tắt (bỏ qua 2 lần)",
-  insufficient_history: "Chưa đủ lịch sử",
-  not_overdue: "Chưa quá nhịp",
-  context_mismatch: "Ngoài khung thèm ăn",
-  cooldown: "Đang cooldown",
-  low_confidence: "Độ tin cậy thấp",
-  quiet_hours: "Ngoài giờ cho phép",
+  ok: "Ready to send",
+  opted_out: "Off (stopped)",
+  muted: "Auto-muted (2 ignores)",
+  insufficient_history: "Not enough history",
+  not_overdue: "Not overdue",
+  context_mismatch: "Outside appetite window",
+  cooldown: "In cooldown",
+  low_confidence: "Low confidence",
+  quiet_hours: "Outside allowed hours",
 };
 
 function channelOf(customerId: string) {
@@ -63,7 +63,7 @@ function percent(value: number) {
 }
 
 function formatDays(value: number | null) {
-  return value === null ? "—" : `${value.toFixed(1)} ngày`;
+  return value === null ? "—" : `${value.toFixed(1)} days`;
 }
 
 function truncate(value: string, length = 120) {
@@ -195,16 +195,16 @@ export function ReengageModule() {
   return (
     <section className="ops">
       <div className="ops__head">
-        <p className="rail-title">Nudge v2 · Nhắc đơn thông minh</p>
-        <small className="ops__subnote">Dự đoán giờ đặt món, cổng gửi và lịch sử thông báo theo từng khách</small>
+        <p className="rail-title">Nudge v2 · Smart Nudges</p>
+        <small className="ops__subnote">Predicted order time, send gate, and notification history by customer</small>
       </div>
 
       <div className="cust-cols">
         <div className="cust-list">
           {membersError ? (
-            <p className="ops__empty">Không tải được danh sách loyalty.</p>
+            <p className="ops__empty">Could not load loyalty list.</p>
           ) : members === null ? (
-            <p className="ops__empty">Đang tải…</p>
+            <p className="ops__empty">Loading...</p>
           ) : members.length ? (
             members.map((member) => (
               <button
@@ -218,27 +218,27 @@ export function ReengageModule() {
                   <span className="cust-row__chan">{channelOf(member.customerId)}</span>
                 </div>
                 <div className="cust-row__pts">
-                  <b>{member.points.toLocaleString("vi-VN")} điểm</b>
-                  <small>tích lũy {member.lifetimePoints.toLocaleString("vi-VN")}</small>
+                  <b>{member.points.toLocaleString("en-US")} points</b>
+                  <small>lifetime {member.lifetimePoints.toLocaleString("en-US")}</small>
                 </div>
               </button>
             ))
           ) : (
-            <p className="ops__empty">Chưa có thành viên loyalty để kiểm tra nhịp quay lại.</p>
+            <p className="ops__empty">No loyalty members yet for return-cycle checks.</p>
           )}
         </div>
 
         <div className="cust-detail">
           {!selected ? (
-            <p className="ops__empty">Chọn một khách để xem quyết định gửi Nudge v2.</p>
+            <p className="ops__empty">Select a customer to view the Nudge v2 send decision.</p>
           ) : decisionLoading && !feed ? (
-            <p className="ops__empty">Đang tính quyết định…</p>
+            <p className="ops__empty">Calculating decision...</p>
           ) : decisionError || !feed ? (
-            <p className="ops__empty">Chưa tải được quyết định tái kích hoạt cho khách này.</p>
+            <p className="ops__empty">Could not load the re-engagement decision for this customer.</p>
           ) : (
             <div className="reng-detail">
               <div className="reng-clock">
-                <label htmlFor="reengage-days-ahead">Demo clock +N ngày</label>
+                <label htmlFor="reengage-days-ahead">Demo clock +N days</label>
                 <input
                   id="reengage-days-ahead"
                   type="number"
@@ -247,7 +247,7 @@ export function ReengageModule() {
                   value={daysAhead}
                   onChange={(event) => setDaysAhead(Math.max(0, Math.min(14, Number(event.target.value) || 0)))}
                 />
-                <label htmlFor="reengage-hour">Giờ (VN)</label>
+                <label htmlFor="reengage-hour">Hour (VN)</label>
                 <select
                   id="reengage-hour"
                   value={hourOverride === null ? "auto" : String(hourOverride)}
@@ -255,7 +255,7 @@ export function ReengageModule() {
                     setHourOverride(event.target.value === "auto" ? null : Number(event.target.value))
                   }
                 >
-                  <option value="auto">bây giờ</option>
+                  <option value="auto">now</option>
                   {Array.from({ length: 24 }, (_, hour) => (
                     <option key={hour} value={hour}>
                       {String(hour).padStart(2, "0")}:00
@@ -271,13 +271,13 @@ export function ReengageModule() {
 
               <div className="reng-card reng-prefs">
                 <div>
-                  <b>Tùy chọn liên hệ</b>
+                  <b>Contact preferences</b>
                   <span>
                     {feed.prefs.optedOut
-                      ? "Khách đã tắt thông báo chủ động."
+                      ? "Customer opted out of proactive notifications."
                       : feed.prefs.mutedAt
-                        ? `Đang tự tắt từ ${time(feed.prefs.mutedAt)}.`
-                        : "Được phép xét gửi khi còn trong cửa sổ hợp lệ."}
+                        ? `Auto-muted since ${time(feed.prefs.mutedAt)}.`
+                        : "Eligible to send when the customer is inside the allowed window."}
                   </span>
                 </div>
                 <div className="reng-actions">
@@ -287,7 +287,7 @@ export function ReengageModule() {
                     disabled={mutating}
                     onClick={() => postPrefs("optOut", !feed.prefs.optedOut)}
                   >
-                    {feed.prefs.optedOut ? "Bật nhận lại" : "Tắt thông báo"}
+                    {feed.prefs.optedOut ? "Opt back in" : "Opt out"}
                   </button>
                   {feed.prefs.mutedAt ? (
                     <button
@@ -296,15 +296,15 @@ export function ReengageModule() {
                       disabled={mutating}
                       onClick={() => postPrefs("unmute")}
                     >
-                      Bỏ tự tắt
+                      Unmute
                     </button>
                   ) : null}
                 </div>
               </div>
 
               <p className="reng-honesty">
-                Gửi Messenger chủ động ngoài cửa sổ 24h tiêu chuẩn cần message tag đã được duyệt hoặc trả phí; scanner
-                chỉ gửi khi còn trong cửa sổ hợp lệ.
+                Proactive Messenger sends outside the standard 24h window require an approved message tag or paid message.
+                The scanner sends only when the customer is inside the allowed window.
               </p>
             </div>
           )}
@@ -315,13 +315,13 @@ export function ReengageModule() {
         <div className="ops__head">
           <div>
             <p className="rail-title" id="reengage-sim-title">
-              Mô phỏng hội tụ
+              Convergence simulation
             </p>
-            <small className="ops__subnote">So sai số cá nhân hóa với blast cố định 12:00 theo từng ngày</small>
+            <small className="ops__subnote">Compare personalized timing error against a fixed 12:00 blast by day</small>
           </div>
           <div className="reng-sim__controls">
             <label>
-              Giờ thật
+              True hour
               <input
                 type="number"
                 min="0"
@@ -332,7 +332,7 @@ export function ReengageModule() {
               />
             </label>
             <label>
-              Nhiễu phút
+              Noise minutes
               <input
                 type="number"
                 min="0"
@@ -342,7 +342,7 @@ export function ReengageModule() {
               />
             </label>
             <label>
-              Số ngày
+              Days
               <input
                 type="number"
                 min="2"
@@ -352,20 +352,20 @@ export function ReengageModule() {
               />
             </label>
             <button type="button" className="promo-submit" disabled={simLoading} onClick={runSimulation}>
-              {simLoading ? "Đang chạy…" : "Chạy mô phỏng"}
+              {simLoading ? "Running..." : "Run simulation"}
             </button>
           </div>
         </div>
 
-        {simError ? <p className="ops__empty">Không chạy được mô phỏng hội tụ.</p> : null}
+        {simError ? <p className="ops__empty">Could not run convergence simulation.</p> : null}
         {simResult ? (
           <>
             <div className="reng-sim__legend">
               <span>
-                <i className="reng-bar--personal" /> Sai số cá nhân hóa (phút)
+                <i className="reng-bar--personal" /> Personalized error (minutes)
               </span>
               <span>
-                <i className="reng-bar--generic" /> Sai số blast 12:00 (phút)
+                <i className="reng-bar--generic" /> 12:00 blast error (minutes)
               </span>
             </div>
             <div className="reng-sim__chart">
@@ -378,28 +378,28 @@ export function ReengageModule() {
                   <div className="reng-sim__day" key={day.day}>
                     <div
                       className="reng-sim__bars"
-                      title={`Ngày ${day.day} · đặt lúc ${day.orderTimeLabel} · cá nhân hóa lệch ${day.errorMinutes ?? "—"} phút, blast lệch ${day.genericErrorMinutes} phút`}
+                      title={`Day ${day.day} · ordered at ${day.orderTimeLabel} · personalized error ${day.errorMinutes ?? "—"} min, blast error ${day.genericErrorMinutes} min`}
                     >
-                      {unlocked ? <span className="reng-unlock">mở khóa gửi</span> : null}
+                      {unlocked ? <span className="reng-unlock">send unlocked</span> : null}
                       <span className="reng-bar reng-bar--personal" style={{ height: `${scale(day.errorMinutes ?? 0)}%` }}>
                         <em>{day.errorMinutes ?? "—"}</em>
                       </span>
                       <span className="reng-bar reng-bar--generic" style={{ height: `${scale(day.genericErrorMinutes)}%` }} />
                     </div>
-                    <b>Ngày {day.day}</b>
+                    <b>Day {day.day}</b>
                     <small>{percent(day.confidence)}%</small>
                   </div>
                 );
               })}
             </div>
             <p className="reng-sim__verdict">
-              Sau {simResult.days.length} ngày: gửi theo cá nhân hóa lệch{" "}
-              <b>{simResult.days[simResult.days.length - 1].errorMinutes ?? "—"} phút</b> so với giờ khách thật sự đặt —
-              blast cố định 12:00 lệch <b>{simResult.days[simResult.days.length - 1].genericErrorMinutes} phút</b>.
+              After {simResult.days.length} days: personalized send error is{" "}
+              <b>{simResult.days[simResult.days.length - 1].errorMinutes ?? "—"} min</b> from the customer's real order time;
+              fixed 12:00 blast is off by <b>{simResult.days[simResult.days.length - 1].genericErrorMinutes} min</b>.
             </p>
           </>
         ) : (
-          <p className="ops__empty">Chạy mô phỏng để xem sai số cá nhân hóa thu hẹp khi đủ lịch sử.</p>
+          <p className="ops__empty">Run the simulation to see personalized error shrink as history accumulates.</p>
         )}
       </section>
     </section>
@@ -413,11 +413,11 @@ function DecisionCard({ feed }: { feed: ReengageFeed }) {
     <div className="reng-card">
       <div className="reng-decision__head">
         <div>
-          <small>Dự đoán đặt món</small>
+          <small>Predicted order</small>
           <b>{decision.predictedOrderTime ?? "—"}</b>
         </div>
         <div>
-          <small>Gửi đề xuất</small>
+          <small>Recommended send</small>
           <b>{decision.recommendedSendTime ?? "—"}</b>
         </div>
         <span className={`reng-gate ${decision.shouldSend ? "reng-gate--ok" : ""}`}>{GATE_LABELS[decision.gate]}</span>
@@ -428,7 +428,7 @@ function DecisionCard({ feed }: { feed: ReengageFeed }) {
           <span className="reng-confidence__fill" style={{ width: `${confidencePct}%` }} />
           <span className="reng-confidence__threshold" style={{ left: "60%" }} />
         </div>
-        <small>{confidencePct}% tin cậy · ngưỡng gửi 60%</small>
+        <small>{confidencePct}% confidence · 60% send threshold</small>
       </div>
 
       <div className="reng-math">
@@ -437,11 +437,11 @@ function DecisionCard({ feed }: { feed: ReengageFeed }) {
           <b>{formatDays(decision.nudge.medianGapDays)}</b>
         </span>
         <span>
-          <small>Đã trôi qua</small>
-          <b>{decision.nudge.elapsedDays.toFixed(1)} ngày</b>
+          <small>Elapsed</small>
+          <b>{decision.nudge.elapsedDays.toFixed(1)} days</b>
         </span>
         <span>
-          <small>Ngưỡng quá nhịp</small>
+          <small>Overdue threshold</small>
           <b>{formatDays(decision.nudge.overdueThresholdDays)}</b>
         </span>
       </div>
@@ -455,7 +455,7 @@ function Timeline({ entries, predictedHour }: { entries: TimelineEntry[]; predic
   return (
     <div className="reng-card">
       <div className="reng-card__head">
-        <b>Timeline giờ đặt</b>
+        <b>Order-time timeline</b>
         <span>0h → 24h</span>
       </div>
       <div className="reng-timeline">
@@ -474,7 +474,7 @@ function Timeline({ entries, predictedHour }: { entries: TimelineEntry[]; predic
           />
         ))}
       </div>
-      {entries.length ? null : <p className="ops__empty">Chưa có lịch sử đặt món để vẽ timeline.</p>}
+      {entries.length ? null : <p className="ops__empty">No order history yet for the timeline.</p>}
     </div>
   );
 }
@@ -483,7 +483,7 @@ function MessagePreview({ decision }: { decision: ReengageCustomerDecision }) {
   if (!decision.shouldSend || !decision.message) return null;
   return (
     <div className="reng-card reng-message">
-      <b>Preview tin nhắn</b>
+      <b>Message preview</b>
       <p>{decision.message}</p>
       <div className="reng-chips">
         {decision.recommendedItems.map((item) => (
@@ -499,8 +499,8 @@ function Notifications({ notifications }: { notifications: ReengageNotification[
   return (
     <div className="reng-card">
       <div className="reng-card__head">
-        <b>Lịch sử thông báo</b>
-        <span>{notifications.length} lần</span>
+        <b>Notification history</b>
+        <span>{notifications.length} times</span>
       </div>
       {notifications.length ? (
         <div className="reng-notifs">
@@ -510,7 +510,7 @@ function Notifications({ notifications }: { notifications: ReengageNotification[
                 <b>{time(notification.sentAt)}</b>
                 <span>
                   {notification.channel}
-                  {notification.predictedFor ? ` · dự đoán ${notification.predictedFor}` : ""} ·{" "}
+                  {notification.predictedFor ? ` · predicted ${notification.predictedFor}` : ""} ·{" "}
                   {percent(notification.confidence)}%
                 </span>
               </div>
@@ -519,7 +519,7 @@ function Notifications({ notifications }: { notifications: ReengageNotification[
           ))}
         </div>
       ) : (
-        <p className="ops__empty">Chưa gửi thông báo tái kích hoạt nào.</p>
+        <p className="ops__empty">No re-engagement notifications sent yet.</p>
       )}
     </div>
   );

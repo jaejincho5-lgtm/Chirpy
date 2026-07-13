@@ -1,6 +1,6 @@
 // Instant FAQ cache for the KFC ambassador. A curated library of evergreen,
 // order-neutral answers that we can serve locally in ~1ms instead of waking
-// Opus 4.8 for "mấy giờ mở cửa?". Governed by one rule: NEVER WRONG.
+// Opus 4.8 for common opening-hours questions. Governed by one rule: NEVER WRONG.
 //
 // How "never wrong" is enforced:
 //   1. Only evergreen, context-free facts live here. Nothing that depends on
@@ -12,7 +12,7 @@
 //   3. Strict matching: the message must be short/question-shaped AND contain a
 //      curated multi-word trigger phrase. A paraphrase that misses simply falls
 //      through to Opus (slower, but always correct). A miss is free; a wrong
-//      hit is not — so we bias hard toward missing.
+//      hit is not, so we bias hard toward missing.
 //
 // Two matchers live here:
 //   matchFaq()          — sync, order-NEUTRAL info questions (never touches menu)
@@ -33,13 +33,13 @@ type FaqEntry = {
   answers: string[];
 };
 
-/** Lowercase, strip Vietnamese diacritics + đ, drop punctuation, collapse spaces. */
+/** Lowercase, strip Vietnamese diacritics, drop punctuation, collapse spaces. */
 export function normalize(text: string): string {
   return text
     .toLowerCase()
     .normalize("NFD")
     .replace(/[̀-ͯ]/g, "") // combining accent marks
-    .replace(/đ/g, "d")
+    .replace(/\u0111/g, "d")
     .replace(/[^a-z0-9\s]/g, " ") // punctuation, emoji → space
     .replace(/\s+/g, " ")
     .trim();
@@ -49,7 +49,7 @@ export function normalize(text: string): string {
 // If any of these fire, the message is (or might be) an order/checkout action.
 // We never serve a cached answer for it — the agent + Order state machine must
 // run. Guard verbs are deliberately SPECIFIC phrases so that policy questions
-// ("có giao hàng không") still pass while imperatives ("giao tới nhà") don't.
+// policy questions still pass while imperatives do not.
 
 const GUARD_PHRASES = [
   // add / order imperatives
@@ -70,6 +70,14 @@ const GUARD_PHRASES = [
   "chot don",
   "len don",
   "mua ngay",
+  "add one",
+  "add 1",
+  "add to cart",
+  "get me",
+  "i want",
+  "i would like",
+  "place order",
+  "order now",
   // cart edits
   "bo mon",
   "xoa mon",
@@ -81,11 +89,15 @@ const GUARD_PHRASES = [
   "ap dung ma",
   "dung ma",
   "nhap ma",
+  "apply ",
+  "apply code",
+  "apply voucher",
+  "use code",
   "dung diem",
   "doi diem",
   "tich diem",
   // checkout / fulfilment / handoff
-  "xac nhan",
+  "xacn",
   "thanh toan luon",
   "giao toi",
   "giao den",
@@ -94,13 +106,13 @@ const GUARD_PHRASES = [
   "giao gap",
   "ship toi",
   "ship den",
-  "gap nhan vien",
+  "gapn vien",
   "gap nguoi",
   "so dien thoai cua",
 ];
 
-// A quantity like "2 miếng", "1 combo", "3 ly", or a phone-length digit run.
-const QUANTITY_RE = /\b\d+\s*(mieng|phan|combo|ly|cai|suat|hop|phi|ban)\b/;
+// A quantity like "2 pieces", "1 combo", "3 drinks", or a phone-length digit run.
+const QUANTITY_RE = /\b\d+\s*(mieng|phan|combo|ly|cai|suat|hop|phi|ban|piece|pieces|drink|drinks|burger|burgers|meal|meals|item|items)\b/;
 const PHONE_RE = /\d{9,}/;
 
 function looksLikeOrder(norm: string): boolean {
@@ -120,7 +132,7 @@ const LIBRARY: FaqEntry[] = [
     triggers: [
       "co halal khong",
       "halal khong",
-      "chung nhan halal",
+      "chungn halal",
       "co gluten",
       "bao nhieu calo",
       "bao nhieu calory",
@@ -134,7 +146,7 @@ const LIBRARY: FaqEntry[] = [
       "an chay",
     ],
     answers: [
-      "Về dinh dưỡng, dị ứng hay halal thì để chắc chắn nhất, anh/chị hỏi nhân viên tại quầy hoặc xem trên bao bì giúp em nhé. Em không muốn nói sai chuyện này ạ.",
+      "For nutrition, allergen, or halal details, please check the packaging or ask store staff so you get the most accurate information.",
     ],
   },
   {
@@ -155,9 +167,13 @@ const LIBRARY: FaqEntry[] = [
       "te qua",
       "that vong",
       "phuc vu kem",
+      "food arrived cold",
+      "wrong item delivered",
+      "missing item",
+      "bad service",
     ],
     answers: [
-      "Dạ em thành thật xin lỗi anh/chị về trải nghiệm này ạ 🙏 Anh/chị mô tả giúp em vấn đề (đơn nào, món nào), em ghi nhận và đội hỗ trợ sẽ xử lý ngay nhé.",
+      "I am sorry about that experience. Tell me which order or item had the issue, and I will pass it to support right away.",
     ],
   },
   {
@@ -181,10 +197,13 @@ const LIBRARY: FaqEntry[] = [
       "gio co mo khong",
       "mo cua chua",
       "what time do you open",
+      "when do you open",
+      "are you open",
+      "what time do you close",
       "opening hours",
     ],
     answers: [
-      "KFC thường mở khoảng 9h sáng tới 22h tối, nhưng tuỳ chi nhánh nên anh/chị kiểm tra cửa hàng gần nhất cho chắc nhé ạ!",
+      "KFC usually opens around 9:00 AM and closes around 10:00 PM, but hours vary by branch. Please check your nearest store to be sure.",
     ],
   },
   {
@@ -197,9 +216,13 @@ const LIBRARY: FaqEntry[] = [
       "nghi tet khong",
       "nghi le khong",
       "le tet co ban",
+      "holiday hours",
+      "open on holidays",
+      "open during holidays",
+      "open on tet",
     ],
     answers: [
-      "Dạ đa số cửa hàng KFC vẫn mở xuyên lễ Tết ạ, giờ giấc có thể thay đổi nhẹ tuỳ chi nhánh. Anh/chị kiểm tra cửa hàng gần nhất trước khi ghé nhé!",
+      "Most KFC stores stay open through holidays, but hours can vary by branch. Please check your nearest store before visiting.",
     ],
   },
   {
@@ -211,14 +234,20 @@ const LIBRARY: FaqEntry[] = [
       "giao hang khong",
       "ship khong vay",
       "co giao tan noi",
-      "giao tan nha khong",
+      "giao tan khong",
       "co ban mang ve",
       "an tai cho khong",
       "co cho ngoi khong",
       "co ghe ngoi khong",
+      "do you deliver",
+      "delivery available",
+      "can i get delivery",
+      "can i pick up",
+      "takeaway available",
+      "do you have seating",
     ],
     answers: [
-      "Dạ KFC có cả giao tận nơi lẫn đến lấy tại quầy ạ. Anh/chị muốn giao hàng hay tự đến lấy để em chuẩn bị đơn nhé?",
+      "KFC supports delivery and counter pickup. Would you like delivery or pickup?",
     ],
   },
   {
@@ -228,16 +257,19 @@ const LIBRARY: FaqEntry[] = [
       "ship bao lau",
       "bao lau thi giao",
       "bao lau thi toi",
-      "bao lau nhan duoc",
+      "bao laun duoc",
       "giao co lau khong",
-      "giao nhanh khong",
-      "ship nhanh khong",
+      "giaonh khong",
+      "shipnh khong",
       "cho bao lau",
       "mat bao lau",
       "how long is delivery",
+      "delivery time",
+      "how long does delivery take",
+      "is delivery fast",
     ],
     answers: [
-      "Dạ thường khoảng 20–40 phút tuỳ khoảng cách và giờ cao điểm ạ. Khi anh/chị chốt đơn, bên em sẽ báo thời gian dự kiến cụ thể nhé!",
+      "Delivery is usually around 20 to 40 minutes depending on distance and peak hours. I will show the exact estimate when you confirm the order.",
     ],
   },
   {
@@ -255,9 +287,13 @@ const LIBRARY: FaqEntry[] = [
       "co freeship",
       "mien phi giao hang",
       "mien phi ship",
+      "delivery fee",
+      "how much is delivery",
+      "how much is shipping",
+      "free delivery",
     ],
     answers: [
-      "Dạ phí giao tuỳ khoảng cách và sẽ hiện rõ trước khi anh/chị xác nhận đơn ạ — thỉnh thoảng còn có ưu đãi freeship nữa. Anh/chị cứ chọn món trước nhé!",
+      "Delivery fee depends on distance and is shown before you confirm. There may also be free-delivery promos.",
     ],
   },
   {
@@ -270,9 +306,13 @@ const LIBRARY: FaqEntry[] = [
       "khu vuc giao",
       "pham vi giao",
       "xa co giao khong",
+      "delivery area",
+      "do you deliver far",
+      "delivery range",
+      "outside delivery area",
     ],
     answers: [
-      "Dạ phạm vi giao tuỳ chi nhánh gần anh/chị ạ. Anh/chị gửi địa chỉ khi chốt đơn, hệ thống sẽ báo ngay có giao được không nhé!",
+      "Delivery range depends on the nearest branch. Share your address at checkout and the system will confirm availability.",
     ],
   },
   {
@@ -283,9 +323,11 @@ const LIBRARY: FaqEntry[] = [
       "mua toi thieu",
       "co toi thieu khong",
       "gia tri toi thieu",
+      "minimum order",
+      "minimum spend",
     ],
     answers: [
-      "Dạ anh/chị cứ chọn món thoải mái ạ — nếu đơn giao hàng cần thêm điều kiện gì, em sẽ báo rõ trước khi chốt nhé!",
+      "Choose what you like first. If delivery needs a minimum order value, I will show it clearly before checkout.",
     ],
   },
   {
@@ -303,34 +345,53 @@ const LIBRARY: FaqEntry[] = [
       "co vi dien tu",
       "tra sau khong",
       "co cod khong",
+      "how can i pay",
+      "cash on delivery",
+      "pay by card",
+      "pay with wallet",
     ],
     answers: [
-      "Anh/chị trả được bằng tiền mặt, thẻ, hoặc ví như MoMo/ZaloPay khi nhận hàng hoặc tại quầy ạ.",
+      "You can pay with cash, card, or wallets such as MoMo/ZaloPay on delivery or at the counter.",
     ],
   },
   {
     id: "invoice",
-    triggers: ["xuat hoa don", "hoa don do", "hoa don vat", "lay hoa don", "co hoa don khong", "xuat vat"],
+    triggers: [
+      "xuat hoa don",
+      "hoa don do",
+      "hoa don vat",
+      "lay hoa don",
+      "co hoa don khong",
+      "xuat vat",
+      "vat invoice",
+      "can i get an invoice",
+      "electronic invoice",
+    ],
     answers: [
-      "Dạ được ạ, KFC xuất hoá đơn VAT theo yêu cầu. Anh/chị báo nhân viên khi nhận hàng hoặc tại quầy để được hỗ trợ nhé!",
+      "KFC can support VAT invoices on request. Please tell staff when receiving the order or at the counter.",
     ],
   },
   {
     id: "spice",
     triggers: [
-      "co cay khong",
-      "cay khong vay",
-      "mon nao cay",
-      "co mon cay",
-      "co mon khong cay",
-      "an cay duoc khong",
-      "ga co cay",
-      "cay nhieu khong",
-      "do cay the nao",
-      "cay lam khong",
+      "co spicy khong",
+      "spicy khong vay",
+      "mon nao spicy",
+      "co mon spicy",
+      "co mon khong spicy",
+      "an spicy duoc khong",
+      "ga co spicy",
+      "spicy nhieu khong",
+      "do spicy the nao",
+      "spicy lam khong",
+      "is it spicy",
+      "which chicken is spicy",
+      "what is not spicy",
+      "non spicy",
+      "not spicy",
     ],
     answers: [
-      "Gà giòn truyền thống thì không cay, còn Gà Hot & Spicy sẽ cay nhẹ đậm đà ạ. Anh/chị thích vị nào để em gợi ý?",
+      "Original crispy chicken is not spicy. Hot & Spicy has a bolder mild heat. Which flavor would you like?",
     ],
   },
   {
@@ -345,9 +406,13 @@ const LIBRARY: FaqEntry[] = [
       "kem sot gi",
       "co cham gi",
       "xin them tuong",
+      "do you have sauce",
+      "ketchup",
+      "chili sauce",
+      "extra sauce",
     ],
     answers: [
-      "Dạ có tương ớt, tương cà kèm sẵn ạ. Anh/chị muốn thêm loại sốt nào cứ dặn em khi chốt món nhé!",
+      "Chili sauce and ketchup are included. Tell me at checkout if you want extra sauce.",
     ],
   },
   {
@@ -355,9 +420,9 @@ const LIBRARY: FaqEntry[] = [
     triggers: [
       "mon nao ngon",
       "mon gi ngon",
-      "ngon nhat",
+      "ngont",
       "best seller",
-      "ban chay nhat",
+      "ban chayt",
       "mon nao hot",
       "nen an gi",
       "an gi ngon",
@@ -365,25 +430,35 @@ const LIBRARY: FaqEntry[] = [
       "mon nao dang thu",
       "mon nao noi tieng",
       "dac san la gi",
+      "best seller",
+      "what is good",
+      "what should i eat",
+      "most popular",
+      "best item",
     ],
     answers: [
-      "Dạ best-seller bên em là Gà Rán Giòn Truyền Thống, Gà Hot & Spicy và burger Zinger ạ. Anh/chị thích gà rán, burger hay combo tiết kiệm để em gợi ý đúng vị hơn nhé?",
+      "Best-sellers include Original Recipe Fried Chicken, Hot & Spicy Chicken, and the Zinger Burger. Do you prefer chicken, burger, or a value combo?",
     ],
   },
   {
     id: "budget",
     triggers: [
       "mon nao re",
-      "re nhat la gi",
-      "gia re nhat",
-      "it tien nhat",
-      "tiet kiem nhat",
+      "ret la gi",
+      "gia ret",
+      "it tient",
+      "tiet kiemt",
       "an gi re",
       "ngan sach it",
       "sinh vien ngheo",
+      "cheap item",
+      "cheapest item",
+      "budget meal",
+      "under budget",
+      "value option",
     ],
     answers: [
-      "Dạ có nhiều lựa chọn tiết kiệm lắm ạ! Anh/chị cho em khoảng ngân sách (ví dụ 'dưới 100k'), em tìm phần vừa ví ngon nhất liền nhé 💸",
+      "There are plenty of value options. Give me a budget, for example under 100k, and I will find the best fit 💸",
     ],
   },
   {
@@ -396,9 +471,12 @@ const LIBRARY: FaqEntry[] = [
       "co nhung gi ben trong",
       "trong combo co gi",
       "mot phan co gi",
+      "what is included",
+      "what comes in",
+      "how many pieces",
     ],
     answers: [
-      "Dạ tuỳ phần ạ — anh/chị nói giúp em tên món hoặc combo, em nêu rõ gồm những gì kèm giá luôn nhé!",
+      "It depends on the item or combo. Tell me which one you mean and I will list what it includes with the price.",
     ],
   },
   {
@@ -414,9 +492,13 @@ const LIBRARY: FaqEntry[] = [
       "do choi khong",
       "an ca gia dinh",
       "phan gia dinh",
+      "kids menu",
+      "for kids",
+      "family meal",
+      "for the family",
     ],
     answers: [
-      "Dạ các bé rất mê gà rán truyền thống, khoai tây nghiền và súp ạ! Nhà mình mấy người để em gợi ý phần ăn gia đình vừa đủ, khỏi thừa khỏi thiếu nhé?",
+      "Original fried chicken, mashed potato, and soup are good family-friendly choices. How many people are eating?",
     ],
   },
   {
@@ -431,25 +513,35 @@ const LIBRARY: FaqEntry[] = [
       "do an nong khong",
       "de lau chua",
       "co gion khong",
+      "is it fresh",
+      "is the chicken fresh",
+      "chicken fresh",
+      "freshly fried",
+      "is it hot",
+      "is it crispy",
     ],
     answers: [
-      "Dạ gà bên em được chiên mới liên tục trong ngày, giao đến vẫn nóng giòn ạ. Anh/chị yên tâm nhé! 🍗",
+      "KFC fries chicken throughout the day so it is served hot and crisp.",
     ],
   },
   {
     id: "birthday-party",
     triggers: [
       "dat tiec",
-      "to chuc sinh nhat",
-      "tiec sinh nhat",
-      "lam sinh nhat",
+      "to chuc sinht",
+      "tiec sinht",
+      "lam sinht",
       "tiec cong ty",
       "dat cho nhieu nguoi",
       "dai gia dinh",
       "nhom dong nguoi",
+      "birthday party",
+      "group order",
+      "large order",
+      "office party",
     ],
     answers: [
-      "Dạ KFC có nhận tiệc sinh nhật và nhóm đông ạ! Đặt tiệc tại nhà hàng thì anh/chị liên hệ chi nhánh gần nhất, còn đặt phần ăn số lượng nhiều giao tận nơi thì em giúp ngay được ạ 🎉",
+      "KFC supports birthdays and group orders. For an in-store party, contact your nearest branch; for large food orders, I can help build the order here.",
     ],
   },
   {
@@ -464,27 +556,36 @@ const LIBRARY: FaqEntry[] = [
       "loyalty",
       "diem thuong dung sao",
       "diem dung lam gi",
+      "loyalty program",
+      "how do points work",
+      "earn points",
+      "redeem points",
     ],
     answers: [
-      "Dạ mỗi đơn đều tự động tích điểm thưởng theo giá trị đơn ạ. Điểm đổi được thành giảm giá ngay khi thanh toán — lúc chốt đơn em sẽ nhắc anh/chị dùng điểm nếu có lợi nhé!",
+      "Orders earn KFC points automatically. Points can be redeemed for discounts at checkout when eligible.",
     ],
   },
   {
     id: "store-locations",
     triggers: [
       "cua hang o dau",
-      "chi nhanh o dau",
-      "co chi nhanh nao",
+      "chinh o dau",
+      "co chinh nao",
       "gan day co kfc",
-      "kfc gan nhat",
-      "cua hang gan nhat",
+      "kfc gant",
+      "cua hang gant",
       "dia chi cua hang",
       "dia chi o dau",
       "co cua hang o",
       "o dau vay shop",
+      "store near me",
+      "kfc near me",
+      "nearest store",
+      "where is kfc",
+      "store location",
     ],
     answers: [
-      "Dạ KFC có chi nhánh khắp các thành phố lớn ạ. Anh/chị xem cửa hàng gần nhất trên kfcvietnam.com.vn hoặc app KFC nhé — còn muốn đặt giao tận nơi thì em lo được luôn ạ!",
+      "KFC has branches across major cities. Check kfcvietnam.com.vn or the KFC app for the nearest store, or order delivery here.",
     ],
   },
   {
@@ -496,9 +597,12 @@ const LIBRARY: FaqEntry[] = [
       "so hotline",
       "lien he the nao",
       "cham soc khach hang",
+      "hotline",
+      "customer service",
+      "contact number",
     ],
     answers: [
-      "Dạ anh/chị xem hotline chính thức trên kfcvietnam.com.vn nhé, hoặc cứ nhắn em ở đây ạ — em hỗ trợ đặt món và giải đáp được hầu hết luôn!",
+      "Please check the official hotline on kfcvietnam.com.vn. You can also message me here for ordering help.",
     ],
   },
   {
@@ -510,16 +614,20 @@ const LIBRARY: FaqEntry[] = [
       "co website khong",
       "dat online duoc khong",
       "dat qua mang",
+      "do you have an app",
+      "kfc app",
+      "kfc website",
+      "order online",
     ],
     answers: [
-      "Dạ có app KFC Việt Nam và website kfcvietnam.com.vn ạ. Mà anh/chị đặt ngay với em ở đây cũng được luôn — nhanh gọn, không cần cài gì thêm ạ! 🐔",
+      "KFC has the KFC Vietnam app and kfcvietnam.com.vn. You can also order with me here without installing anything.",
     ],
   },
   {
     id: "wifi-seating",
-    triggers: ["co wifi", "wifi khong", "pass wifi", "co cho sac", "o cam dien"],
+    triggers: ["co wifi", "wifi khong", "pass wifi", "co cho sac", "o cam dien", "wifi", "charging outlet"],
     answers: [
-      "Dạ đa số chi nhánh đều có chỗ ngồi thoải mái và wifi ạ, tuỳ cửa hàng. Anh/chị hỏi nhân viên tại quầy để lấy pass wifi nhé!",
+      "Most branches have seating and many offer Wi-Fi, depending on the store. Ask staff at the counter for details.",
     ],
   },
   {
@@ -529,14 +637,21 @@ const LIBRARY: FaqEntry[] = [
       "co uu dai khong",
       "co ma giam gia khong",
       "co voucher khong",
+      "promotion",
+      "promo",
       "dang co khuyen mai",
       "khuyen mai gi khong",
       "co deal khong",
       "co giam gia khong",
       "co combo tiet kiem",
+      "any promotion",
+      "any promos",
+      "any vouchers",
+      "discount code",
+      "deals today",
     ],
     answers: [
-      "Dạ đang có nhiều ưu đãi ạ! Anh/chị muốn em áp thử mã giảm giá hay gợi ý combo tiết kiệm nhất không?",
+      "There are often promos available. Tell me what you want to order and I will check eligible codes or value combos.",
     ],
   },
   {
@@ -553,9 +668,12 @@ const LIBRARY: FaqEntry[] = [
       "dung nhu the nao",
       "noi gi voi em",
       "noi gi bay gio",
+      "what can you do",
+      "how do i use this",
+      "help me order",
     ],
     answers: [
-      "Anh/chị cứ nói tên món, hoặc kiểu 'thèm gì đó cay cay dưới 100k', em tìm món, thêm vào giỏ, áp mã và chốt đơn giúp ạ. Anh/chị muốn bắt đầu chưa?",
+      "Tell me an item name or a craving like 'spicy under 100k'. I can find items, add them to cart, apply promos, and help checkout.",
     ],
   },
   {
@@ -575,9 +693,13 @@ const LIBRARY: FaqEntry[] = [
       "ban la ga",
       "la ga a",
       "co phai ai khong",
+      "who are you",
+      "are you real",
+      "are you an ai",
+      "what is your name",
     ],
     answers: [
-      "Em là Đại sứ ảo của KFC, một chú gà AI, ở đây để giúp anh/chị gọi món thật nhanh gọn ạ! 🐔",
+      "I am KFC's virtual Chicken Ambassador, here to help you order quickly.",
     ],
   },
   {
@@ -592,21 +714,21 @@ const LIBRARY: FaqEntry[] = [
       "do you speak english",
     ],
     answers: [
-      "Dạ em nói tiếng Việt là chính, nhưng anh/chị cứ thoải mái, em vẫn hiểu ạ! (I can understand English too.)",
+      "I can speak English. Tell me what you would like to order.",
     ],
   },
   {
     id: "thanks",
     triggers: ["cam on", "cam on em", "cam on nhe", "cam on ban", "thank you", "thanks nhe", "tks em"],
     answers: [
-      "Dạ không có gì đâu ạ! Anh/chị cần thêm gì cứ nói em nhé 🍗",
+      "You're welcome. Tell me if you need anything else 🍗",
     ],
   },
   {
     id: "goodbye",
     triggers: ["tam biet", "chao tam biet", "het roi nhe", "khong can nua", "thoi nhe", "bye bye", "goodbye"],
     answers: [
-      "Dạ cảm ơn anh/chị, hẹn gặp lại ạ! Chúc anh/chị ngon miệng 🐔",
+      "Thanks for choosing KFC. See you next time 🐔",
     ],
   },
   {
@@ -628,7 +750,7 @@ const LIBRARY: FaqEntry[] = [
       "chao buoi toi",
     ],
     answers: [
-      "Dạ em chào anh/chị! Em là Đại sứ Gà KFC đây ạ. Anh/chị muốn dùng gì hôm nay để em gợi ý nhé? 🍗",
+      "Hi, I am the KFC Chicken Ambassador. What would you like today?",
     ],
   },
 ];
@@ -687,17 +809,17 @@ export function matchFaq(text: string): FaqHit | null {
 }
 
 // ---- grounded order-opener clarifier ---------------------------------------
-// "cho 1 burger" → "which burger?" built from the LIVE catalog, so it lists only
+// "one burger" -> "which burger?" built from the LIVE catalog, so it lists only
 // real, in-stock items with real prices and can never go stale. Fires ONLY for a
 // short, single-category opener with no specific item and no second item; a
-// specific ("burger zinger") or compound ("burger và khoai tây") request falls
+// specific ("burger zinger") or compound ("burger and fries") request falls
 // through so the real agent (and its state machine) handles the add.
 
-// Order lead ("cho/lấy/muốn/gọi/mua…") or a leading quantity.
-const OPENER_LEAD_RE = /(^|\s)(cho|lay|muon|goi|order|mua)(\s|$)/;
-const OPENER_QTY_RE = /^(\d+|mot|hai|ba)\s/;
+// Order lead or a leading quantity.
+const OPENER_LEAD_RE = /(^|\s)(cho|lay|muon|goi|order|mua|add|get|want|buy)(\s|$)/;
+const OPENER_QTY_RE = /^(\d+|mot|hai|ba|one|two|three)\s/;
 // A second item joined on — treat as compound and let the model handle it.
-const CONJUNCTION_RE = /(^|\s)(va|voi|kem|cong|them)(\s|$)/;
+const CONJUNCTION_RE = /(^|\s)(va|voi|kem|cong|them|and|with|plus)(\s|$)/;
 
 // If any specific product token appears, the request is already specific enough
 // to add directly — don't clarify.
@@ -711,7 +833,7 @@ type OpenerCategory = {
   key: string;
   category: string; // MenuCategory to filter matches to
   query: string; // search query into the catalog
-  label: string; // Vietnamese label for the clarifier
+  label: string; // English label for the clarifier
   words: string[]; // normalized category words that select this category
 };
 
@@ -722,27 +844,29 @@ const OPENER_CATEGORIES: OpenerCategory[] = [
     key: "chicken",
     category: "chicken",
     query: "ga ran",
-    label: "món gà",
+    label: "chicken",
     words: ["ga", "ga ran", "phan ga", "mieng ga", "ga gion", "chicken"],
   },
   {
     key: "drink",
     category: "drink",
     query: "nuoc",
-    label: "món nước",
-    words: ["nuoc", "nuoc uong", "do uong", "thuc uong", "nuoc ngot"],
+    label: "drinks",
+    words: ["nuoc", "nuoc uong", "do uong", "thuc uong", "nuoc ngot", "drink", "drinks"],
   },
-  // Rice/side/dessert are deliberately omitted: "cơm" already means one specific
+  // Rice/side/dessert are deliberately omitted because those requests usually mean one specific
   // dish, so they're best left to the model to add directly.
 ];
 
 // Leads, quantities, units and filler that carry no product specificity. If
 // anything OTHER than these + the category word survives, the request is
-// specific ("2 miếng gà rán không cay") and must go to the model, not a clarifier.
+// specific ("2 pieces of fried chicken, not spicy") and must go to the model, not a clarifier.
 const OPENER_FILLER = new Set([
   "cho", "minh", "toi", "em", "ban", "lay", "muon", "goi", "mua", "order", "xin",
   "gium", "giup", "a", "di", "nhe", "mot", "hai", "ba", "bon", "phan", "mieng",
   "ly", "cai", "suat", "hop", "con", "dia", "to", "phai",
+  "add", "get", "want", "buy", "me", "please", "one", "two", "three", "four",
+  "piece", "pieces", "drink", "drinks", "meal", "item",
 ]);
 
 /** Whole-word containment on the normalized string (space-padded). */
@@ -768,7 +892,7 @@ function isBareOpener(norm: string, cat: OpenerCategory): boolean {
 
 function joinList(items: string[]): string {
   if (items.length <= 1) return items[0] ?? "";
-  return `${items.slice(0, -1).join(", ")} và ${items[items.length - 1]}`;
+  return `${items.slice(0, -1).join(", ")} and ${items[items.length - 1]}`;
 }
 
 /**
@@ -799,8 +923,8 @@ export async function matchOrderOpener(text: string): Promise<FaqHit | null> {
 
   const shown = available.slice(0, 4);
   const list = joinList(shown.map((m) => `${m.name} (${m.displayPrice})`));
-  const more = available.length > shown.length ? ", và vài lựa chọn khác nữa" : "";
-  const say = `Dạ bên em có vài ${cat.label} như ${list}${more} ạ, anh/chị muốn phần nào để em thêm vào đơn nhé?`;
+  const more = available.length > shown.length ? ", plus a few more options" : "";
+  const say = `We have a few ${cat.label} options such as ${list}${more}. Which one should I add to your order?`;
 
   return { id: `opener-${cat.key}`, say };
 }

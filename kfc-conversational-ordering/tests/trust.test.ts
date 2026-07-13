@@ -26,14 +26,14 @@ const contact: CustomerContact = {
   customerId: "linh",
   name: "Linh",
   phone: "0901234567",
-  address: "12 Nguyễn Huệ, Quận 1",
+  address: "12 Main Street, District 1",
   fulfillment: "delivery",
   updatedAt: new Date().toISOString(),
 };
 
 const trustedInput: CanSkipOtpInput = {
   customerId: "linh",
-  order: orderFor(150000, "12 Nguyen Hue, Quan 1"),
+  order: orderFor(150000, "12 Main Street, District 1"),
   contact,
   completedOrderCount: 2,
 };
@@ -58,17 +58,17 @@ assert.equal(
 // --- total boundary: under 200k skips, at/above 200k never skips -------------
 
 assert.equal(
-  canSkipOtp({ ...trustedInput, order: orderFor(TRUSTED_SKIP_MAX_TOTAL_VND - 1, "12 Nguyễn Huệ, Quận 1") }),
+  canSkipOtp({ ...trustedInput, order: orderFor(TRUSTED_SKIP_MAX_TOTAL_VND - 1, "12 Main Street, District 1") }),
   true,
   "total one VND below the boundary can skip",
 );
 assert.equal(
-  canSkipOtp({ ...trustedInput, order: orderFor(TRUSTED_SKIP_MAX_TOTAL_VND, "12 Nguyễn Huệ, Quận 1") }),
+  canSkipOtp({ ...trustedInput, order: orderFor(TRUSTED_SKIP_MAX_TOTAL_VND, "12 Main Street, District 1") }),
   false,
   "total exactly at the boundary cannot skip",
 );
 assert.equal(
-  canSkipOtp({ ...trustedInput, order: orderFor(TRUSTED_SKIP_MAX_TOTAL_VND + 1, "12 Nguyễn Huệ, Quận 1") }),
+  canSkipOtp({ ...trustedInput, order: orderFor(TRUSTED_SKIP_MAX_TOTAL_VND + 1, "12 Main Street, District 1") }),
   false,
   "total one VND above the boundary cannot skip",
 );
@@ -96,7 +96,7 @@ assert.equal(
   "missing delivery address on the order means no skip",
 );
 assert.equal(
-  canSkipOtp({ ...trustedInput, order: orderFor(150000, "99 Đường Khác, Quận 7") }),
+  canSkipOtp({ ...trustedInput, order: orderFor(150000, "99 Other Street, District 7") }),
   false,
   "mismatched delivery address means no skip",
 );

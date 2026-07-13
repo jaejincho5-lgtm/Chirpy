@@ -9,13 +9,13 @@ import { MENU_CATALOG } from "@/lib/menu";
 import { vnd } from "./shared";
 
 const CATEGORY_LABEL: Record<string, string> = {
-  chicken: "Gà",
+  chicken: "Chicken",
   combo: "Combo",
   burger: "Burger",
-  rice: "Cơm",
-  side: "Món phụ",
-  drink: "Đồ uống",
-  dessert: "Tráng miệng",
+  rice: "Rice",
+  side: "Sides",
+  drink: "Drinks",
+  dessert: "Dessert",
 };
 
 export function StockModule() {
@@ -23,7 +23,7 @@ export function StockModule() {
   const [busy, setBusy] = useState(false);
 
   // Hydrate from the server's current OOS set on mount, so a page reload
-  // doesn't show "tất cả còn hàng" while the agent is still refusing items.
+  // doesn't show "all items in stock" while the agent is still refusing items.
   useEffect(() => {
     fetch("/api/demo")
       .then((res) => (res.ok ? res.json() : null))
@@ -52,9 +52,9 @@ export function StockModule() {
   return (
     <section className="ops">
       <div className="ops__head">
-        <p className="rail-title">Kho, hết hàng theo món</p>
+        <p className="rail-title">Stock, out-of-stock by item</p>
         <small className="ops__subnote">
-          {oos.size ? `${oos.size} món đang đánh dấu hết` : "tất cả còn hàng"}
+          {oos.size ? `${oos.size} items marked out of stock` : "all items in stock"}
         </small>
       </div>
       <div className="stock-cats">
@@ -74,7 +74,7 @@ export function StockModule() {
                   >
                     <span className="stock-item__name">{item.name}</span>
                     <span className="stock-item__price">{vnd(item.priceVnd)}</span>
-                    <span className="stock-item__flag">{out ? "HẾT" : "còn"}</span>
+                    <span className="stock-item__flag">{out ? "OUT" : "in"}</span>
                   </button>
                 );
               })}

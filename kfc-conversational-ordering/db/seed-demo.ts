@@ -1,5 +1,5 @@
 // Demo data seeder — fills Supabase with a believable morning of activity so
-// /backend reads as a live store: a mixed-stage OMS queue (đơn hàng), loyalty
+// /backend reads as a live store: a mixed-stage OMS queue, loyalty
 // members, taste history, suggestion take-rate, and agent turns for the KPIs.
 //
 // Carts are built through the REAL createOrder/addToCart helpers so every
@@ -110,8 +110,8 @@ function buildOrder(s: Scenario): { payload: Order; omsOrderNumber: string; crea
   order = setQuote(
     order,
     s.fulfillment === "delivery"
-      ? { fulfillment: "delivery", address: "12 Nguyễn Huệ, Q.1, TP.HCM", deliveryFeeVnd: 15000, etaMinutes: 28, displayDeliveryFee: "15.000 ₫" }
-      : { fulfillment: "pickup", deliveryFeeVnd: 0, etaMinutes: 15, displayDeliveryFee: "0 ₫" },
+      ? { fulfillment: "delivery", address: "12 Main Street, District 1, Ho Chi Minh City", deliveryFeeVnd: 15000, etaMinutes: 28, displayDeliveryFee: "15,000 VND" }
+      : { fulfillment: "pickup", deliveryFeeVnd: 0, etaMinutes: 15, displayDeliveryFee: "0 VND" },
   );
   const createdAt = minutesAgo(s.placedMinAgo);
   const omsOrderNumber = `KFCVN-${createdAt.slice(2, 10).replace(/-/g, "")}-${String(4200 + s.n * 37).padStart(4, "0")}`;
@@ -169,7 +169,7 @@ async function main() {
         step.stage === "placed"
           ? { omsOrderNumber, totalVnd: payload.totals.totalVnd }
           : step.stage === "cancelled"
-            ? { note: "Khách đổi ý, hủy trước khi bếp nhận." }
+            ? { note: "Customer changed their mind and cancelled before the kitchen accepted it." }
             : {},
       created_at: minutesAgo(s.placedMinAgo - step.afterMin),
     })),
@@ -249,18 +249,18 @@ async function main() {
   // ---- agent turns (console KPIs: latency, tokens, cost) --------------------
   const model = process.env.AGENT_MODEL || "anthropic/claude-haiku-4-5";
   const TURNS: Array<[string, "web" | "messenger", string, string, string[], number]> = [
-    ["lan.nguyen", "messenger", "Cho chị combo gia đình như lần trước nhé", "Dạ chị Lan! Combo gia đình 4 người, gà cay, Pepsi như mọi khi ạ. Chị lấy thêm 4 bánh trứng nướng không, lần trước chị khen ngon?", ["get_profile", "search_menu", "add_to_cart"], 3],
-    ["lan.nguyen", "messenger", "Ừ lấy luôn em", "Dạ! 4 bánh trứng đã vào giỏ. Tổng đơn 353.000 ₫, giao tới 12 Nguyễn Huệ như cũ chị nhé?", ["add_to_cart", "quote_order"], 3],
-    ["duc.hoang", "web", "2 burger zinger không mayo với 2 pepsi", "Dạ anh! 2 Burger Zinger (không mayo) + 2 Pepsi, tổng 146.000 ₫. Anh nhận tại quầy hay giao tận nơi ạ?", ["search_menu", "add_to_cart"], 6],
-    ["duc.hoang", "web", "Lấy tại quầy", "Đơn của anh đã vào bếp, số đơn KFCVN-260712-4274. Khoảng 15 phút nữa anh ghé quầy nhé!", ["quote_order", "request_otp", "place_order"], 6],
-    ["minh.tran", "messenger", "combo zinger + thêm 3 tenders cay", "Dạ anh Minh! Em áp luôn mã KFC20 cho anh, giảm 26.200 ₫. Tổng còn 119.800 ₫ ạ.", ["search_menu", "add_to_cart", "apply_voucher"], 14],
-    ["thu.pham", "web", "2 phần cơm gà cay và 2 soup rong biển", "Dạ chị Thư! 2 Cơm gà rán cay + 2 soup rong biển, tổng 118.000 ₫. Chị ghé lấy lúc mấy giờ ạ?", ["search_menu", "add_to_cart"], 18],
-    ["hoa.vo", "messenger", "Combo couple còn khuyến mãi không em?", "Dạ còn chị Hoa ơi! Combo couple 155.000 ₫, em lên đơn gà giòn không cay + 7Up như chị thích nhé?", ["search_menu", "get_profile"], 22],
-    ["quang.le", "web", "2 miếng gà cay, 1 coleslaw, 1 pepsi vừa", "Dạ anh Quang! Tổng 117.000 ₫. Đơn nhận tại quầy, 15 phút nữa có ngay ạ.", ["search_menu", "add_to_cart", "place_order"], 31],
-    ["lan.nguyen", "messenger", "Đơn hàng tới đâu rồi em?", "Dạ đơn burger tôm của chị đang giao, tài xế sắp tới nơi rồi ạ! 🛵", ["check_order_status"], 36],
-    ["minh.tran", "web", "Đặt combo party 6 người giao văn phòng", "Dạ anh! Combo party 6 người gà cay, áp mã KFC20 giảm 60.000 ₫, còn 469.000 ₫. Giao 45 Lê Lợi trước 12h ạ.", ["search_menu", "add_to_cart", "apply_voucher", "quote_order", "place_order"], 74],
-    ["thu.pham", "messenger", "2 burger gà yo lấy tại quầy", "Dạ chị! 2 Burger gà YO + 2 khoai tây chiên, tổng 142.000 ₫. Em lên đơn nhé?", ["search_menu", "add_to_cart", "place_order"], 102],
-    ["duc.hoang", "messenger", "Thôi em ơi hủy đơn gà giúp anh", "Dạ em đã hủy đơn 3 miếng gà của anh, chưa tính phí gì ạ. Hẹn anh lần sau! 🙏", ["check_order_status", "cancel_order"], 47],
+    ["lan.nguyen", "messenger", "Can I get the family combo like last time?", "Sure, Lan. Family Combo for 4 with spicy chicken and Pepsi like usual. Want to add 4 egg tarts again?", ["get_profile", "search_menu", "add_to_cart"], 3],
+    ["lan.nguyen", "messenger", "Yes, add them", "Done. Four egg tarts are in the cart. Total is 353,000 VND, delivered to 12 Main Street as before?", ["add_to_cart", "quote_order"], 3],
+    ["duc.hoang", "web", "2 Zinger burgers no mayo and 2 Pepsis", "Done. 2 Zinger Burgers with no mayo plus 2 Pepsi. Total is 146,000 VND. Pickup or delivery?", ["search_menu", "add_to_cart"], 6],
+    ["duc.hoang", "web", "Pickup", "Your order is in the kitchen, order KFCVN-260712-4274. It should be ready for pickup in about 15 minutes.", ["quote_order", "request_otp", "place_order"], 6],
+    ["minh.tran", "messenger", "Zinger combo plus 3 spicy tenders", "Done. I applied KFC20 for you and saved 26,200 VND. Total is 119,800 VND.", ["search_menu", "add_to_cart", "apply_voucher"], 14],
+    ["thu.pham", "web", "2 spicy fried chicken rice and 2 seaweed soups", "Done. 2 spicy Fried Chicken Rice plus 2 Seaweed Soup, total 118,000 VND. What pickup time would you like?", ["search_menu", "add_to_cart"], 18],
+    ["hoa.vo", "messenger", "Is the couple combo on promo?", "Yes. Couple's Bucket is 155,000 VND. I can build it with original chicken and 7Up like you prefer.", ["search_menu", "get_profile"], 22],
+    ["quang.le", "web", "2 spicy fried chicken, 1 coleslaw, 1 medium Pepsi", "Done. Total is 117,000 VND. Pickup order should be ready in about 15 minutes.", ["search_menu", "add_to_cart", "place_order"], 31],
+    ["lan.nguyen", "messenger", "Where is my order?", "Your Shrimp Burger order is out for delivery and the driver is almost there.", ["check_order_status"], 36],
+    ["minh.tran", "web", "Order a party combo for 6 delivered to the office", "Done. Party Combo for 6 with spicy chicken, KFC20 applied for 60,000 VND off, total 469,000 VND. Delivery to 45 Market Street before 12:00.", ["search_menu", "add_to_cart", "apply_voucher", "quote_order", "place_order"], 74],
+    ["thu.pham", "messenger", "2 Burger GaYo for pickup", "Done. 2 Burger GaYo plus 2 fries, total 142,000 VND. Should I place the order?", ["search_menu", "add_to_cart", "place_order"], 102],
+    ["duc.hoang", "messenger", "Please cancel my chicken order", "I cancelled your 3-piece chicken order. No fee was charged.", ["check_order_status", "cancel_order"], 47],
   ];
   const turnRows = TURNS.map(([customer, channel, userText, replyText, tools, min], i) => ({
     convo_key: channel === "messenger" ? `messenger:demo_${customer}` : null,
@@ -287,7 +287,7 @@ async function main() {
       `${historyRows.length} history rows, ${suggestionRows.length} suggestion events, ${turnRows.length} agent turns.`,
   );
   for (const { s, payload, omsOrderNumber } of built) {
-    console.log(`  ${omsOrderNumber}  ${s.stage.padEnd(9)} ${(s.customer ?? "guest").padEnd(11)} ${payload.totals.displayTotal.padStart(12)}  ${payload.cart.map((l) => `${l.quantity}x ${l.vietnameseName}`).join(", ")}`);
+    console.log(`  ${omsOrderNumber}  ${s.stage.padEnd(9)} ${(s.customer ?? "guest").padEnd(11)} ${payload.totals.displayTotal.padStart(12)}  ${payload.cart.map((l) => `${l.quantity}x ${l.name}`).join(", ")}`);
   }
 }
 

@@ -23,7 +23,7 @@ const cravingPart = (matches: object[]) => ({
   output: { ok: true, matches, unmatched: false },
 });
 
-// --- named-in-say filter: exactly the mentioned items, in score order ---------
+// --- named-in-say filter: exactly the mentioned items, in score order --------
 
 const fiveMatches = [
   match("zinger-burger", 9),
@@ -33,7 +33,7 @@ const fiveMatches = [
   match("pepsi-std", 2),
 ];
 const namedTurn = [
-  assistantTurn("m1", "Dạ mình có Burger Zinger 56k và Burger Tôm 45k nha, anh/chị chọn món nào ạ? 🐔", [
+  assistantTurn("m1", "We have Burger Zinger for 56k and Burger Shrimp for 45k. Which one would you like?", [
     searchPart(fiveMatches),
   ]),
 ];
@@ -41,22 +41,22 @@ const named = surfacedItems(namedTurn);
 assert.deepEqual(
   named.map((m) => m.catalogId),
   ["zinger-burger", "shrimp-burger"],
-  "only the items named in the spoken line surface (accent-insensitive), score-ordered",
+  "only the items named in the spoken line surface, score-ordered",
 );
 
-// --- paraphrase fallback: top-3 by score, never a wall of cards ---------------
+// --- paraphrase fallback: top-3 by score, never a wall of cards --------------
 
 const paraphrased = [
-  assistantTurn("m2", "Dạ bên em có nhiều burger ngon lắm, anh/chị thích loại nào ạ?", [searchPart(fiveMatches)]),
+  assistantTurn("m2", "We have several tasty burgers. Which type would you like?", [searchPart(fiveMatches)]),
 ];
 const fallback = surfacedItems(paraphrased);
 assert.deepEqual(
   fallback.map((m) => m.catalogId),
   ["zinger-burger", "shrimp-burger", "burger-ga-yo"],
-  "no names in say → top-3 by score fallback",
+  "no names in say -> top-3 by score fallback",
 );
 
-// --- named list respects the max cap ------------------------------------------
+// --- named list respects the max cap ----------------------------------------
 
 const sixNamed = [
   match("zinger-burger", 9),
@@ -69,17 +69,17 @@ const sixNamed = [
 const bigTurn = [
   assistantTurn(
     "m3",
-    "Mình có Burger Zinger, Burger Tôm, Burger Gà Yo, Combo Burger Zinger, Pepsi và Khoai Tây Chiên nha!",
+    "We have Burger Zinger, Burger Shrimp, Burger Yo (Chicken), Combo Burger Zinger, Pepsi (STD), and French Fries (R).",
     [searchPart(sixNamed)],
   ),
 ];
 assert.equal(surfacedItems(bigTurn).length, 4, "named surface capped at max=4");
 assert.equal(surfacedItems(bigTurn, 2).length, 2, "custom max respected");
 
-// --- interpret_craving surfaces items too --------------------------------------
+// --- interpret_craving surfaces items too -----------------------------------
 
 const craving = [
-  assistantTurn("m4", "Giòn giòn cay cay thì em gợi ý Gà Popcorn nha!", [
+  assistantTurn("m4", "For crunchy spicy bites, I suggest Popcorn Chicken (R).", [
     cravingPart([match("popcorn-regular", 4), match("tenders-3pc", 3)]),
   ]),
 ];
@@ -89,10 +89,10 @@ assert.deepEqual(
   "craving matches surface; only the named one is kept",
 );
 
-// --- dedupe by catalogId across both tools in one turn -------------------------
+// --- dedupe by catalogId across both tools in one turn -----------------------
 
 const dupTurn = [
-  assistantTurn("m5", "Dạ có Burger Zinger nha!", [
+  assistantTurn("m5", "Yes, Burger Zinger is available.", [
     searchPart([match("zinger-burger", 9)]),
     cravingPart([match("zinger-burger", 3), match("pepsi-std", 2)]),
   ]),
@@ -103,15 +103,15 @@ assert.deepEqual(
   "same item from two tools dedupes to one card",
 );
 
-// --- streaming / malformed parts never surface ---------------------------------
+// --- streaming / malformed parts never surface ------------------------------
 
 const streaming = [
-  assistantTurn("m6", "Dạ chờ em xíu…", [searchPart(fiveMatches, "input-available")]),
+  assistantTurn("m6", "One moment please...", [searchPart(fiveMatches, "input-available")]),
 ];
 assert.deepEqual(surfacedItems(streaming), [], "tool part without completed output is ignored");
 
 const malformed = [
-  assistantTurn("m7", "Dạ!", [
+  assistantTurn("m7", "Sure.", [
     { type: "tool-search_menu", state: "output-available", output: { ok: true } }, // no matches array
     { type: "tool-search_menu", state: "output-available" }, // no output at all
     searchPart([{ name: "ghost" }, { catalogId: 42 }]), // rows missing required fields
@@ -119,39 +119,39 @@ const malformed = [
 ];
 assert.deepEqual(surfacedItems(malformed), [], "missing/malformed outputs and rows are skipped");
 
-// --- reorder_usual is excluded --------------------------------------------------
+// --- reorder_usual is excluded ----------------------------------------------
 
 const reorder = [
-  assistantTurn("m8", "Em thêm lại đơn quen của mình rồi nha!", [
+  assistantTurn("m8", "I added your usual order back to the cart.", [
     { type: "tool-reorder_usual", state: "output-available", output: { ok: true, applied: ["Burger Zinger"] } },
   ]),
 ];
-assert.deepEqual(surfacedItems(reorder), [], "reorder_usual adds to cart directly — no popups");
+assert.deepEqual(surfacedItems(reorder), [], "reorder_usual adds to cart directly, no popups");
 
-// --- turn selection -------------------------------------------------------------
+// --- turn selection ----------------------------------------------------------
 
-assert.deepEqual(surfacedItems([]), [], "no messages → no items");
+assert.deepEqual(surfacedItems([]), [], "no messages -> no items");
 assert.deepEqual(
-  surfacedItems([{ id: "u1", role: "user", parts: [{ type: "text", text: "đói quá" }] }]),
+  surfacedItems([{ id: "u1", role: "user", parts: [{ type: "text", text: "very hungry" }] }]),
   [],
-  "no assistant turn → no items",
+  "no assistant turn -> no items",
 );
 
-const older = assistantTurn("m9", "Dạ có Burger Zinger nha!", [searchPart([match("zinger-burger", 9)])]);
-const newerNoTools = assistantTurn("m10", "Dạ anh/chị muốn giao về đâu ạ?", []);
+const older = assistantTurn("m9", "Yes, Burger Zinger is available.", [searchPart([match("zinger-burger", 9)])]);
+const newerNoTools = assistantTurn("m10", "Where should we deliver?", []);
 assert.deepEqual(
   surfacedItems([older, newerNoTools]),
   [],
-  "only the LAST assistant turn counts — older turns' cards do not linger",
+  "only the LAST assistant turn counts, so older turns' cards do not linger",
 );
-const trailingUser: VoiceMessage = { id: "u2", role: "user", parts: [{ type: "text", text: "ừ" }] };
+const trailingUser: VoiceMessage = { id: "u2", role: "user", parts: [{ type: "text", text: "yes" }] };
 assert.equal(
   surfacedItems([older, trailingUser]).length,
   1,
   "a trailing user message does not hide the last assistant turn's items",
 );
 
-// --- lastAssistantId keys the popup refresh ------------------------------------
+// --- lastAssistantId keys the popup refresh ---------------------------------
 
 assert.equal(lastAssistantId([older, trailingUser]), "m9", "keyed on the last assistant message id");
 assert.equal(lastAssistantId([trailingUser]), null, "null before any assistant reply");

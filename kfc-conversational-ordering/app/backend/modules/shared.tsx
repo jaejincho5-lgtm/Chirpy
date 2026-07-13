@@ -8,25 +8,25 @@
 
 import type { ReactNode } from "react";
 
-// ONE money formatter (₫, thousand separators) and ONE humanized timestamp.
-export const fmtVnd = (value: number) => `${Math.round(value).toLocaleString("vi-VN")} ₫`;
+// ONE money formatter (VND, thousand separators) and ONE humanized timestamp.
+export const fmtVnd = (value: number) => `${Math.round(value).toLocaleString("en-US")} VND`;
 
 export function fmtTimeAgo(iso: string, now = Date.now()): string {
   const t = Date.parse(iso);
   if (Number.isNaN(t)) return "—";
   const min = Math.floor(Math.max(0, now - t) / 60000);
-  if (min < 1) return "vừa xong";
-  if (min < 60) return `${min} phút trước`;
+  if (min < 1) return "just now";
+  if (min < 60) return `${min} min ago`;
   const hr = Math.floor(min / 60);
-  if (hr < 24) return `${hr} giờ trước`;
-  return `${Math.floor(hr / 24)} ngày trước`;
+  if (hr < 24) return `${hr} h ago`;
+  return `${Math.floor(hr / 24)} d ago`;
 }
 
 // Kept for existing call sites; fmtVnd is the canonical formatter going forward.
 export const vnd = fmtVnd;
 
 export const time = (iso: string) =>
-  new Date(iso).toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+  new Date(iso).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
 
 export const secs = (ms: number | null) => (ms === null ? "—" : `${(ms / 1000).toFixed(1)}s`);
 
@@ -98,24 +98,24 @@ export function EmptyState({ icon, message, action }: { icon?: ReactNode; messag
   );
 }
 
-// One status vocabulary for every enum in the app — colored dot + VN label, so
+// One status vocabulary for every enum in the app: colored dot plus label, so
 // no raw enum string ever renders. Falls back to a neutral tone for unknowns.
 const STATUS_META: Record<string, { vi: string; tone: string }> = {
   // order stages
-  placed: { vi: "Đã đặt", tone: "blue" },
-  preparing: { vi: "Đang làm", tone: "amber" },
-  ready: { vi: "Sẵn sàng", tone: "green" },
-  completed: { vi: "Hoàn tất", tone: "green" },
-  cancelled: { vi: "Đã huỷ", tone: "red" },
+  placed: { vi: "Placed", tone: "blue" },
+  preparing: { vi: "Preparing", tone: "amber" },
+  ready: { vi: "Ready", tone: "green" },
+  completed: { vi: "Completed", tone: "green" },
+  cancelled: { vi: "Cancelled", tone: "red" },
   // voucher / generic on-off
-  active: { vi: "Đang bật", tone: "green" },
-  inactive: { vi: "Đã tắt", tone: "gray" },
-  on: { vi: "Còn hàng", tone: "green" },
-  off: { vi: "Hết hàng", tone: "red" },
+  active: { vi: "On", tone: "green" },
+  inactive: { vi: "Off", tone: "gray" },
+  on: { vi: "In stock", tone: "green" },
+  off: { vi: "Out of stock", tone: "red" },
   // nudge gate outcomes
-  sent: { vi: "Đã gửi", tone: "green" },
-  gated: { vi: "Bị chặn", tone: "amber" },
-  skipped: { vi: "Bỏ qua", tone: "gray" },
+  sent: { vi: "Sent", tone: "green" },
+  gated: { vi: "Blocked", tone: "amber" },
+  skipped: { vi: "Skipped", tone: "gray" },
 };
 
 export function StatusBadge({ status, label }: { status: string; label?: string }) {

@@ -58,7 +58,7 @@ Channel reply: rich cards (item, price, "confirm?") + natural language
 ```
 
 - **Grounding:** the LLM proposes; **tools are the source of truth** for menu, price, voucher validity, points. The
-  model can't invent a ₫ price — it must call `search_menu`. Guardrail: reject any cart line without a catalog match.
+  model can't invent a VND price — it must call `search_menu`. Guardrail: reject any cart line without a catalog match.
 - **JSON contract (your note, formalized):** each turn the agent returns `{say, order_state, next_action}`; the
   backend executes `next_action` (e.g. `request_otp`) and returns the result to the next turn. Clean, testable boundary.
 - **Multi-turn memory:** cart + customer context persist per conversation (Supabase), so "make it two, and add a Pepsi"
@@ -82,9 +82,9 @@ Channel reply: rich cards (item, price, "confirm?") + natural language
 
 Run it **inside a real Zalo/Messenger chat on a phone mirrored to screen** — the channel *is* the wow.
 
-1. Voice note in Vietnamese: "Cho mình 1 combo gà rán và 1 Pepsi." → agent builds cart with **rich cards + price**.
-2. "Áp mã giảm giá KFC20 và dùng điểm của mình." → **voucher applies, points redeem**, total updates live.
-3. "Xác nhận, giao tới nhà." → **OTP** sent → user enters → **order # returned**. Completed, never left chat.
+1. Voice note in English: "Add 1 fried chicken combo and 1 Pepsi." -> agent builds cart with **rich cards + price**.
+2. "Apply voucher KFC20 and use my points." -> **voucher applies, points redeem**, total updates live.
+3. "Confirm, deliver to my home." -> **OTP** sent -> user enters -> **order # returned**. Completed, never left chat.
 4. Trigger a curveball ("this is wrong, I want a person") → clean **human handoff** with context.
 5. Cut to the **metrics slide**, then the **integration slide** (our JSON contract → KFC OMS/Loyalty APIs).
 
@@ -94,7 +94,7 @@ Run it **inside a real Zalo/Messenger chat on a phone mirrored to screen** — t
 
 - **D1** — menu catalog → DB; define the `Order` state machine + JSON contract; storyboard; set up one channel (Zalo *or* Messenger).
 - **D2** — vertical slice: text → search_menu → add_to_cart → quote → place_order (mock OMS). One order completes.
-- **D3** — voucher + loyalty tools + OTP flow; eval harness with the named metrics; Vietnamese NLU tuning.
+- **D3** — voucher + loyalty tools + OTP flow; eval harness with the named metrics; English NLU tuning.
 - **D4** — rich cards, voice-note input, human handoff; polish the channel UX; record fallbacks.
 - **D5** — second channel if time; deck (metric-mapped) + README + 5 dry-runs.
 
@@ -107,7 +107,7 @@ Run it **inside a real Zalo/Messenger chat on a phone mirrored to screen** — t
   mock with identical logic if neither approves in time. Don't let API bureaucracy own the critical path.
 - **Real payment integration is out of scope for a hackathon** → stop at OTP-confirmed order creation in OMS
   (mock/sandbox); state clearly "payment handoff is the next integration step."
-- **Vietnamese + code-switching NLU** → test Day 2 on real phrasing; keep an eval set; Claude handles VN well.
+- **English conversational NLU** -> test Day 2 on real phrasing; keep an eval set.
 - **Hallucinated menu/price** → hard guardrail: no cart line without a catalog match; unit-test it.
 
 ## 9. Scorecard
@@ -219,7 +219,7 @@ Post-delivery review + build pass (commits `38d5b9f`, `cb8095f`, `c9c5cc8`):
    controls for persona/weather/hour/return-visit/OOS, moved *out* of the phone), a Zalo-authentic
    OA chat (official KFC mark, verified badge, typing indicator, menu cards, suggestion chip, Combo
    Math savings card), and a live engineering console rendering every real tool call plus an order
-   receipt. Vietnamese-native fonts (Be Vietnam Pro, Bricolage Grotesque, Spline Sans Mono), oklch
+   receipt. Broad Latin fonts (Be Vietnam Pro, Bricolage Grotesque, Spline Sans Mono), oklch
    palette. Renderer fixes: fenced-JSON contracts never show raw in bubbles; auto-scroll; minimal
    bold rendering.
 3. **Channel mode — real Messenger/Zalo path** (`lib/convo-store.ts`, `lib/channel.ts`,
@@ -306,9 +306,9 @@ What this buys on stage:
 - **Every price a judge sees is the official one** — 37k fried chicken, 79k Combo Burger Zinger,
   269k Party Bucket.
 - **Combo Math is now citable**: Party Bucket 269k vs 404k list = a real 115k saved (verified in
-  the optimizer live: 9 pieces itemized → `combo-party-6`, saves 115.000₫). Big Combo saves 53k.
-  The old invented 14.000₫ zinger-combo saving coincidentally SURVIVES on real prices (93k → 79k).
-- The hot-day pick is honest: the real menu has no ice cream, so nóng → **Lipton mát lạnh 17k**.
+  the optimizer live: 9 pieces itemized -> `combo-party-6`, saves 115,000 VND). Big Combo saves 53k.
+  The old invented 14,000 VND zinger-combo saving coincidentally SURVIVES on real prices (93k -> 79k).
+- The hot-day pick is honest: the real menu has no ice cream, so hot weather -> **cold Lipton 17k**.
 
 Post-swap numbers (regenerated, free suites): lib pipeline **28/30** (was 25/30 — the swap plus
 three search-scoring fixes actually improved NLU), personalization lift **+7.4pp** on 998 held-out
@@ -341,11 +341,11 @@ Supabase path exercised end-to-end).
   rate-limiting: 60s resend cooldown + max 3 mints / 10-min window (`kfc_otp` gains counter columns).
 
 **New surfaces**
-- **`/backend` → Odoo-style modules**: Đạo diễn (director), Đơn hàng (OMS queue), Khách hàng
-  (loyalty + taste profile), Voucher (CRUD), Kho (OOS), Agent (ops board). Every module stays mounted
+- **`/backend` → Odoo-style modules**: Director (director), Order (OMS queue), Customers
+  (loyalty + taste profile), Voucher (CRUD), Stock (OOS), Agent (ops board). Every module stays mounted
   so the Director's live BroadcastChannel link never resets across tabs.
 - **`/voice`** — a VRM virtual ambassador (`three` + `@pixiv/three-vrm`, dynamically imported so it
-  never enters other bundles). Push-to-talk vi-VN speech in, browser TTS out with word-boundary
+  never enters other bundles). Push-to-talk en-US speech in, browser TTS out with word-boundary
   lip-sync + blink/idle/thinking/happy motion, driven by the **same** `/api/agent` + tools. TTS is
   behind a swappable `Speaker` interface (`lib/speech.ts`) so ElevenLabs drops in later.
 
@@ -367,9 +367,9 @@ npm run dev   # open http://localhost:3000 — use localhost, not 127.0.0.1
 ```
 
 Beats (mirrored in the left rail): ① persona Linh + rain on → order a zinger → rainy corn-soup
-suggestion chip → accept · ② apply KFC20 + points · ③ "xem có cách nào rẻ hơn không" → Combo Math
+suggestion chip -> accept · ② apply KFC20 + points · ③ "is there a cheaper option?" -> Combo Math
 card → accept · ④ toggle the OOS scenario, confirm delivery, enter the dev OTP shown in chat →
-out-of-stock recovery → order number · ⑤ "Khách quay lại" → greet → agent offers the usual.
+out-of-stock recovery → order number · ⑤ "Returning customer" → greet → agent offers the usual.
 
 Simulate a channel webhook without a Meta app:
 
@@ -392,9 +392,9 @@ R→0 = the customer orders whenever, and we don't pretend otherwise.
 - **Send time = predicted hour − 12 minutes** (inside the spec'd 10–15-min lead window).
 - **Predictor is an interface** (`Predictor`), so logistic regression / GBM / RL can swap in later
   without touching the gates, scanner, API, or console.
-- **Gates, in order** (first failure wins): explicit opt-out ("dừng", intercepted deterministically
-  in `lib/channel.ts` before the LLM — bare "dừng"/"stop" defers to the agent when an order is
-  mid-funnel, and "dung" is deliberately NOT matched: it's how "đúng"/"correct" is typed without
+- **Gates, in order** (first failure wins): explicit opt-out ("stop notifications", intercepted deterministically
+  in `lib/channel.ts` before the LLM; bare "stop" defers to the agent when an order is
+  mid-funnel, and "dung" is deliberately NOT matched because it is how "correct" can be typed without
   diacritics) → auto-mute (2 consecutive ignored sends; "ignored" = no order within 48h — we never
   fake open-tracking Messenger doesn't provide) → v1 day-level gate, where a customer's OWN
   habitual hour (confident prediction, ±1h) counts as an appetite window alongside rain/heat/evening
@@ -405,7 +405,7 @@ R→0 = the customer orders whenever, and we don't pretend otherwise.
 - **Surfaces**: `/api/reengage` (decision + timeline + notification history, plus a seeded
   deterministic convergence simulator), `/api/reengage/scan` (cron scanner, same sweep guardrails
   as followup/broadcast: Messenger-only, no synthetic customers, inside the 24h window), and a
-  **"Tái kích hoạt" module in `/backend`** — prediction card, confidence bar, 0–24h order-time
+  **"Re-engage" module in `/backend`** — prediction card, confidence bar, 0–24h order-time
   timeline, gate explanations, and the convergence demo: personalized error shrinking day-over-day
   against a flat generic-blast baseline.
 
@@ -425,7 +425,7 @@ gate, and full gate ordering (`tests/reengage.test.ts`, in `npm test`).
   and ready for either.
 - There is deliberately **no "notification opened" event** — Messenger gives no honest open signal.
   The only tracked outcomes are a send, and whether an order followed it.
-- The "dừng" opt-out intercept lives on the **Messenger inbound path only**; web/`/voice` chats go
+- The "stop notifications" opt-out intercept lives on the **Messenger inbound path only**; web/`/voice` chats go
   through `/api/agent`, which has no opt-out handling yet. Real proactive sends are Messenger-only,
   so the promise holds where it's made — but wiring the same intercept into `/api/agent` is the
   next step if web ever gets proactive pushes.

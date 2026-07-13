@@ -50,13 +50,13 @@ export function CustomersModule() {
   return (
     <section className="ops">
       <div className="ops__head">
-        <p className="rail-title">Khách hàng &amp; Loyalty</p>
-        <small className="ops__subnote">Tài khoản = danh tính nhắn tin (Messenger PSID / persona)</small>
+        <p className="rail-title">Customers &amp; Loyalty</p>
+        <small className="ops__subnote">Account = messaging identity (Messenger PSID / persona)</small>
       </div>
       <div className="cust-cols">
         <div className="cust-list">
           {members === null ? (
-            <p className="ops__empty">Đang tải…</p>
+            <p className="ops__empty">Loading...</p>
           ) : members.length ? (
             members.map((member) => (
               <button
@@ -70,38 +70,38 @@ export function CustomersModule() {
                   <span className="cust-row__chan">{channelOf(member.customerId)}</span>
                 </div>
                 <div className="cust-row__pts">
-                  <b>{member.points.toLocaleString("vi-VN")} điểm</b>
-                  <small>tích lũy {member.lifetimePoints.toLocaleString("vi-VN")}</small>
+                  <b>{member.points.toLocaleString("en-US")} points</b>
+                  <small>lifetime {member.lifetimePoints.toLocaleString("en-US")}</small>
                 </div>
               </button>
             ))
           ) : (
-            <p className="ops__empty">Chưa có thành viên loyalty, đặt một đơn để tích điểm.</p>
+            <p className="ops__empty">No loyalty members yet. Place an order to earn points.</p>
           )}
         </div>
         <div className="cust-detail">
           {!selected ? (
-            <p className="ops__empty">Chọn một khách để xem hồ sơ vị giác.</p>
+            <p className="ops__empty">Select a customer to view their taste profile.</p>
           ) : profile?.ok ? (
             <div className="profile-card">
               <div className="profile-card__row profile-card__usual">
-                <span>Món quen</span>
+                <span>Usual item</span>
                 <b>
                   {profile.profile.usual
                     ? `${profile.profile.usual.name} · ${Math.round(profile.profile.usual.share * 100)}%`
-                    : "chưa đủ dữ liệu"}
+                    : "not enough data"}
                 </b>
               </div>
               <div className="profile-card__row">
-                <span>Vị · Số đơn · Ticket TB</span>
+                <span>Taste · Orders · Avg ticket</span>
                 <b>
                   {profile.profile.spice === "spicy"
-                    ? "cay"
+                    ? "spicy"
                     : profile.profile.spice === "original"
-                      ? "truyền thống"
+                      ? "original"
                       : "—"}
                   {" · "}
-                  {profile.profile.orderCount} đơn · {vnd(profile.profile.avgTicketVnd)}
+                  {profile.profile.orderCount} orders · {vnd(profile.profile.avgTicketVnd)}
                 </b>
               </div>
               {profile.profile.attachRates.length > 0 ? (
@@ -118,14 +118,14 @@ export function CustomersModule() {
                 </div>
               ) : null}
               <div className="profile-card__row profile-card__take">
-                <span>Gợi ý được nhận</span>
+                <span>Accepted suggestions</span>
                 <b>
                   {profile.suggestions.accepted}/{profile.suggestions.accepted + profile.suggestions.declined}
                 </b>
               </div>
             </div>
           ) : (
-            <p className="ops__empty">Chưa có hồ sơ cho khách này.</p>
+            <p className="ops__empty">No profile for this customer yet.</p>
           )}
         </div>
       </div>

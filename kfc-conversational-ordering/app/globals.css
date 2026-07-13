@@ -1,4 +1,4 @@
-/* Chirpy demo stage — KFC Việt Nam conversational ordering.
+/* Chirpy demo stage: KFC Vietnam conversational ordering.
    Scene: bright hackathon hall, projector at 3-10m + judges' own phones.
    Strategy: committed KFC red on a warm cream canvas; Zalo blue lives only
    inside the chat so the phone reads as the customer's real channel. */
@@ -882,7 +882,7 @@ button:disabled { cursor: default; }
   white-space: nowrap;
 }
 
-/* Vietnamese prose, not console data — the UI face, not mono. */
+/* Customer prose, not console data: the UI face, not mono. */
 .trace-console__empty { color: var(--console-faint); font-size: 12px; padding: 10px 4px; margin: 0; }
 
 .console-note {
@@ -1046,7 +1046,7 @@ button:disabled { cursor: default; }
 }
 
 .transcript__empty, .transcript__busy { font-size: 13px; color: var(--ink-faint); margin: 0; }
-/* Vietnamese prose ("agent đang trả lời…"), not console data — keep the UI face. */
+/* Customer prose ("agent is replying..."), not console data: keep the UI face. */
 .transcript__busy { font-size: 12px; font-style: italic; }
 
 @media (max-width: 1100px) {
@@ -1259,7 +1259,7 @@ button:disabled { cursor: default; }
 
 .decisions__note { margin: 0; font-size: 12.5px; color: var(--ink-faint); max-width: 78ch; line-height: 1.6; }
 
-/* ── /backend — Giao dịch & phân tích (mọi kênh) ─────────────────────────── */
+/* /backend: transactions and analytics, all channels */
 
 .ops {
   max-width: 1560px;
@@ -1376,7 +1376,7 @@ button:disabled { cursor: default; }
 
 .tx__body { display: grid; gap: 3px; font-size: 13px; }
 .tx__user { margin: 0; color: var(--ink); font-weight: 600; }
-.tx__user::before { content: "Khách · "; font-weight: 700; font-size: 11px; color: var(--ink-faint); letter-spacing: 0.03em; }
+.tx__user::before { content: "Customer · "; font-weight: 700; font-size: 11px; color: var(--ink-faint); letter-spacing: 0.03em; }
 .tx__reply { margin: 0; color: var(--ink-soft); }
 .tx__reply::before { content: "Agent · "; font-weight: 700; font-size: 11px; color: var(--ink-faint); letter-spacing: 0.03em; }
 
@@ -2002,7 +2002,7 @@ button:disabled { cursor: default; }
   color: white; background: var(--red); padding: 9px 14px; flex: none;
   display: flex; align-items: center; justify-content: space-between; gap: 8px;
 }
-/* "✓ Đã đặt — #order" stamp once the order is placed. */
+/* Order-placed stamp once the order is placed. */
 .voice-receipt__placed {
   font-size: 10.5px; font-weight: 800; letter-spacing: 0.04em; text-transform: none;
   padding: 3px 8px; border-radius: 999px; background: oklch(1 0 0 / 0.22);

@@ -1,6 +1,6 @@
 // Text-to-speech for the /voice ambassador, behind a swappable interface so a
 // higher-quality provider (ElevenLabs) can drop in later. Today: browser
-// speechSynthesis with a Vietnamese voice. The viseme "level" that drives the
+// speechSynthesis with an English voice. The viseme "level" that drives the
 // avatar's mouth is pulsed on each word boundary (speechSynthesis exposes no
 // audio stream to analyze), then decayed toward 0 by the render loop.
 
@@ -12,8 +12,7 @@ export interface Speaker {
 
 /**
  * What the voice actually says. The agent's replies carry emoji for the chat
- * bubble, but TTS engines verbalize them ("gà rán" followed by "poultry leg
- * emoji" kills the illusion) — so every pictograph, variation selector, ZWJ,
+ * bubble, but TTS engines verbalize them, so every pictograph, variation selector, ZWJ,
  * skin-tone modifier, and regional-indicator pair is stripped before the
  * utterance. The display text keeps its emoji; only the speech is cleaned.
  * Exported so any future Speaker (ElevenLabs) applies the same rule.
@@ -40,7 +39,6 @@ class BrowserSpeaker implements Speaker {
   private pickVoice(): SpeechSynthesisVoice | null {
     const voices = window.speechSynthesis.getVoices();
     return (
-      voices.find((v) => v.lang.toLowerCase().startsWith("vi")) ??
       voices.find((v) => v.lang.toLowerCase().startsWith("en")) ??
       voices[0] ??
       null
@@ -57,7 +55,7 @@ class BrowserSpeaker implements Speaker {
     const utterance = new SpeechSynthesisUtterance(speakable);
     const voice = this.pickVoice();
     if (voice) utterance.voice = voice;
-    utterance.lang = voice?.lang ?? "vi-VN";
+    utterance.lang = voice?.lang ?? "en-US";
     utterance.rate = 1.05;
     utterance.pitch = 1.15; // slightly bright — mascot-ish
     // Word-boundary pulses drive the beak flap; the loop decays between them.

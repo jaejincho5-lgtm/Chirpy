@@ -9,7 +9,7 @@ export function twilioConfigured(): boolean {
   );
 }
 
-/** Normalize a Vietnamese phone number to E.164 (+84…). */
+/** Normalize a Vietnam phone number to E.164 (+84...). */
 export function normalizeVnPhone(raw: string): string {
   const digits = raw.replace(/\D/g, "");
   if (digits.startsWith("84")) return `+${digits}`;

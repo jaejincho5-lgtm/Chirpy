@@ -13,12 +13,12 @@ import { DEMO_BUS, type DemoBusMessage } from "../../demo-shared";
 // One-click demo blast: pre-written "suggestion of the day" so the operator
 // can fire a believable promo without typing anything on stage.
 const SUGGESTED_PROMO =
-  "🌤️ Trưa nay nắng nóng, lười ra đường? Combo gà rán giòn cay + Pepsi mát lạnh giao tận nơi trong 30 phút. Nhập mã KFC20 giảm 20% (tối đa 60k) cho đơn từ 80k. Nhắn “combo” để đặt ngay nhé! 🍗";
+  "Hot lunch, no need to head out? Get crispy fried chicken with a cold Pepsi delivered in 30 minutes. Use code KFC20 for 20% off, capped at 60,000 VND, on orders from 80,000 VND. Reply \"combo\" to order now.";
 
 const TEMPLATES = [
-  "🔥 Thứ Ba vui vẻ! Combo Gà Rán chỉ 79k hôm nay, nhắn “combo” để đặt ngay nhé!",
-  "Trời mưa rồi ☔ Gà nóng giao tận nơi, đặt qua chat trong 30 giây. Bạn thèm gì?",
-  "🎁 Riêng khách quen KFC: freeship cho đơn từ 150k tối nay. Đặt liền nha!",
+  "Tuesday deal: Fried Chicken Combo for only 79k today. Reply \"combo\" to order now.",
+  "Rainy day? Hot chicken delivered to your door, ordered by chat in 30 seconds. What are you craving?",
+  "For loyal KFC customers tonight: free delivery on orders from 150k. Order now.",
 ];
 
 export function PromotionsModule() {
@@ -67,7 +67,7 @@ export function PromotionsModule() {
 
     if (!res?.ok) {
       const json = (await res?.json().catch(() => null)) as { error?: string } | null;
-      setError(json?.error ?? "Không gửi được khuyến mãi.");
+      setError(json?.error ?? "Could not send promotion.");
       return;
     }
     const json = (await res.json().catch(() => null)) as { attempted: number; sent: number } | null;
@@ -80,25 +80,25 @@ export function PromotionsModule() {
   return (
     <section className="ops">
       <div className="ops__head">
-        <p className="rail-title">Khuyến mãi, soạn &amp; gửi tới khách</p>
-        <small className="ops__subnote">Gửi qua Messenger cho khách trong 24h + hiển thị ngay trên /user (demo)</small>
+        <p className="rail-title">Promotions, compose &amp; send</p>
+        <small className="ops__subnote">Send through Messenger to customers in the 24h window and mirror instantly on /user (demo)</small>
       </div>
       {error ? <p className="oms-error">{error}</p> : null}
 
       <div className="promo-suggest">
         <div className="promo-suggest__text">
-          <b>✨ Gợi ý hôm nay · trưa nắng nóng + mã KFC20 đang chạy</b>
+          <b>✨ Today's suggestion · hot lunch + KFC20 is active</b>
           <p>{SUGGESTED_PROMO}</p>
         </div>
         <button type="button" className="promo-suggest__send" disabled={busy} onClick={() => send(SUGGESTED_PROMO)}>
-          {busy ? "Đang gửi…" : "📣 Gửi ngay"}
+          {busy ? "Sending..." : "Send now"}
         </button>
       </div>
 
       <div className="promo-compose">
         <textarea
           className="promo-textarea"
-          placeholder="Soạn nội dung khuyến mãi gửi tới khách…"
+          placeholder="Write a promotional message for customers..."
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           maxLength={1800}
@@ -107,20 +107,20 @@ export function PromotionsModule() {
         <div className="promo-meta">
           <span>{message.length}/1800</span>
           <button type="button" onClick={() => send()} disabled={busy || !message.trim()}>
-            {busy ? "Đang gửi…" : "📣 Gửi tới khách"}
+            {busy ? "Sending..." : "Send to customers"}
           </button>
         </div>
       </div>
 
       {result ? (
         <p className="promo-result">
-          Đã gửi tới <b>{result.sent}</b>/{result.attempted} khách qua Messenger
-          {result.attempted === 0 ? " (chưa có khách nào trong cửa sổ 24h, demo hiển thị trên /user)" : ""}.
+          Sent to <b>{result.sent}</b>/{result.attempted} customers through Messenger
+          {result.attempted === 0 ? " (no customers are currently in the 24h window, demo still mirrors on /user)" : ""}.
         </p>
       ) : null}
 
       <div className="promo-templates">
-        <p className="promo-templates__title">Mẫu nhanh</p>
+        <p className="promo-templates__title">Quick templates</p>
         {TEMPLATES.map((t) => (
           <button key={t} type="button" className="promo-template" onClick={() => setMessage(t)}>
             {t}
@@ -130,15 +130,15 @@ export function PromotionsModule() {
 
       {vouchers.length ? (
         <div className="promo-vouchers">
-          <p className="promo-templates__title">Chèn mã đang chạy</p>
+          <p className="promo-templates__title">Insert active code</p>
           <div className="promo-voucher-chips">
             {vouchers.map((v) => (
               <button
                 key={v.code}
                 type="button"
                 className="promo-voucher-chip"
-                onClick={() => setMessage((m) => `${m ? `${m.trimEnd()} ` : ""}Dùng mã ${v.code} nhé!`)}
-                title={`${v.description} · đơn tối thiểu ${vnd(v.minimum_subtotal_vnd)}`}
+                onClick={() => setMessage((m) => `${m ? `${m.trimEnd()} ` : ""}Use code ${v.code}!`)}
+                title={`${v.description} · minimum order ${vnd(v.minimum_subtotal_vnd)}`}
               >
                 {v.code}
               </button>

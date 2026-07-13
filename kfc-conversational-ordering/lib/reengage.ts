@@ -6,7 +6,7 @@
 // Circular math matters here: hours wrap. A naive average of 23:30 and 00:30
 // predicts noon; the vector mean correctly predicts midnight. Each order's
 // hour becomes a unit vector on the 24h circle, recent orders weigh more
-// (half-life decay by order recency), and the resultant length R ∈ [0,1] is a
+// (half-life despicy by order recency), and the resultant length R ∈ [0,1] is a
 // free concentration measure: R→1 means a tight habitual window, R→0 means
 // the customer orders at random times and we should NOT claim to know better.
 //
@@ -274,15 +274,15 @@ export function decideReengage(inputs: ReengagePureInputs): ReengageDecision {
     explanation,
   });
 
-  if (prefs.optedOut) return fail("opted_out", "Khách đã nhắn 'dừng', không gửi thông báo chủ động.");
+  if (prefs.optedOut) return fail("opted_out", "Customer opted out, so no proactive reminder is sent.");
   if (prefs.mutedAt) {
-    return fail("muted", "Đã tự tắt sau 2 thông báo bị bỏ qua, chỉ bật lại khi khách chủ động quay lại.");
+    return fail("muted", "Auto-muted after 2 ignored reminders. It only turns back on when the customer returns.");
   }
 
   const ignores = countConsecutiveIgnores(notifications, placedAtsIso, now);
   if (ignores >= AUTO_MUTE_AFTER_IGNORES) {
     return {
-      ...fail("muted", `${ignores} thông báo liên tiếp bị bỏ qua, tự tắt để tránh làm phiền.`),
+      ...fail("muted", `${ignores} consecutive reminders were ignored, so reminders auto-muted.`),
       autoMuted: true,
     };
   }
@@ -292,13 +292,13 @@ export function decideReengage(inputs: ReengagePureInputs): ReengageDecision {
   if (nudge.reason === "insufficient_history") {
     return fail(
       "insufficient_history",
-      `Chưa đủ lịch sử (cần ≥${MIN_ORDERS_FOR_HOUR} đơn) để dự đoán nhịp đặt hàng.`,
+      `Not enough history, need at least ${MIN_ORDERS_FOR_HOUR} orders to predict a reorder rhythm.`,
     );
   }
   if (nudge.reason === "not_overdue") {
     return fail(
       "not_overdue",
-      `Khách chưa quá nhịp đặt của chính họ (median ${nudge.medianGapDays?.toFixed(1)} ngày · đã ${nudge.elapsedDays.toFixed(1)} ngày · ngưỡng ${nudge.overdueThresholdDays?.toFixed(1)} ngày).`,
+      `Customer is not past their own reorder rhythm yet, median ${nudge.medianGapDays?.toFixed(1)} days, elapsed ${nudge.elapsedDays.toFixed(1)} days, threshold ${nudge.overdueThresholdDays?.toFixed(1)} days.`,
     );
   }
   if (nudge.reason === "context_mismatch") {
@@ -313,7 +313,7 @@ export function decideReengage(inputs: ReengagePureInputs): ReengageDecision {
     if (!inPersonalWindow) {
       return fail(
         "context_mismatch",
-        "Đã quá nhịp nhưng ngoài khung thèm ăn (mưa / nóng / buổi tối) và ngoài khung giờ quen của khách.",
+        "Customer is overdue, but the current context is outside appetite windows and outside the customer's usual hour.",
       );
     }
   }
@@ -328,7 +328,7 @@ export function decideReengage(inputs: ReengagePureInputs): ReengageDecision {
     if (daysSinceSend < COOLDOWN_DAYS) {
       const left = Math.ceil(COOLDOWN_DAYS - daysSinceSend);
       return {
-        ...fail("cooldown", `Đã gửi trong ${COOLDOWN_DAYS} ngày qua, còn ${left} ngày cooldown.`),
+        ...fail("cooldown", `Sent within the last ${COOLDOWN_DAYS} days, ${left} cooldown days left.`),
         cooldownDaysLeft: left,
       };
     }
@@ -337,11 +337,11 @@ export function decideReengage(inputs: ReengagePureInputs): ReengageDecision {
   if (prediction.predictedHour === null || prediction.confidence < MIN_CONFIDENCE) {
     const why =
       prediction.predictedHour === null || prediction.sampleCount < MIN_ORDERS_FOR_HOUR
-        ? `mới ${prediction.sampleCount} đơn có giờ`
-        : `giờ đặt phân tán (R=${prediction.resultantLength.toFixed(2)})`;
+        ? `only ${prediction.sampleCount} timed orders`
+        : `order times are scattered (R=${prediction.resultantLength.toFixed(2)})`;
     return fail(
       "low_confidence",
-      `Độ tin cậy ${prediction.confidence.toFixed(2)} < ${MIN_CONFIDENCE} (${why}), chưa đủ chắc để chủ động nhắn.`,
+      `Confidence ${prediction.confidence.toFixed(2)} < ${MIN_CONFIDENCE} (${why}), not reliable enough for a proactive send.`,
     );
   }
 
@@ -350,7 +350,7 @@ export function decideReengage(inputs: ReengagePureInputs): ReengageDecision {
   if (sendHour < QUIET_HOURS.startHour || sendHour >= QUIET_HOURS.endHour) {
     return fail(
       "quiet_hours",
-      `Giờ gửi dự kiến ${formatHourLabel(sendHour)} nằm ngoài khung ${QUIET_HOURS.startHour}:00-${QUIET_HOURS.endHour}:00.`,
+      `Recommended send time ${formatHourLabel(sendHour)} is outside ${QUIET_HOURS.startHour}:00-${QUIET_HOURS.endHour}:00.`,
     );
   }
 
@@ -360,10 +360,10 @@ export function decideReengage(inputs: ReengagePureInputs): ReengageDecision {
     shouldSend: true,
     gate: "ok",
     explanation:
-      `Khách đặt ổn định vào buổi ${daypartWord}, quanh ${prediction.predictedTimeLabel}` +
-      `${prediction.spreadMinutes !== null ? ` (±${prediction.spreadMinutes} phút)` : ""}, ` +
-      `${prediction.sampleCount} đơn gần nhất, độ tập trung ${(prediction.resultantLength * 100).toFixed(0)}%. ` +
-      `Gửi trước ${LEAD_MINUTES} phút: ${base.recommendedSendTime}.`,
+      `Customer orders consistently in the ${daypartWord}, around ${prediction.predictedTimeLabel}` +
+      `${prediction.spreadMinutes !== null ? ` (±${prediction.spreadMinutes} min)` : ""}, ` +
+      `${prediction.sampleCount} recent orders, concentration ${(prediction.resultantLength * 100).toFixed(0)}%. ` +
+      `Send ${LEAD_MINUTES} minutes before: ${base.recommendedSendTime}.`,
   };
 }
 
@@ -377,10 +377,10 @@ export type ReengageCustomerDecision = ReengageDecision & {
   message: string | null;
 };
 
-/** One source of truth for daypart → Vietnamese word (explanation + opener). */
+/** One source of truth for daypart wording (explanation + opener). */
 function daypartWordVi(hour: number): string {
   const daypart = getDaypart(Math.round(hour) % 24);
-  return daypart === "breakfast" ? "sáng" : daypart === "lunch" ? "trưa" : daypart === "afternoon" ? "chiều" : "tối";
+  return daypart === "breakfast" ? "morning" : daypart === "lunch" ? "lunch window" : daypart === "afternoon" ? "afternoon" : "evening";
 }
 
 function composeMessage(
@@ -389,10 +389,10 @@ function composeMessage(
   voucher: { code: string; description: string } | null,
 ): string {
   const word = daypartWordVi(decision.prediction.predictedHour ?? 12);
-  const opener = `${word.charAt(0).toUpperCase()}${word.slice(1)} nay`;
-  const dish = usualName ? `${usualName} như mọi khi nhé?` : "ghé KFC một bữa nhé?";
-  const voucherLine = voucher ? ` Bạn còn voucher ${voucher.code} (${voucher.description}) chưa dùng đó.` : "";
-  return `${opener} 🍗 ${dish}${voucherLine} Nhắn "như cũ" là mình lên đơn liền. (Nhắn "dừng" để tắt thông báo.)`;
+  const opener = `${word.charAt(0).toUpperCase()}${word.slice(1)} reminder`;
+  const dish = usualName ? `Want your usual ${usualName}?` : "Want KFC today?";
+  const voucherLine = voucher ? ` You still have voucher ${voucher.code} (${voucher.description}).` : "";
+  return `${opener} 🍗 ${dish}${voucherLine} Reply "usual" and I will build the order. Reply "stop" to turn off reminders.`;
 }
 
 export type ReengageDecideOptions = {

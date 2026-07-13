@@ -24,11 +24,11 @@ export const OMS_STAGE_FLOW: Record<OmsStage, OmsStage[]> = {
 
 // Rough kitchen ETA per stage, for customer-facing status answers.
 export const OMS_STAGE_LABEL: Record<OmsStage, { vi: string; etaHint: string | null }> = {
-  placed: { vi: "Đã nhận đơn", etaHint: "bếp sẽ nhận trong ít phút" },
-  preparing: { vi: "Đang chuẩn bị", etaHint: "khoảng 10-15 phút nữa" },
-  ready: { vi: "Sẵn sàng / đang giao", etaHint: "sắp tới nơi" },
-  completed: { vi: "Hoàn tất", etaHint: null },
-  cancelled: { vi: "Đã hủy", etaHint: null },
+  placed: { vi: "Order received", etaHint: "the kitchen will start shortly" },
+  preparing: { vi: "Preparing", etaHint: "about 10-15 minutes left" },
+  ready: { vi: "Ready / out for delivery", etaHint: "almost there" },
+  completed: { vi: "Completed", etaHint: null },
+  cancelled: { vi: "Cancelled", etaHint: null },
 };
 
 export type OmsOrderRecord = {

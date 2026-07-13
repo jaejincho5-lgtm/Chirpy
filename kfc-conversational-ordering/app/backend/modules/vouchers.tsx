@@ -8,13 +8,13 @@ import { useEffect, useState } from "react";
 import { vnd, type VoucherRow } from "./shared";
 
 const TYPE_LABEL: Record<VoucherRow["discount_type"], string> = {
-  percent: "Phần trăm",
-  fixed: "Số tiền",
-  free_delivery: "Miễn ship",
+  percent: "Percent",
+  fixed: "Amount",
+  free_delivery: "Free delivery",
 };
 
 function valueLabel(row: VoucherRow) {
-  if (row.discount_type === "percent") return `${row.discount_value}%${row.max_discount_vnd ? ` (tối đa ${vnd(row.max_discount_vnd)})` : ""}`;
+  if (row.discount_type === "percent") return `${row.discount_value}%${row.max_discount_vnd ? ` (max ${vnd(row.max_discount_vnd)})` : ""}`;
   if (row.discount_type === "fixed") return vnd(row.discount_value);
   return "—";
 }
@@ -55,7 +55,7 @@ export function VouchersModule() {
     setBusy(false);
     if (!res?.ok) {
       const json = (await res?.json().catch(() => null)) as { error?: string } | null;
-      setMsg(json?.error ?? "Không cập nhật được voucher (cần Supabase).");
+      setMsg(json?.error ?? "Could not update voucher (Supabase required).");
       return;
     }
     setMsg(null);
@@ -80,7 +80,7 @@ export function VouchersModule() {
     setBusy(false);
     if (!res?.ok) {
       const json = (await res?.json().catch(() => null)) as { error?: string } | null;
-      setMsg(json?.error ?? "Không tạo được voucher (cần Supabase).");
+      setMsg(json?.error ?? "Could not create voucher (Supabase required).");
       return;
     }
     setMsg(null);
@@ -94,38 +94,38 @@ export function VouchersModule() {
   return (
     <section className="ops">
       <div className="ops__head">
-        <p className="rail-title">Voucher, quản lý khuyến mãi</p>
-        {source ? <small className="ops__subnote">nguồn: {source === "db" ? "Supabase" : "mặc định (offline)"}</small> : null}
+        <p className="rail-title">Vouchers, promotion management</p>
+        {source ? <small className="ops__subnote">source: {source === "db" ? "Supabase" : "default (offline)"}</small> : null}
       </div>
       {msg ? <p className="oms-error">{msg}</p> : null}
 
       <div className="vch-create">
-        <input placeholder="MÃ" value={code} onChange={(e) => setCode(e.target.value.toUpperCase())} maxLength={20} />
-        <input placeholder="Mô tả" value={description} onChange={(e) => setDescription(e.target.value)} />
+        <input placeholder="CODE" value={code} onChange={(e) => setCode(e.target.value.toUpperCase())} maxLength={20} />
+        <input placeholder="Description" value={description} onChange={(e) => setDescription(e.target.value)} />
         <select value={discountType} onChange={(e) => setDiscountType(e.target.value as VoucherRow["discount_type"])}>
-          <option value="fixed">Số tiền (VND)</option>
-          <option value="percent">Phần trăm (%)</option>
-          <option value="free_delivery">Miễn ship</option>
+          <option value="fixed">Amount (VND)</option>
+          <option value="percent">Percent (%)</option>
+          <option value="free_delivery">Free delivery</option>
         </select>
         <input
-          placeholder="Giá trị"
+          placeholder="Value"
           value={discountValue}
           onChange={(e) => setDiscountValue(e.target.value.replace(/\D/g, ""))}
           disabled={discountType === "free_delivery"}
         />
         <input
-          placeholder="Đơn tối thiểu"
+          placeholder="Minimum order"
           value={minSubtotal}
           onChange={(e) => setMinSubtotal(e.target.value.replace(/\D/g, ""))}
         />
         <button type="button" onClick={create} disabled={busy || !code.trim()}>
-          Tạo
+          Create
         </button>
       </div>
 
       <div className="vch-list">
         {rows === null ? (
-          <p className="ops__empty">Đang tải…</p>
+          <p className="ops__empty">Loading...</p>
         ) : rows.length ? (
           rows.map((row) => (
             <div className={`vch-row ${row.is_active ? "" : "vch-row--off"}`} key={row.code}>
@@ -140,12 +140,12 @@ export function VouchersModule() {
                 disabled={busy}
                 onClick={() => toggle(row)}
               >
-                {row.is_active ? "Đang bật" : "Đang tắt"}
+                {row.is_active ? "On" : "Off"}
               </button>
             </div>
           ))
         ) : (
-          <p className="ops__empty">Chưa có voucher.</p>
+          <p className="ops__empty">No vouchers yet.</p>
         )}
       </div>
     </section>

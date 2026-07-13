@@ -11,22 +11,22 @@ assert.equal(verbosityHint([]), null, "no history → no override hint");
 
 // One-word / compact texters → terse.
 assert.equal(replyStyleFor(["ok"]), "terse", "one-word reply → terse");
-assert.equal(replyStyleFor(["combo 9", "ok", "giao nhà"]), "terse", "short commands → terse");
-assert.match(verbosityHint(["ok"]) ?? "", /cực ngắn/, "terse hint pushes for a very short reply");
+assert.equal(replyStyleFor(["combo 9", "ok", "delivery"]), "terse", "short commands -> terse");
+assert.match(verbosityHint(["ok"]) ?? "", /one short sentence/, "terse hint pushes for a very short reply");
 
 // A normal ordering request sits in the neutral middle.
 assert.equal(
-  replyStyleFor(["cho mình 1 combo gà rán và 1 pepsi"]),
+  replyStyleFor(["add one fried chicken combo and one pepsi"]),
   "normal",
   "a normal request stays neutral",
 );
-assert.equal(verbosityHint(["cho mình 1 combo gà rán và 1 pepsi"]), null, "normal → no override");
+assert.equal(verbosityHint(["add one fried chicken combo and one pepsi"]), null, "normal -> no override");
 
 // A descriptive paragraph → expansive.
 const chatty =
-  "Chào bạn, mình muốn đặt một phần gà rán giòn cho hai người ăn tối nay, kèm khoai tây và nước ngọt, giao tới nhà giúp mình nhé, cảm ơn nhiều";
-assert.equal(replyStyleFor([chatty]), "expansive", "long descriptive message → expansive");
-assert.match(verbosityHint([chatty]) ?? "", /diễn giải/, "expansive hint allows a fuller reply");
+  "Hi, I want to order crispy fried chicken for two people tonight, with fries and soft drinks, delivered to my home please, thank you very much";
+assert.equal(replyStyleFor([chatty]), "expansive", "long descriptive message -> expansive");
+assert.match(verbosityHint([chatty]) ?? "", /2-3 concise sentences/, "expansive hint allows a fuller reply");
 
 // The average is over non-empty messages; whitespace-only turns are ignored.
 assert.equal(averageUserMessageLength(["ab", "  ", "cdef"]), 3, "blank turns excluded from the mean");
@@ -41,7 +41,7 @@ for (const stage of ["preparing", "ready", "completed", "cancelled"] as const) {
   const msg = composeStatusMessage(stage, "KFC-123");
   assert.ok(msg && msg.includes("KFC-123"), `${stage} message names the order number`);
 }
-assert.match(composeStatusMessage("preparing", "KFC-9") ?? "", /chuẩn bị/, "preparing mentions kitchen prep");
-assert.match(composeStatusMessage("cancelled", "KFC-9") ?? "", /hủy/, "cancelled mentions cancellation");
+assert.match(composeStatusMessage("preparing", "KFC-9") ?? "", /prepared|preparing/i, "preparing mentions kitchen prep");
+assert.match(composeStatusMessage("cancelled", "KFC-9") ?? "", /cancelled/i, "cancelled mentions cancellation");
 
 console.log("verbosity + status-push tests passed");

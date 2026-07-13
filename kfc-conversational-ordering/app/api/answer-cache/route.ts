@@ -1,6 +1,6 @@
 import { getAnswerCacheStats } from "@/lib/answer-cache";
 
-// Ops feed for the /backend "Bộ nhớ trả lời chung" card: entries, hits,
+// Ops feed for the /backend shared-answer-memory card: entries, hits,
 // hit-rate, and the most-hit questions. Never throws to the client — a store
 // hiccup returns an all-zero shape so the panel still renders.
 export async function GET() {

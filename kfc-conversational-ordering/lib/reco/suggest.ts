@@ -241,10 +241,10 @@ function buildReason(
   context: OrderContext,
   profile: TasteProfile | null,
 ) {
-  // Customer-facing copy (Vietnamese, chat-native). A personal reason is only
+  // Customer-facing copy. A personal reason is only
   // claimed when the customer has actually attached the item before — a
   // Laplace-smoothed score with zero real occurrences falls back to the
-  // population reason instead of "0 trong 1 đơn gần đây".
+  // population reason instead of claiming a nonexistent personal pattern.
   const count = profile
     ? Math.max(0, Math.round((candidate.personal ?? 0) * (profile.orderCount + 2) - 1))
     : 0;
@@ -253,21 +253,21 @@ function buildReason(
 
   let reason: string;
   if (isPersonal && profile) {
-    reason = `Bạn đã thêm ${itemName} trong ${count}/${profile.orderCount} đơn gần đây.`;
+    reason = `You added ${itemName} in ${count}/${profile.orderCount} recent orders.`;
   } else {
     const rule = candidate.bestRule;
     if (!rule && candidate.catalogId === "seaweed-soup" && context.weather === "rainy") {
-      return "Trời đang mưa — món ấm nóng được gọi nhiều hơn hẳn hôm nay.";
+      return "It is raining, and warm sides are especially popular today.";
     }
     if (!rule && candidate.catalogId === "lipton-medium" && context.weather === "hot") {
-      return "Trời đang nóng — Lipton mát lạnh rất hợp hôm nay.";
+      return "It is hot today, and iced Lipton fits the weather.";
     }
-    const fromName = rule ? getCatalogEntry(rule.from)?.name ?? rule.from : "đơn tương tự";
-    reason = `${Math.round((rule?.confidence ?? 0) * 100)}% khách gọi ${fromName} thêm ${itemName}.`;
+    const fromName = rule ? getCatalogEntry(rule.from)?.name ?? rule.from : "similar orders";
+    reason = `${Math.round((rule?.confidence ?? 0) * 100)}% of customers who order ${fromName} add ${itemName}.`;
   }
 
   if (candidate.catalogId === "seaweed-soup" && context.weather === "rainy") {
-    reason += " Trời đang mưa — món ấm nóng được gọi nhiều hơn hẳn.";
+    reason += " It is raining, and warm sides are performing better.";
   }
 
   return reason;

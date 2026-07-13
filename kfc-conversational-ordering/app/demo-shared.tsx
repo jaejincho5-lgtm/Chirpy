@@ -93,25 +93,25 @@ export type ToolTrace = {
 /* ---------- demo content ---------- */
 
 export const quickReplies = [
-  "Cho mình 1 combo gà rán 1 miếng và 1 Pepsi",
-  "Áp mã KFC20 và dùng điểm của mình",
-  "Xác nhận giao tới nhà, SĐT 0901234567",
-  "Đơn này sai rồi, cho mình gặp nhân viên",
+  "I want 1 classic fried chicken combo and 1 Pepsi",
+  "Apply KFC20 and use my points",
+  "Confirm delivery to my home, phone 0901234567",
+  "This order is wrong, connect me to staff",
 ];
 
 export const emptyPrompts = [
-  "Cho mình 1 burger zinger và khoai tây",
-  "Thèm gì đó giòn giòn cay cay, dưới 100k",
-  "Áp mã KFC20 giúp mình",
+  "I want 1 Zinger burger and fries",
+  "I want something crispy and spicy under 100k",
+  "Apply KFC20 for me",
 ];
 
 export const demoBeats = [
-  { label: "Gọi món bằng tiếng Việt", hint: "search_menu → add_to_cart" },
-  { label: "Gợi ý theo ngữ cảnh", hint: "trời mưa → súp rong biển nóng" },
-  { label: "Voucher + điểm thưởng", hint: "KFC20, loyalty redeem" },
-  { label: "Combo Math tiết kiệm", hint: "optimize_bill → swap" },
-  { label: "OTP → đặt hàng", hint: "kịch bản hết hàng tự xử lý" },
-  { label: "Khách quay lại", hint: "“như mọi khi?”, taste memory" },
+  { label: "Natural-language ordering", hint: "search_menu → add_to_cart" },
+  { label: "Context-aware suggestion", hint: "rainy weather -> hot seaweed soup" },
+  { label: "Voucher + loyalty points", hint: "KFC20, loyalty redeem" },
+  { label: "Combo savings math", hint: "optimize_bill → swap" },
+  { label: "OTP -> place order", hint: "out-of-stock scenario handled automatically" },
+  { label: "Returning customer", hint: "\"the usual?\", taste memory" },
 ];
 
 /* ---------- helpers ---------- */
@@ -326,7 +326,7 @@ export function SuggestionChip({
 
   return (
     <div className="addon-chip">
-      <span className="addon-chip__label">Gợi ý cho bạn</span>
+      <span className="addon-chip__label">Suggested for you</span>
       <div className="addon-chip__head">
         <b>{suggestion.name}</b>
         <span>{suggestion.displayPrice}</span>
@@ -334,10 +334,10 @@ export function SuggestionChip({
       <p>{suggestion.reason}</p>
       <div className="addon-chip__actions">
         <button type="button" onClick={() => onAccept(suggestion)}>
-          Thêm vào đơn
+          Add to order
         </button>
         <button type="button" onClick={() => onDecline(traceId, suggestion)}>
-          Không, cảm ơn
+          No, thanks
         </button>
       </div>
     </div>
@@ -348,31 +348,31 @@ export function BillSwapCard({ proposal, onAccept }: { proposal: BillProposal; o
   return (
     <div className="bill-swap-card">
       <span className="bill-swap-card__label">Combo Math</span>
-      <b>Tiết kiệm {proposal.displaySavings}</b>
+      <b>Save {proposal.displaySavings}</b>
       <p>{proposal.summary}</p>
       <button type="button" onClick={() => onAccept(proposal)}>
-        Đổi luôn
+        Switch now
       </button>
     </div>
   );
 }
 
-export const STAGE_LABEL_VI: Record<string, string> = {
-  browsing: "đang xem menu",
-  cart: "giỏ hàng",
-  quoted: "đã báo giá",
-  otp_requested: "chờ mã xác nhận",
-  confirmed: "đã xác nhận",
-  placed: "đã đặt",
-  handoff: "gặp nhân viên",
+export const STAGE_LABELS: Record<string, string> = {
+  browsing: "browsing menu",
+  cart: "cart",
+  quoted: "quoted",
+  otp_requested: "waiting for code",
+  confirmed: "confirmed",
+  placed: "placed",
+  handoff: "staff handoff",
 };
 
 export function Receipt({ order }: { order?: Order | null }) {
   return (
     <div className="receipt">
       <div className="receipt__head">
-        <span>Đơn hàng</span>
-        <b>{order ? (STAGE_LABEL_VI[order.stage] ?? order.stage) : "chưa có"}</b>
+        <span>Order</span>
+        <b>{order ? (STAGE_LABELS[order.stage] ?? order.stage) : "not started"}</b>
       </div>
       {order && order.cart.length ? (
         <div className="receipt__lines">
@@ -386,20 +386,20 @@ export function Receipt({ order }: { order?: Order | null }) {
           ))}
         </div>
       ) : (
-        <p className="receipt__empty">Giỏ hàng trống, khách chưa gọi món.</p>
+        <p className="receipt__empty">Cart is empty. The customer has not ordered yet.</p>
       )}
       {order ? (
         <div className="receipt__meta">
           {order.voucher ? <span>Voucher {order.voucher.code} · −{order.totals.displayVoucherDiscount}</span> : null}
-          {order.loyalty ? <span>Điểm thưởng · −{order.loyalty.displayDiscount}</span> : null}
-          {order.quote ? <span>{order.quote.fulfillment === "delivery" ? "Giao hàng" : "Đến lấy"} · {order.quote.etaMinutes} phút</span> : null}
-          {order.otp ? <span className={order.otp.verified ? "is-good" : ""}>OTP {order.otp.verified ? "đã xác thực" : `→ ${order.otp.maskedPhone}`}</span> : null}
-          {order.placedOrder ? <span className="is-good">Mã đơn {order.placedOrder.orderNumber}</span> : null}
-          {order.handoff ? <span>Chuyển nhân viên · {order.handoff.ticketId}</span> : null}
+          {order.loyalty ? <span>Loyalty points · −{order.loyalty.displayDiscount}</span> : null}
+          {order.quote ? <span>{order.quote.fulfillment === "delivery" ? "Delivery" : "Pickup"} · {order.quote.etaMinutes} min</span> : null}
+          {order.otp ? <span className={order.otp.verified ? "is-good" : ""}>OTP {order.otp.verified ? "verified" : `→ ${order.otp.maskedPhone}`}</span> : null}
+          {order.placedOrder ? <span className="is-good">Order no. {order.placedOrder.orderNumber}</span> : null}
+          {order.handoff ? <span>Staff handoff · {order.handoff.ticketId}</span> : null}
         </div>
       ) : null}
       <div className="receipt__total">
-        <span>Tổng</span>
+        <span>Total</span>
         <b>{order ? order.totals.displayTotal : "0 VND"}</b>
       </div>
     </div>
@@ -423,7 +423,7 @@ export function TraceConsole({ traces }: { traces: ToolTrace[] }) {
             </div>
           ))
         ) : (
-          <p className="trace-console__empty">Chưa có tool call, gửi tin nhắn để xem agent làm việc.</p>
+          <p className="trace-console__empty">No tool calls yet. Send a message to see the agent work.</p>
         )}
       </div>
     </div>

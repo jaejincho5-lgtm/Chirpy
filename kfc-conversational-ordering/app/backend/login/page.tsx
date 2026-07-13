@@ -39,8 +39,8 @@ export default function BackendLoginPage() {
         <div className="ops-login__brand">
           <KfcMark />
           <div>
-            <h1>Khu vực vận hành</h1>
-            <p>Nhập mật khẩu để mở bảng điều khiển</p>
+            <h1>Operations area</h1>
+            <p>Enter the password to open the console</p>
           </div>
         </div>
         <input
@@ -50,19 +50,19 @@ export default function BackendLoginPage() {
             setPassword(event.target.value);
             if (status === "wrong") setStatus("idle");
           }}
-          placeholder="Mật khẩu"
+          placeholder="Password"
           autoFocus
           autoComplete="current-password"
-          aria-label="Mật khẩu bảng điều khiển"
+          aria-label="Console password"
           aria-invalid={status === "wrong"}
         />
         {status === "wrong" && (
           <p className="ops-login__error" role="alert">
-            Sai mật khẩu, thử lại nhé.
+            Wrong password. Try again.
           </p>
         )}
         <button type="submit" disabled={status === "checking" || !password}>
-          {status === "checking" ? "Đang kiểm tra…" : "Vào bảng điều khiển"}
+          {status === "checking" ? "Checking..." : "Open console"}
         </button>
       </form>
     </main>

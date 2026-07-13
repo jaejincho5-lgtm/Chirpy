@@ -408,9 +408,9 @@ export default function ChickenStage(props: Props) {
     <div className="vrm-stage-wrap">
       <div ref={mountRef} className="vrm-stage" />
       {failed ? (
-        <div className="vrm-status vrm-status--error">Không tải được mô hình Gà 🐔</div>
+        <div className="vrm-status vrm-status--error">Could not load the chicken model.</div>
       ) : !ready ? (
-        <div className="vrm-status vrm-status--loading">Đang gọi Đại sứ Gà… 🐔</div>
+        <div className="vrm-status vrm-status--loading">Calling the Chicken Ambassador...</div>
       ) : null}
 
       {tuning ? (

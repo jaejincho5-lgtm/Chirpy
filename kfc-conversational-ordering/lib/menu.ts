@@ -354,7 +354,7 @@ export const MENU_CATALOG: MenuItem[] = [
 ];
 
 export function formatVnd(amount: number) {
-  return `${new Intl.NumberFormat("vi-VN").format(Math.max(0, Math.round(amount)))} VND`;
+  return `${new Intl.NumberFormat("en-US").format(Math.max(0, Math.round(amount)))} VND`;
 }
 
 export function createMatchId(catalogId: string) {
@@ -366,7 +366,7 @@ export function normalizeText(value: string) {
     .toLowerCase()
     .normalize("NFD")
     .replace(/\p{Diacritic}/gu, "")
-    .replace(/đ/g, "d")
+    .replace(/\u0111/g, "d")
     .replace(/[^a-z0-9\s-]/g, " ")
     .replace(/\s+/g, " ")
     .trim();

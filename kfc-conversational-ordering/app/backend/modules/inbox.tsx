@@ -2,9 +2,9 @@
 
 // Inbox module — live Messenger conversations with human takeover. Polls
 // /api/takeover every 3s: left rail lists recent conversations (takeover
-// badge), right pane shows the transcript. "Tiếp quản" pauses the agent for
+// badge), right pane shows the transcript. "Take over" pauses the agent for
 // this conversation (webhook parks inbound messages); the composer sends a
-// human reply through the same Send API the agent uses. "Trả lại AI" resumes —
+// human reply through the same Send API the agent uses. "Return to AI" resumes —
 // the agent sees the human's messages as normal transcript context.
 
 import { useEffect, useRef, useState } from "react";
@@ -66,7 +66,7 @@ export function InboxModule() {
       body: JSON.stringify({ action: "set", convoId, active }),
     }).catch(() => null);
     if (!res?.ok) {
-      setNotice("Không đổi được chế độ, thử lại nhé.");
+      setNotice("Could not change mode. Try again.");
       return;
     }
     setConvos((prev) => prev?.map((c) => (c.id === convoId ? { ...c, takeover: active } : c)) ?? prev);
@@ -85,7 +85,7 @@ export function InboxModule() {
     const json = (await res?.json().catch(() => null)) as { ok?: boolean; sent?: boolean; sendReason?: string } | null;
     setSending(false);
     if (!json?.ok) {
-      setNotice("Gửi thất bại, thử lại nhé.");
+      setNotice("Send failed. Try again.");
       return;
     }
     setDraft("");
@@ -99,20 +99,20 @@ export function InboxModule() {
         ) ?? prev,
     );
     if (json.sent === false) {
-      setNotice(`Đã lưu vào hội thoại nhưng Messenger chưa nhận: ${json.sendReason ?? "không rõ lý do"}.`);
+      setNotice(`Saved to the conversation, but Messenger did not receive it: ${json.sendReason ?? "unknown reason"}.`);
     }
   }
 
   return (
     <section className="ops">
       <div className="ops__head">
-        <p className="rail-title">Hộp thư &amp; tiếp quản</p>
-        <small className="ops__subnote">Tiếp quản = agent tạm dừng trên hội thoại đó, nhân viên trả lời tay</small>
+        <p className="rail-title">Inbox &amp; takeover</p>
+        <small className="ops__subnote">Takeover pauses the agent for that conversation while staff reply manually</small>
       </div>
       <div className="cust-cols inbox-cols">
         <div className="cust-list">
           {convos === null ? (
-            <p className="ops__empty">Đang tải…</p>
+            <p className="ops__empty">Loading...</p>
           ) : convos.length ? (
             convos.map((item) => (
               <button
@@ -124,25 +124,25 @@ export function InboxModule() {
                 <div className="cust-row__id">
                   <b>{item.customerId}</b>
                   <span className="cust-row__chan">
-                    {item.lastMessage ? `${item.lastMessage.role === "user" ? "Khách" : "Trả lời"}: ${item.lastMessage.content.slice(0, 48)}` : "chưa có tin nhắn"}
+                    {item.lastMessage ? `${item.lastMessage.role === "user" ? "Customer" : "Reply"}: ${item.lastMessage.content.slice(0, 48)}` : "no messages yet"}
                   </span>
                 </div>
                 <div className="cust-row__pts">
                   <span className={`inbox-badge ${item.takeover ? "inbox-badge--human" : ""}`}>
-                    {item.takeover ? "🧑 Người" : "🤖 AI"}
+                    {item.takeover ? "🧑 Human" : "🤖 AI"}
                   </span>
                   <small>{time(item.updatedAt)}</small>
                 </div>
               </button>
             ))
           ) : (
-            <p className="ops__empty">Chưa có hội thoại Messenger nào.</p>
+            <p className="ops__empty">No Messenger conversations yet.</p>
           )}
         </div>
 
         <div className="cust-detail inbox-pane">
           {!convo ? (
-            <p className="ops__empty">Chọn một hội thoại để xem và tiếp quản.</p>
+            <p className="ops__empty">Select a conversation to view and take over.</p>
           ) : (
             <>
               <div className="inbox-pane__head">
@@ -152,7 +152,7 @@ export function InboxModule() {
                   className={`inbox-toggle ${convo.takeover ? "inbox-toggle--human" : ""}`}
                   onClick={() => setTakeover(convo.id, !convo.takeover)}
                 >
-                  {convo.takeover ? "Trả lại AI 🤖" : "Tiếp quản 🧑"}
+                  {convo.takeover ? "Return to AI 🤖" : "Take over 🧑"}
                 </button>
               </div>
 
@@ -167,7 +167,7 @@ export function InboxModule() {
                     </p>
                   ))
                 ) : (
-                  <p className="ops__empty">Hội thoại trống.</p>
+                  <p className="ops__empty">Empty conversation.</p>
                 )}
               </div>
 
@@ -176,8 +176,8 @@ export function InboxModule() {
                   rows={2}
                   placeholder={
                     convo.takeover
-                      ? "Nhắn khách với tư cách nhân viên…"
-                      : "Gửi sẽ tự động tiếp quản (agent tạm dừng)…"
+                      ? "Message the customer as staff..."
+                      : "Sending will automatically take over and pause the agent..."
                   }
                   value={draft}
                   onChange={(event) => setDraft(event.target.value)}
@@ -189,13 +189,13 @@ export function InboxModule() {
                   }}
                 />
                 <button type="button" className="inbox-send" disabled={sending || !draft.trim()} onClick={() => void sendReply()}>
-                  {sending ? "Đang gửi…" : "Gửi"}
+                  {sending ? "Sending..." : "Send"}
                 </button>
               </div>
               {notice ? <p className="inbox-notice">{notice}</p> : null}
               <p className="console-note">
-                Tiếp quản tự trả lại AI sau 60 phút không hoạt động. Tin nhắn của bạn nằm trong transcript nên agent
-                tiếp tục mạch hội thoại khi nhận lại.
+                Takeover returns to AI after 60 minutes of inactivity. Your messages stay in the transcript so the agent
+                can continue the conversation when it resumes.
               </p>
             </>
           )}

@@ -109,7 +109,7 @@ function sendTypingIndicator(channel: "messenger", senderId: string) {
 // B8 — if the model is still working after this long, send one interim note so
 // the customer never stares at silence. Single timer → never duplicates.
 // 10s, not 6s: p50 turn latency is ~9s, so a 6s threshold fired the interim on
-// almost EVERY turn — the customer saw "đợi mình chút nhé" before every single
+// almost EVERY turn: the customer saw a waiting message before every single
 // reply (real-phone transcript, 2026-07-06). At 10s it only covers the genuinely
 // slow tail; the typing indicator carries the normal case.
 const INTERIM_REPLY_AFTER_MS = 10_000;
@@ -123,17 +123,17 @@ const INTERIM_REPLY_AFTER_MS = 10_000;
  * through the channel's send API when a token is configured.
  */
 // Proactive-notification opt-out/in must work deterministically (the nudge
-// message promises 'Nhắn "dừng"'), so it is intercepted BEFORE the LLM: a
+// message promises 'Reply "stop"'), so it is intercepted BEFORE the LLM: a
 // guardrail the model cannot mis-handle, and it works keyless.
 //
 // Two tiers, because bare words collide with order talk: the full phrases
-// always opt out, but bare "dừng"/"stop" mid-order means "stop the ORDER" and
+// always opt out, but bare "stop" mid-order means "stop the ORDER" and
 // must reach the agent. "dung" (no diacritics) is deliberately absent — it is
-// how "đúng" ("correct") is typed on a diacritic-less keyboard, and swallowing
+// how "correct" can be typed on a diacritic-less keyboard, and swallowing
 // a customer's "yes" as an opt-out would be catastrophic.
-const OPT_OUT_PHRASES = /^(tắt thông báo|tat thong bao|dừng thông báo|dung thong bao)$/i;
-const OPT_OUT_BARE = /^(dừng|stop)[.!]?$/i;
-const OPT_IN_WORDS = /^(bật thông báo|bat thong bao|start)$/i;
+const OPT_OUT_PHRASES = /^(tat thong bao|dung thong bao|stop notifications)$/i;
+const OPT_OUT_BARE = /^(stop)[.!]?$/i;
+const OPT_IN_WORDS = /^(bat thong bao|start notifications|start)$/i;
 const MID_FUNNEL_STAGES = new Set(["cart", "quoted", "otp_requested"]);
 
 async function interceptOptOut(
@@ -162,12 +162,12 @@ async function interceptOptOut(
   await store.setOptOut(customerId, optOut).catch(() => null);
   if (optIn) await store.setMuted(customerId, null).catch(() => null);
   return optOut
-    ? "Đã tắt thông báo chủ động. Bạn vẫn đặt hàng bình thường bất cứ lúc nào, nhắn \"bật thông báo\" nếu muốn nhận lại. 🙏"
-    : "Đã bật lại thông báo chủ động. Hẹn gặp bạn đúng bữa! 🍗";
+    ? "Proactive reminders are off. You can still order any time. Reply \"start\" to turn reminders back on. 🙏"
+    : "Proactive reminders are back on. See you at your next meal time! 🍗";
 }
 
 // Chirpy handoff — ".chirpy" mints a magic link to /voice with the SAME
-// identity. Intercepted BEFORE the LLM (same placement/zero-cost as the "dừng"
+// identity. Intercepted BEFORE the LLM (same placement/zero-cost as the opt-out
 // opt-out), and deliberately conservative so it can never hijack a real order.
 function baseAppUrl(): string {
   // Trailing slash stripped: NEXT_PUBLIC_APP_URL set as "https://x.app/" would
@@ -194,7 +194,7 @@ async function interceptChirpy(channel: "messenger", senderId: string, text: str
   const customerId = channelCustomerId(channel, senderId);
   const conversationKey = convoId(channel, senderId);
   const { token } = await mintVoiceLink(customerId, conversationKey);
-  return `Bấm vào đây để nói chuyện với em nhé, em nhớ đơn của mình rồi 🐔 ${baseAppUrl()}/voice?t=${token}`;
+  return `Tap here to talk with me by voice. I already remember your order 🐔 ${baseAppUrl()}/voice?t=${token}`;
 }
 
 export async function forwardToAgent(
@@ -426,7 +426,7 @@ export async function forwardToAgent(
     // Volatile world + order state goes AFTER the cache breakpoint so it never
     // invalidates the cached prefix. Always emit it (even with no cart) so the
     // agent sees today's real weather/calendar line.
-    const worldLine = describeWorld(world) + (weatherOverride ? " (thời tiết do điều phối viên đặt)" : "");
+    const worldLine = describeWorld(world) + (weatherOverride ? " (weather set by the operator)" : "");
     const stateLine = initialOrder
       ? `Current server-side order state (source of truth; these lines are ALREADY in the cart — never re-add them): ${JSON.stringify(compactOrderState(initialOrder))}`
       : "";
@@ -448,7 +448,7 @@ export async function forwardToAgent(
 
     sendTypingIndicator(channel, senderId);
     const interimTimer = setTimeout(() => {
-      void sendChannelReply(channel, senderId, "Đợi mình chút nhé, đang kiểm tra… 🍗");
+      void sendChannelReply(channel, senderId, "One moment, I am checking... 🍗");
     }, INTERIM_REPLY_AFTER_MS);
 
     let result;
@@ -470,7 +470,7 @@ export async function forwardToAgent(
     const cacheWriteTokens = sumCacheWriteTokens(result.steps);
     recordUsage(customerId, AGENT_MODEL, { ...result.totalUsage, cacheWriteTokens });
 
-    const reply = extractSay(result.text) || "Xin lỗi, bạn nhắn lại giúp mình nhé?";
+    const reply = extractSay(result.text) || "Sorry, please send that again.";
 
     // Feed the learned global cache (same never-wrong write policy as the web
     // route): a safe, tool-free answer here serves the NEXT asker in ~1ms.

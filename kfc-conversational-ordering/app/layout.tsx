@@ -15,9 +15,8 @@ const displayFace = Bricolage_Grotesque({
   display: "swap",
 });
 
-// IBM Plex Mono, not Spline Sans Mono: Spline ships no Vietnamese subset, so
-// diacritics in mono-styled text (KPIs, receipts, trace rows) fell back to a
-// different face mid-word — the "Telex text looks out of place" bug.
+// IBM Plex Mono, not Spline Sans Mono: broad subset coverage keeps mono-styled
+// KPIs, receipts, and trace rows aligned.
 const mono = IBM_Plex_Mono({
   subsets: ["latin", "vietnamese"],
   weight: ["400", "500", "600"],
@@ -26,13 +25,13 @@ const mono = IBM_Plex_Mono({
 });
 
 export const metadata = {
-  title: "Chirpy · KFC Việt Nam ordering agent",
+  title: "Chirpy · KFC Vietnam ordering agent",
   description: "Conversational ordering agent that learns your taste. AABW 2026, KFC Vietnam track.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="vi" className={`${ui.variable} ${displayFace.variable} ${mono.variable}`}>
+    <html lang="en" className={`${ui.variable} ${displayFace.variable} ${mono.variable}`}>
       <body>{children}</body>
     </html>
   );

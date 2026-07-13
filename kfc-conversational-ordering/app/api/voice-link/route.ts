@@ -10,10 +10,10 @@ async function buildGreeting(customerId: string): Promise<string> {
   const profile = await deriveProfile(customerId).catch(() => null);
   if (profile?.usual) {
     const item = getCatalogEntry(profile.usual.catalogId);
-    const name = item?.name ?? "phần quen";
-    return `Chào mừng quay lại! Phần như mọi khi của mình (${name}), em nhớ rồi, nói "như mọi khi" là em lên đơn liền nha.`;
+    const name = item?.name ?? "usual order";
+    return `Welcome back! I remember your usual (${name}). Say "the usual" and I will build it for you.`;
   }
-  return "Chào mừng anh/chị đến với Đại sứ Gà KFC! Mình muốn dùng gì hôm nay để em gợi ý nhé? 🐔";
+  return "Welcome to Chicken Ambassador KFC. What would you like today?";
 }
 
 export async function GET(req: Request) {

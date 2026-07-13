@@ -6,7 +6,7 @@
 // Two delivery paths, same composed message:
 //   • Messenger (customerId starts with `msgr_`): a real Graph API send, plus a
 //     transcript append so the conversation stays coherent if the customer
-//     replies ("đơn tới đâu rồi?").
+//     asks where the order is.
 //   • Web / demo: the /backend Orders module mirrors the same message into the
 //     /user phone over the demo BroadcastChannel (see orders.tsx) — no server
 //     push channel exists for the web chat, so the bus is how the stage sees it.
@@ -17,7 +17,7 @@ import { logTurn } from "./turn-log";
 import type { OmsOrderRecord, OmsStage } from "./oms-store";
 
 export type StatusPushResult = {
-  /** Vietnamese message composed for this transition, or null if this stage is not customer-notified. */
+  /** English message composed for this transition, or null if this stage is not customer-notified. */
   message: string | null;
   /** True only when a real channel send succeeded (Messenger). */
   delivered: boolean;
@@ -33,13 +33,13 @@ export type StatusPushResult = {
 export function composeStatusMessage(stage: OmsStage, orderNumber: string): string | null {
   switch (stage) {
     case "preparing":
-      return `Đơn ${orderNumber} của bạn bếp đã nhận và đang chuẩn bị nhé 👨‍🍳 Khoảng 10-15 phút nữa là xong.`;
+      return `Order ${orderNumber} is now being prepared 👨‍🍳 It should be ready in about 10-15 minutes.`;
     case "ready":
-      return `Đơn ${orderNumber} đã xong và đang trên đường tới bạn 🛵 Sắp tới nơi rồi nhé!`;
+      return `Order ${orderNumber} is ready and on the way 🛵 Almost there!`;
     case "completed":
-      return `Đơn ${orderNumber} đã hoàn tất — cảm ơn bạn đã chọn KFC, hẹn gặp lại! 🍗`;
+      return `Order ${orderNumber} is complete. Thanks for choosing KFC, see you next time! 🍗`;
     case "cancelled":
-      return `Đơn ${orderNumber} đã được hủy. Cần hỗ trợ thêm thì bạn cứ nhắn mình nhé.`;
+      return `Order ${orderNumber} was cancelled. Message us if you need anything else.`;
     case "placed":
       return null;
     default:

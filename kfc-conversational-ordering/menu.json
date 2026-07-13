@@ -2,7 +2,7 @@
   "source": "https://kfcvietnam.com.vn/en/menu",
   "market": "Vietnam",
   "currency": "VND",
-  "currency_symbol": "₫",
+  "currency_symbol": "VND",
   "date_pulled": "2026-07-06",
   "size_key": {
     "STD": "Standard",
@@ -131,7 +131,7 @@
   "promotions": {
     "active": [
       {
-        "name": "Thêm Gà, Tiệc Thêm Vui (More Chicken, More Party) — Big Order",
+        "name": "More Chicken, More Party — Big Order",
         "start_date": "2026-07-01",
         "end_date": "2026-07-31",
         "type": "big_order",
@@ -160,9 +160,9 @@
       }
     ],
     "expired_recent": [
-      { "name": "KFC Big Order — Đơn Lớn Quà To", "start_date": "2026-06-01", "end_date": "2026-06-30", "description": "10–20% off + Pepsi, KFC/VietGoal/GreenSM/Shopee vouchers by order tier." },
-      { "name": "Đặt Đơn Lớn Rinh Ưu Đãi To", "start_date": "2026-04-01", "end_date": "2026-04-30", "description": "10–20% off + Pepsi, UrBox, KFC, VietGoal vouchers." },
-      { "name": "Gà Giòn Thay Hoa (Women's month)", "start_date": "2026-03-01", "end_date": "2026-03-31", "description": "10–20% off + Pepsi, KFC, UrBox vouchers." },
+      { "name": "KFC Big Order — Big Gifts", "start_date": "2026-06-01", "end_date": "2026-06-30", "description": "10–20% off + Pepsi, KFC/VietGoal/GreenSM/Shopee vouchers by order tier." },
+      { "name": "Big Order, Big Savings", "start_date": "2026-04-01", "end_date": "2026-04-30", "description": "10–20% off + Pepsi, UrBox, KFC, VietGoal vouchers." },
+      { "name": "Crispy Chicken for Women's Month", "start_date": "2026-03-01", "end_date": "2026-03-31", "description": "10–20% off + Pepsi, KFC, UrBox vouchers." },
       { "name": "Free Eggtart via Kiosk", "start_date": "2026-01-01", "end_date": "2026-01-31", "description": "Free 1 Eggtart on bills of 99,000 VND or more, kiosk orders only, selected customers." }
     ]
   }

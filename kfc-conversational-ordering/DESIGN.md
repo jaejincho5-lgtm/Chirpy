@@ -37,8 +37,8 @@ Loaded via `next/font/google` in `app/layout.tsx`:
 - `--font-ui` — **Be Vietnam Pro** (300–700): all UI and body text.
 - `--font-display` — **Bricolage Grotesque**: display/headline moments.
 - `--font-mono` — **IBM Plex Mono**: numbers, prices, codes, trace rows. Chosen specifically
-  for full Vietnamese coverage; NEVER swap in a mono without Vietnamese subsets (Spline Sans
-  Mono regression, fixed 2026-07-11). Vietnamese *sentences* never render in mono — only
+  for broad Latin coverage. Do not swap in a mono without broad Latin subsets (Spline Sans
+  Mono regression, fixed 2026-07-11). Customer-facing sentences never render in mono, only
   numerals/codes.
 
 ## Elevation & Shape
@@ -77,6 +77,6 @@ phone mock stays centered. No horizontal scroll at any width.
 
 ## Copy conventions
 
-Customer-facing: Vietnamese only, warm, anh/chị/em etiquette, ≤1 emoji per message.
-Operator-facing: Vietnamese labels with established English internals (KPI names, trace).
+Customer-facing: English only, warm and concise, no more than one emoji per message.
+Operator-facing: English labels with established technical terms (KPI names, trace).
 Buttons are verbs; no trailing periods on labels.

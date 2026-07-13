@@ -14,31 +14,31 @@ export default function Launcher() {
         </div>
         <div>
           <b>Chirpy</b>
-          <small>Đặt món qua chat, nhớ khẩu vị của bạn · KFC Việt Nam · AABW 2026</small>
+          <small>Order by chat, with taste memory · KFC Vietnam · AABW 2026</small>
         </div>
       </div>
 
       <div className="launcher__cards">
         <Link href="/user" className="launcher__card">
           <span className="launcher__tag">/user</span>
-          <b>Điện thoại của khách</b>
-          <p>Chat Messenger mock, thứ duy nhất khách (và khán giả gần) nhìn thấy. Mở cửa sổ hẹp cỡ điện thoại.</p>
+          <b>Customer phone</b>
+          <p>Messenger-style customer chat. Open it in a narrow phone-sized window.</p>
         </Link>
         <Link href="/backend" className="launcher__card launcher__card--dark">
           <span className="launcher__tag">/backend</span>
-          <b>Bàn điều khiển demo</b>
-          <p>Kịch bản, persona, thời tiết, kịch bản hết hàng + hội thoại, đơn hàng và tool call của agent, chiếu màn hình này.</p>
+          <b>Demo console</b>
+          <p>Script, persona, weather, out-of-stock scenario, conversations, orders, and agent tool calls. Put this screen on the projector.</p>
         </Link>
         <Link href="/voice" className="launcher__card">
           <span className="launcher__tag">/voice</span>
-          <b>Nói chuyện với Đại sứ ảo KFC 🎤</b>
-          <p>Nhân vật 3D nói tiếng Việt, khách nói, Đại sứ đáp lời và nhép miệng. Cùng một agent, cùng bộ tool bên dưới.</p>
+          <b>Talk to the KFC virtual ambassador 🎤</b>
+          <p>A 3D character listens, replies, and lip-syncs. It uses the same agent and tools underneath.</p>
         </Link>
       </div>
 
       <p className="launcher__note">
-        Mở cả hai trong cùng một trình duyệt, chúng tự đồng bộ trực tiếp. Kênh thật (Messenger webhook) chạy song song
-        qua <code>/api/webhook/messenger</code>.
+        Open both in the same browser and they sync live. The real Messenger webhook runs in parallel
+        via <code>/api/webhook/messenger</code>.
       </p>
     </main>
   );

@@ -27,7 +27,7 @@ type Props = {
 
 export default function ItemPopups({ messages, isBusy, outOfStock, onAdd, onOpenMenu }: Props) {
   const turnKey = lastAssistantId(messages);
-  // Uncapped pull so the "+N nữa" overflow count is honest; capped for render.
+  // Uncapped pull so the "+N more" overflow count is honest; capped for render.
   const all = useMemo(() => surfacedItems(messages, 99), [messages]);
   const items = all.slice(0, MAX_CARDS);
   const overflow = all.length - items.length;
@@ -75,7 +75,7 @@ export default function ItemPopups({ messages, isBusy, outOfStock, onAdd, onOpen
   const visible = items.filter((item) => !dismissed.has(item.catalogId));
   if (!turnKey || expired || visible.length === 0) return null;
   // While the agent composes: hide the cluster (stale turn's items) — except a
-  // just-tapped card, which stays as the "Đang thêm…" optimistic anchor.
+  // just-tapped card, which stays as the "Adding..." optimistic anchor.
   const shown = isBusy ? visible.filter((item) => item.catalogId === addingId) : visible;
   if (shown.length === 0) return null;
 
@@ -115,7 +115,7 @@ export default function ItemPopups({ messages, isBusy, outOfStock, onAdd, onOpen
             <button
               type="button"
               className="voice-popup__dismiss"
-              aria-label={`Ẩn ${item.name}`}
+              aria-label={`Hide ${item.name}`}
               onClick={() => dismiss(item.catalogId)}
             >
               ×
@@ -123,7 +123,7 @@ export default function ItemPopups({ messages, isBusy, outOfStock, onAdd, onOpen
             <button
               type="button"
               className="voice-popup__body"
-              aria-label={oos ? `${item.name} tạm hết hàng` : `Thêm ${item.name} vào giỏ, ${item.displayPrice}`}
+              aria-label={oos ? `${item.name} temporarily out of stock` : `Add ${item.name} to cart, ${item.displayPrice}`}
               disabled={isBusy || oos || addingId !== null}
               onClick={() => handleAdd(item)}
             >
@@ -131,9 +131,9 @@ export default function ItemPopups({ messages, isBusy, outOfStock, onAdd, onOpen
               <b className="voice-popup__name">{item.name}</b>
               <span className="voice-popup__desc">{item.description}</span>
               <span className="voice-popup__price">{item.displayPrice}</span>
-              {oos ? <span className="voice-popup__ribbon">tạm hết</span> : null}
+              {oos ? <span className="voice-popup__ribbon">out</span> : null}
               {adding ? (
-                <span className="voice-popup__state">{isBusy ? "Đang thêm…" : "✓ Đã thêm"}</span>
+                <span className="voice-popup__state">{isBusy ? "Adding..." : "✓ Added"}</span>
               ) : null}
             </button>
           </div>
@@ -141,7 +141,7 @@ export default function ItemPopups({ messages, isBusy, outOfStock, onAdd, onOpen
       })}
       {overflow > 0 ? (
         <button type="button" className="voice-popup voice-popup--more" onClick={onOpenMenu}>
-          +{overflow} nữa
+          +{overflow} more
         </button>
       ) : null}
     </div>

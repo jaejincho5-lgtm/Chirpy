@@ -2,7 +2,7 @@
 
 // The always-available visual menu for /voice (docs/FEATURE_ITEM_POPUPS.md
 // §3.3): a collapsible panel docked to the right edge of the phone frame,
-// collapsed by default behind a slim "Thực đơn" handle. Every row adds through
+// collapsed by default behind a slim "Menu" handle. Every row adds through
 // the same agent-guarded quickAdd path as the popups. The catalog comes from
 // the page's one /api/menu fetch — the AGENT's live view (Supabase when
 // configured), so the panel never offers an item the agent can't match; the
@@ -13,13 +13,13 @@ import { MENU_CATALOG, normalizeText, formatVnd, toMenuMatch, type MenuCategory,
 import type { Order } from "@/lib/order";
 
 const CATEGORY_LABELS: Record<MenuCategory, string> = {
-  chicken: "Gà rán",
+  chicken: "Chicken",
   combo: "Combo",
   burger: "Burger",
-  rice: "Cơm & Mì",
-  side: "Món thêm",
-  drink: "Thức uống",
-  dessert: "Tráng miệng",
+  rice: "Rice & Pasta",
+  side: "Sides",
+  drink: "Drinks",
+  dessert: "Dessert",
 };
 const CATEGORY_ORDER: MenuCategory[] = ["combo", "chicken", "burger", "rice", "side", "drink", "dessert"];
 
@@ -56,20 +56,20 @@ export default function MenuPanel({ open, onToggle, isBusy, outOfStock, latestOr
   }
 
   return (
-    <aside className={`voice-menu ${open ? "is-open" : ""}`} aria-label="Thực đơn KFC">
+    <aside className={`voice-menu ${open ? "is-open" : ""}`} aria-label="Menu KFC">
       <button
         type="button"
         className="voice-menu__handle"
         aria-expanded={open}
         onClick={() => onToggle(!open)}
       >
-        <span aria-hidden>🍗</span> Thực đơn
+        <span aria-hidden>🍗</span> Menu
       </button>
 
       <div className="voice-menu__sheet" aria-hidden={!open}>
         <div className="voice-menu__head">
-          <b>Thực đơn</b>
-          <button type="button" className="voice-menu__close" aria-label="Đóng thực đơn" onClick={() => onToggle(false)}>
+          <b>Menu</b>
+          <button type="button" className="voice-menu__close" aria-label="Close menu" onClick={() => onToggle(false)}>
             ×
           </button>
         </div>
@@ -77,12 +77,12 @@ export default function MenuPanel({ open, onToggle, isBusy, outOfStock, latestOr
           className="voice-menu__search"
           value={query}
           onChange={(event) => setQuery(event.target.value)}
-          placeholder="Tìm món… (gõ không dấu cũng được)"
+          placeholder="Search menu..."
           type="search"
           tabIndex={open ? 0 : -1}
         />
         <div className="voice-menu__list">
-          {groups.length === 0 ? <p className="voice-menu__empty">Không tìm thấy món nào 🥲</p> : null}
+          {groups.length === 0 ? <p className="voice-menu__empty">No items found.</p> : null}
           {groups.map((group) => (
             <section key={group.category} className="voice-menu__group">
               <h4 className="voice-menu__group-title">{group.label}</h4>
@@ -94,16 +94,16 @@ export default function MenuPanel({ open, onToggle, isBusy, outOfStock, latestOr
                     type="button"
                     className={`voice-menu__row ${oos ? "is-oos" : ""}`}
                     disabled={isBusy || oos}
-                    aria-label={oos ? `${item.name} tạm hết hàng` : `Thêm ${item.name} vào giỏ, ${formatVnd(item.priceVnd)}`}
+                    aria-label={oos ? `${item.name} temporarily out of stock` : `Add ${item.name} to cart, ${formatVnd(item.priceVnd)}`}
                     onClick={() => handleAdd(item)}
                     tabIndex={open ? 0 : -1}
                   >
                     <span className="voice-menu__row-main">
                       <b>{item.name}</b>
                       <small>
-                        {item.vietnameseName}
-                        {item.popular ? <em className="voice-menu__hot"> 🔥 Bán chạy</em> : null}
-                        {oos ? <em className="voice-menu__oos-tag"> · tạm hết</em> : null}
+                        {item.description}
+                        {item.popular ? <em className="voice-menu__hot"> 🔥 Popular</em> : null}
+                        {oos ? <em className="voice-menu__oos-tag"> · unavailable</em> : null}
                       </small>
                     </span>
                     <span className="voice-menu__row-price">{formatVnd(item.priceVnd)}</span>
@@ -115,7 +115,7 @@ export default function MenuPanel({ open, onToggle, isBusy, outOfStock, latestOr
         </div>
         {latestOrder && latestOrder.cart.length > 0 ? (
           <footer className="voice-menu__cart">
-            {latestOrder.cart.length} món · <b>{latestOrder.totals.displayTotal}</b>
+            {latestOrder.cart.length} items · <b>{latestOrder.totals.displayTotal}</b>
           </footer>
         ) : null}
       </div>

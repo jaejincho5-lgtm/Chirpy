@@ -22,9 +22,9 @@ export type FollowupResult = { convoKey: string; sent: boolean; reason?: string 
 
 function composeFollowup(itemCount: number, total: string | null): string {
   const cartLine = itemCount
-    ? `Giỏ của bạn vẫn còn ${itemCount} món${total ? ` (${total})` : ""} nhé.`
-    : "Đơn của bạn vẫn đang mở nhé.";
-  return `Bạn còn đó không? ${cartLine} Nhắn tiếp để mình hoàn tất đơn, hoặc "hủy" nếu bạn đổi ý 😊`;
+    ? `Your cart still has ${itemCount} item${itemCount === 1 ? "" : "s"}${total ? ` (${total})` : ""}.`
+    : "Your order is still open.";
+  return `Still there? ${cartLine} Reply to finish the order, or say "cancel" if you changed your mind 😊`;
 }
 
 /**

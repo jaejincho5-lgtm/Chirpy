@@ -1,6 +1,6 @@
 // Human takeover flag per channel conversation. When active, the Messenger
 // webhook parks inbound messages in the convo transcript and never invokes the
-// agent — a human answers from /backend → Hộp thư instead. Supabase-backed
+// agent; a human answers from /backend Inbox instead. Supabase-backed
 // when configured (the webhook may land on any serverless instance),
 // in-memory otherwise (same env-gating as convo-store).
 //

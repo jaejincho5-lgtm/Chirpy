@@ -21,9 +21,9 @@ const VrmStage = dynamic(() => import("./chicken-stage"), { ssr: false });
 // docs/FEATURE_ITEM_POPUPS.md: with this off, /voice behaves exactly as before.
 const SHOW_MENU_VISUALS = true;
 
-const VOICE_GREETING = "Chào anh/chị! Em là Đại sứ Gà đây, mình muốn dùng gì hôm nay ạ? 🐔";
+const VOICE_GREETING = "Hi! I am the KFC chicken ambassador. What would you like today? 🐔";
 // Spoken while the agent is still thinking, so the avatar never sits silent.
-const FILLERS = ["Dạ, để em xem…", "Dạ có ngay ạ…", "Ok ạ, chờ em xíu nha…"];
+const FILLERS = ["Let me check...", "On it...", "Okay, one moment..."];
 
 // Concatenate the text parts of a message into raw assistant text.
 function messageText(message: { parts?: Array<{ type?: string; text?: string }> }): string {
@@ -159,7 +159,7 @@ export default function VoicePage() {
         }
       } else {
         setShowCaptions(true);
-        setSubtitle('Link đã hết hạn, nhắn "chirpy" trong Messenger để lấy link mới nhé 🐔');
+        setSubtitle('This link expired. Message "chirpy" in Messenger to get a new link 🐔');
       }
     })();
   }, [speakLine]);
@@ -189,11 +189,9 @@ export default function VoicePage() {
   function quickAdd(match: MenuMatch) {
     if (!started || isBusy) return;
     setMenuOpen(false);
-    // Vietnamese name + "1 phần", not the English name: "Cho mình 1 Fried
-    // Chicken Rice" made the agent match "1 Fried Chicken" (leading-digit
-    // collision, verified live). The VN name is what the menu search is tuned
-    // for, and "1 phần X" keeps the quantity unambiguous for any item name.
-    submit(`Cho mình 1 phần ${match.vietnameseName} nha`);
+    // Route quick-add through the same agent path as speech. The English item
+    // name keeps the customer-facing transcript consistent with the app.
+    submit(`Add 1 ${match.name}`);
   }
 
   // Pre-warm the server audio cache on mount so the first spoken lines (greeting
@@ -333,12 +331,12 @@ export default function VoicePage() {
     if (!Impl) {
       setShowType(true);
       setShowCaptions(true);
-      setSubtitle("Trình duyệt chưa hỗ trợ nhận giọng nói, anh/chị gõ giúp em nhé.");
+      setSubtitle("This browser does not support speech recognition. Please type instead.");
       return;
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const recognition: any = new Impl();
-    recognition.lang = "vi-VN";
+    recognition.lang = "en-US";
     recognition.interimResults = true;
     recognition.continuous = false;
     finalTextRef.current = "";
@@ -383,7 +381,7 @@ export default function VoicePage() {
         setMuted(true);
         setShowType(true);
         setShowCaptions(true);
-        setSubtitle("Em chưa được cấp quyền mic, anh/chị bật quyền hoặc gõ giúp em nhé.");
+        setSubtitle("Microphone permission is not enabled. Turn it on or type instead.");
         return;
       }
       if (err === "no-speech" || err === "aborted") {
@@ -394,7 +392,7 @@ export default function VoicePage() {
       if (errorStreakRef.current >= 2) {
         setShowType(true);
         setShowCaptions(true);
-        setSubtitle("Nhận giọng nói đang trục trặc, anh/chị gõ giúp em nhé.");
+        setSubtitle("Speech recognition is having trouble. Please type instead.");
         return;
       }
       if (canListen()) beginRecognition();
@@ -423,7 +421,7 @@ export default function VoicePage() {
   }, [started, muted, speaking, isBusy]);
 
   // First interaction: a browser gesture is required before mic + audio. Tapping
-  // "Bắt đầu" requests mic permission, speaks the greeting, then goes hands-free.
+  // "Start" requests mic permission, speaks the greeting, then goes hands-free.
   async function handleStart() {
     startedRef.current = true;
     setStarted(true);
@@ -433,7 +431,7 @@ export default function VoicePage() {
       setMuted(true);
       setShowType(true);
       setShowCaptions(true);
-      setSubtitle("Em chưa được cấp quyền mic, anh/chị bật quyền hoặc gõ giúp em nhé.");
+      setSubtitle("Microphone permission is not enabled. Turn it on or type instead.");
       return;
     }
     speakLine(lastSpokenRef.current ?? VOICE_GREETING, { meaningful: true });
@@ -453,15 +451,15 @@ export default function VoicePage() {
         ? "listen"
         : "idle";
   const statusLabel = isBusy
-    ? "đang nghĩ…"
+    ? "thinking..."
     : speaking
-      ? "đang nói…"
+      ? "speaking..."
       : muted
-        ? "mic đang tắt"
+        ? "mic muted"
         : started
-          ? "đang nghe…"
-          : "chạm để bắt đầu";
-  const captionWho = interim ? "Bạn" : speaking ? "Đại sứ Gà" : null;
+          ? "listening..."
+          : "tap to start";
+  const captionWho = interim ? "You" : speaking ? "Chicken Ambassador" : null;
 
   return (
     <main className={`voice-stage voice-stage--${state}`}>
@@ -472,9 +470,9 @@ export default function VoicePage() {
           <span className="voice-start__mark" aria-hidden>
             <KfcMark />
           </span>
-          <b className="voice-start__title">Đại sứ Gà KFC</b>
-          <span className="voice-start__cta">Bắt đầu</span>
-          <small className="voice-start__hint">Chạm để nói chuyện, em nghe rảnh tay, không cần giữ nút</small>
+          <b className="voice-start__title">Chicken Ambassador KFC</b>
+          <span className="voice-start__cta">Start</span>
+          <small className="voice-start__hint">Tap to start. Hands-free listening, no press-and-hold.</small>
         </button>
       ) : null}
       <header className="voice-top">
@@ -483,8 +481,8 @@ export default function VoicePage() {
             <KfcMark />
           </div>
           <div>
-            <b>Đại sứ ảo KFC</b>
-            <small>Nói chuyện để đặt món</small>
+            <b>KFC Virtual Ambassador</b>
+            <small>Talk to order</small>
           </div>
         </div>
         <div className="voice-top__right">
@@ -494,7 +492,7 @@ export default function VoicePage() {
             aria-pressed={showCaptions}
             onClick={() => setShowCaptions((visible) => !visible)}
           >
-            Phụ đề
+            Captions
           </button>
           <div className="voice-status">
             <span className={`voice-dot voice-dot--${state}`} />
@@ -506,9 +504,9 @@ export default function VoicePage() {
               className="voice-cart__chip"
               onClick={() => setReceiptOpen((open) => !open)}
               aria-pressed={receiptOpen}
-              aria-label={receiptOpen ? "Ẩn đơn hàng" : "Xem đơn hàng"}
+              aria-label={receiptOpen ? "Hide order" : "View order"}
             >
-              <span className="voice-cart__count">{latestOrder.cart.length} món</span>
+              <span className="voice-cart__count">{latestOrder.cart.length} items</span>
               <b>{latestOrder.totals.displayTotal}</b>
             </button>
           ) : null}
@@ -520,7 +518,7 @@ export default function VoicePage() {
           className="voice-avatar__tap"
           role="button"
           tabIndex={0}
-          aria-label="Chạm để Đại sứ nói lại"
+          aria-label="Tap for the ambassador to repeat"
           onClick={repeatLastSpoken}
           onKeyDown={handleAvatarKeyDown}
         >
@@ -546,15 +544,15 @@ export default function VoicePage() {
         {latestOrder && latestOrder.cart.length > 0 && receiptOpen ? (
           <aside className={`voice-receipt ${latestOrder.stage === "placed" ? "is-placed" : ""}`}>
             <div className="voice-receipt__head">
-              <span>Đơn của bạn</span>
+              <span>Your order</span>
               {latestOrder.stage === "placed" && latestOrder.placedOrder ? (
-                <span className="voice-receipt__placed">✓ Đã đặt · #{latestOrder.placedOrder.orderNumber}</span>
+                <span className="voice-receipt__placed">✓ Placed · #{latestOrder.placedOrder.orderNumber}</span>
               ) : null}
               <button
                 type="button"
                 className="voice-receipt__close"
                 onClick={() => setReceiptOpen(false)}
-                aria-label="Đóng đơn hàng"
+                aria-label="Close order"
               >
                 ×
               </button>
@@ -570,7 +568,7 @@ export default function VoicePage() {
           className={`voice-mic ${muted ? "is-muted" : "is-listening"} ${listening ? "is-capturing" : ""}`}
           onClick={toggleMute}
           aria-pressed={muted}
-          aria-label={muted ? "Mic đang tắt, chạm để bật" : "Đang nghe, chạm để tắt mic"}
+          aria-label={muted ? "Mic is muted, tap to unmute" : "Listening, tap to mute"}
         >
           <span className="voice-mic__rings" aria-hidden>
             <i />
@@ -580,7 +578,7 @@ export default function VoicePage() {
             <MicIcon />
           </span>
           <span className="voice-mic__label">
-            {muted ? "Mic đang tắt, chạm để bật" : "Đang nghe, chạm để tắt mic"}
+            {muted ? "Mic is muted, tap to unmute" : "Listening, tap to mute"}
           </span>
         </button>
 
@@ -596,16 +594,16 @@ export default function VoicePage() {
             <input
               value={typed}
               onChange={(e) => setTyped(e.target.value)}
-              placeholder="Gõ tin nhắn cho Đại sứ…"
+              placeholder="Type a message for the ambassador..."
               disabled={isBusy}
             />
             <button type="submit" disabled={isBusy || !typed.trim()}>
-              Gửi
+              Send
             </button>
           </form>
         ) : (
           <button type="button" className="voice-type-toggle" onClick={() => setShowType(true)}>
-            hoặc gõ phím
+            or type
           </button>
         )}
       </div>

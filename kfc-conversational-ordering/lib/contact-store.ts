@@ -56,7 +56,7 @@ const DEMO_CONTACTS: CustomerContact[] = [
     customerId: "msgr_demo_linh",
     name: "Linh",
     phone: "0901234567",
-    address: "12 Nguyễn Huệ, Quận 1, TP.HCM",
+    address: "12 Main Street, District 1, Ho Chi Minh City",
     fulfillment: "delivery",
     updatedAt: new Date().toISOString(),
   },
@@ -160,11 +160,11 @@ function maskPhone(phone?: string): string | null {
 export function describeContactForAgent(contact: CustomerContact | null, completedOrderCount = 0): string {
   if (!contact || (!contact.address && !contact.phone)) return "";
   const parts: string[] = [];
-  if (contact.name) parts.push(`tên ${contact.name}`);
-  if (contact.address) parts.push(`địa chỉ giao "${contact.address}"`);
+  if (contact.name) parts.push(`name ${contact.name}`);
+  if (contact.address) parts.push(`delivery address "${contact.address}"`);
   const masked = maskPhone(contact.phone);
-  if (masked) parts.push(`SĐT ${masked}`);
-  if (contact.fulfillment) parts.push(contact.fulfillment === "pickup" ? "quen đến lấy tại quầy" : "quen giao tận nơi");
-  const trusted = completedOrderCount >= 1 ? " Khách quen (đã đặt trước đây)." : "";
-  return `SAVED CONTACT — ${parts.join("; ")}. Đã lưu từ đơn trước, chỉ cần xác nhận, đừng hỏi lại.${trusted}`;
+  if (masked) parts.push(`phone ${masked}`);
+  if (contact.fulfillment) parts.push(contact.fulfillment === "pickup" ? "usual pickup" : "usual delivery");
+  const trusted = completedOrderCount >= 1 ? " Trusted returning customer, completed prior orders." : "";
+  return `SAVED CONTACT — ${parts.join("; ")}. Saved from a previous order, confirm it instead of asking again.${trusted}`;
 }

@@ -14,7 +14,7 @@ import {
   KfcMark,
   MenuCards,
   MicIcon,
-  STAGE_LABEL_VI,
+  STAGE_LABELS,
   SendIcon,
   SuggestionChip,
   VerifiedBadge,
@@ -109,8 +109,8 @@ function MessageBubble({
         {((message.parts ?? []) as ChatPart[]).map((part, index) => {
           if (part.type === "data-cache") {
             return (
-              <span key={`${message.id}-${index}`} className="cache-badge" title="Trả lời từ answer cache, không gọi AI">
-                ⚡ trả lời tức thì
+              <span key={`${message.id}-${index}`} className="cache-badge" title="Answered from cache, no AI call">
+                ⚡ instant reply
               </span>
             );
           }
@@ -182,7 +182,7 @@ export default function UserPhone() {
   const latestOrder = useMemo(() => getLatestOrder(messages), [messages]);
   const traces = useMemo(() => getToolTraces(messages), [messages]);
   const isBusy = status === "submitted" || status === "streaming";
-  const stage = latestOrder ? (STAGE_LABEL_VI[latestOrder.stage] ?? latestOrder.stage) : "sẵn sàng";
+  const stage = latestOrder ? (STAGE_LABELS[latestOrder.stage] ?? latestOrder.stage) : "ready";
   const messagesRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -309,7 +309,7 @@ export default function UserPhone() {
     } satisfies DemoBusMessage);
   }, [customerId, weather, hour, daysAhead, latestOrder, traces, messages, isBusy, helloTick]);
 
-  // Real voice input via the browser speech API (vi-VN). Chrome/Edge only;
+  // Real voice input via the browser speech API (en-US). Chrome/Edge only;
   // elsewhere the button falls back to pre-filling a sample message.
   function toggleMic() {
     if (listening) {
@@ -319,11 +319,11 @@ export default function UserPhone() {
     const SpeechRecognitionImpl =
       (window as any).SpeechRecognition ?? (window as any).webkitSpeechRecognition;
     if (!SpeechRecognitionImpl) {
-      setInput("Cho mình một combo gà rán classic, không cay");
+      setInput("I want one classic fried chicken combo, not spicy");
       return;
     }
     const recognition = new SpeechRecognitionImpl();
-    recognition.lang = "vi-VN";
+    recognition.lang = "en-US";
     recognition.interimResults = true;
     recognition.continuous = false;
     recognition.onresult = (event: any) => {
@@ -362,7 +362,7 @@ export default function UserPhone() {
 
   function acceptSuggestion(suggestion: AddonSuggestion) {
     void postFeedback(suggestion, "accepted");
-    submitMessage(`Thêm 1 ${suggestion.name}`);
+    submitMessage(`Add 1 ${suggestion.name}`);
   }
 
   function declineSuggestion(traceId: string, suggestion: AddonSuggestion) {
@@ -371,7 +371,7 @@ export default function UserPhone() {
   }
 
   function acceptBillSwap(proposal: BillProposal) {
-    submitMessage(`Đồng ý đổi combo (swap ${proposal.swapId})`);
+    submitMessage(`Agree to switch combo (swap ${proposal.swapId})`);
   }
 
   return (
@@ -383,15 +383,15 @@ export default function UserPhone() {
           </div>
           <div>
             <span className="oa-name">
-              KFC Việt Nam <VerifiedBadge />
+              KFC Vietnam <VerifiedBadge />
             </span>
-            <small>Official Account · trả lời trong vài giây</small>
+            <small>Official Account · replies in seconds</small>
           </div>
           <Link
             href="/voice"
             className="phone__voice-link"
-            title="Nói chuyện với Đại sứ ảo"
-            aria-label="Mở Đại sứ ảo, nói chuyện bằng giọng nói"
+            title="Talk to the virtual ambassador"
+            aria-label="Open the virtual ambassador for voice ordering"
           >
             🎤
           </Link>
@@ -401,8 +401,8 @@ export default function UserPhone() {
         <div className="messages" aria-live="polite" ref={messagesRef}>
           {messages.length === 0 ? (
             <div className="empty-state">
-              <span>Gà nóng, chat là tới. Hôm nay bạn thèm gì?</span>
-              <p>Nhắn tiếng Việt tự nhiên, agent tự tra menu, giá thật, không bịa.</p>
+              <span>Hot chicken is one chat away. What are you craving today?</span>
+              <p>Message naturally. The agent checks the real menu and prices, no guessing.</p>
               <div className="empty-prompts">
                 {emptyPrompts.map((prompt) => (
                   <button key={prompt} type="button" onClick={() => submitMessage(prompt)} disabled={isBusy}>
@@ -424,7 +424,7 @@ export default function UserPhone() {
             ))
           )}
           {isBusy ? (
-            <div className="typing" aria-label="Assistant đang trả lời">
+            <div className="typing" aria-label="Assistant is replying">
               <i />
               <i />
               <i />
@@ -447,8 +447,8 @@ export default function UserPhone() {
             className={`composer__voice ${listening ? "is-listening" : ""}`}
             type="button"
             onClick={toggleMic}
-            title={listening ? "Đang nghe... bấm để dừng" : "Nói tiếng Việt (Chrome/Edge)"}
-            aria-label={listening ? "Đang nghe, bấm để dừng" : "Nhập bằng giọng nói"}
+            title={listening ? "Listening... press to stop" : "Voice input (Chrome/Edge)"}
+            aria-label={listening ? "Listening, press to stop" : "Voice input"}
             aria-pressed={listening}
           >
             <MicIcon />
@@ -456,10 +456,10 @@ export default function UserPhone() {
           <input
             value={input}
             onChange={(event) => setInput(event.target.value)}
-            placeholder="Nhắn cho KFC..."
+            placeholder="Message KFC..."
             disabled={isBusy}
           />
-          <button className="composer__send" type="submit" disabled={isBusy || !input.trim()} aria-label="Gửi">
+          <button className="composer__send" type="submit" disabled={isBusy || !input.trim()} aria-label="Send">
             <SendIcon />
           </button>
         </form>

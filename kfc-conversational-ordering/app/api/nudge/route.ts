@@ -46,7 +46,7 @@ export async function POST(request: Request) {
     return Response.json({
       ok: false,
       reason: "no_history",
-      message: "Khách chưa có lịch sử đơn, nudge chỉ gửi cho khách đã từng đặt (opt-in).",
+      message: "This customer has no order history yet. Nudges are only sent to opted-in returning customers.",
     });
   }
 
@@ -64,27 +64,27 @@ export async function POST(request: Request) {
   );
   const daysSince = Math.max(1, Math.round(decision.elapsedDays));
 
-  const spice = profile.spice === "spicy" ? " cay" : "";
+  const spice = profile.spice === "spicy" ? " spicy" : "";
   const context = normalizeContext({ weather, hour });
   const addon = suggestAddons([{ catalogId: profile.usual.catalogId, quantity: 1 }], context, profile);
 
   const opener =
     weather === "rainy"
-      ? "Trời mưa thế này"
+      ? "Rainy day"
       : weather === "hot"
-        ? "Trời nóng thế này, làm gì mát mát"
+        ? "Hot day, something cold sounds good"
         : context.daypart === "evening"
-          ? "Tối nay"
-          : "Trưa nay";
-  const gap = daysSince <= 1 ? "Hôm qua bạn vừa đặt" : `Đã ${daysSince} ngày rồi từ lần bạn đặt`;
+          ? "This evening"
+          : "Lunch today";
+  const gap = daysSince <= 1 ? "You ordered yesterday" : `It has been ${daysSince} days since your last order`;
   const addonLine =
     addon.decision === "suggest" && addon.suggestion
-      ? ` Thêm ${addon.suggestion.name} (${addon.suggestion.displayPrice}) như mọi khi?`
+      ? ` Add ${addon.suggestion.name} (${addon.suggestion.displayPrice}) like usual?`
       : "";
 
   const message =
-    `${opener}, ăn KFC không? ${gap} ${usualItem.name}${spice} (${formatVnd(usualItem.priceVnd)}).` +
-    `${addonLine} Nhắn "như cũ" là mình lên đơn liền. (Nhắn "dừng" để tắt thông báo.)`;
+    `${opener}, want KFC? ${gap}. Your usual is ${usualItem.name}${spice} (${formatVnd(usualItem.priceVnd)}).` +
+    `${addonLine} Reply "usual" and I will build the order. Reply "stop" to turn off reminders.`;
 
   return Response.json({
     ok: true,
@@ -102,7 +102,7 @@ export async function POST(request: Request) {
       usual: profile.usual.catalogId,
       weather,
       daypart: context.daypart,
-      guardrails: "opt-in · toi da 1/tuan · tu tat sau 2 lan bo qua",
+      guardrails: "opt-in · max 1/week · auto-mute after 2 ignores",
     },
   });
 }

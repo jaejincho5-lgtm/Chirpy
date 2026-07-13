@@ -17,25 +17,25 @@ const STAGE_FLOW: Record<OmsStage, OmsStage[]> = {
 };
 
 const STAGE_LABEL: Record<OmsStage, string> = {
-  placed: "Mới",
-  preparing: "Đang chuẩn bị",
-  ready: "Sẵn sàng",
-  completed: "Hoàn tất",
-  cancelled: "Đã hủy",
+  placed: "New",
+  preparing: "Preparing",
+  ready: "Ready",
+  completed: "Completed",
+  cancelled: "Cancelled",
 };
 
 const ACTION_LABEL: Record<OmsStage, string> = {
-  placed: "Đưa về Mới",
-  preparing: "Nhận đơn",
-  ready: "Sẵn sàng",
-  completed: "Hoàn tất",
-  cancelled: "Hủy",
+  placed: "Move to New",
+  preparing: "Accept order",
+  ready: "Ready",
+  completed: "Completed",
+  cancelled: "Cancel",
 };
 
 const STAGE_ORDER: OmsStage[] = ["placed", "preparing", "ready", "completed", "cancelled"];
 
 // FNV-1a over the order id — a stable, unique-per-order hex digest so the fake
-// OMS payload carries a distinct trace/signature for every đơn hàng.
+// OMS payload carries a distinct trace/signature for every order row.
 function fnv1a(seed: string): string {
   let h = 0x811c9dc5;
   for (let i = 0; i < seed.length; i++) {
@@ -73,8 +73,8 @@ export function OrdersModule() {
   const [orders, setOrders] = useState<OmsOrderRow[] | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  // Order ids we've just notified the customer about — drives the "đã nhắn
-  // khách" chip so the operator sees the proactive push landed.
+  // Order ids we've just notified the customer about. This drives the
+  // "customer notified" chip so the operator sees the proactive push landed.
   const [notified, setNotified] = useState<Record<string, string>>({});
   // Clicked order → JSON inspector modal ("fake" API call to the OMS dashboard).
   const [inspect, setInspect] = useState<OmsOrderRow | null>(null);
@@ -134,7 +134,7 @@ export function OrdersModule() {
     setBusyId(null);
     if (!res?.ok) {
       const json = (await res?.json().catch(() => null)) as { error?: string } | null;
-      setError(json?.error ?? "Không cập nhật được trạng thái.");
+      setError(json?.error ?? "Could not update status.");
       load(); // reconcile with server truth
       return;
     }
@@ -157,8 +157,8 @@ export function OrdersModule() {
   if (!orders) {
     return (
       <section className="ops">
-        <p className="rail-title">Đơn hàng, hàng đợi OMS</p>
-        <p className="ops__empty">Đang tải…</p>
+        <p className="rail-title">Orders, OMS queue</p>
+        <p className="ops__empty">Loading...</p>
       </section>
     );
   }
@@ -168,7 +168,7 @@ export function OrdersModule() {
   return (
     <section className="ops">
       <div className="ops__head">
-        <p className="rail-title">Đơn hàng, hàng đợi OMS (live)</p>
+        <p className="rail-title">Orders, OMS queue (live)</p>
         <div className="oms-counts">
           {counts.map(({ stage, n }) => (
             <span key={stage} className={`oms-count oms-count--${stage}`}>
@@ -186,7 +186,7 @@ export function OrdersModule() {
               key={order.id}
               role="button"
               tabIndex={0}
-              title="Xem JSON gửi sang OMS"
+              title="View JSON sent to OMS"
               onClick={() => setInspect(order)}
               onKeyDown={(e) => {
                 if (e.key === "Enter" || e.key === " ") {
@@ -204,7 +204,7 @@ export function OrdersModule() {
               <p className="oms-row__items">{order.itemsSummary || "—"}</p>
               {notified[order.id] ? (
                 <p className="oms-row__notice" title={notified[order.id]}>
-                  📲 Đã nhắn khách: “{notified[order.id]}”
+                  📲 Customer notified: “{notified[order.id]}”
                 </p>
               ) : null}
               <div className="oms-row__foot">
@@ -225,13 +225,13 @@ export function OrdersModule() {
                       {ACTION_LABEL[next]}
                     </button>
                   ))}
-                  {STAGE_FLOW[order.stage].length === 0 ? <span className="oms-terminal">,  kết thúc , </span> : null}
+                  {STAGE_FLOW[order.stage].length === 0 ? <span className="oms-terminal">complete</span> : null}
                 </div>
               </div>
             </div>
           ))
         ) : (
-          <p className="ops__empty">Chưa có đơn nào. Đặt một đơn ở /user để thấy nó xuất hiện ở đây.</p>
+          <p className="ops__empty">No orders yet. Place an order in /user to see it here.</p>
         )}
       </div>
       {inspect ? (
@@ -242,13 +242,13 @@ export function OrdersModule() {
                 <b className="oms-modal__num">{inspect.omsOrderNumber}</b>
                 <code className="oms-modal__endpoint">POST https://oms.kfc.vn/api/v2/orders/sync</code>
               </div>
-              <button type="button" className="oms-modal__close" onClick={() => setInspect(null)} aria-label="Đóng">
+              <button type="button" className="oms-modal__close" onClick={() => setInspect(null)} aria-label="Close">
                 ✕
               </button>
             </div>
             <pre className="oms-modal__json">{JSON.stringify(omsPayload(inspect), null, 2)}</pre>
             <p className={`oms-modal__status oms-modal__status--${syncState}`}>
-              {syncState === "sending" ? "⏳ Đang gửi payload sang OMS…" : "✓ Copied to OMS dashboard"}
+              {syncState === "sending" ? "⏳ Sending payload to OMS..." : "✓ Copied to OMS dashboard"}
             </p>
           </div>
         </div>

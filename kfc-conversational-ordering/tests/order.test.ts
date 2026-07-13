@@ -166,7 +166,7 @@ if (!freeship.ok) throw new Error("FREESHIP should apply");
 assert.equal(freeship.order.totals.deliveryFeeVnd, 0, "FREESHIP waives fee regardless of apply order");
 
 // --- cartForNewRequest: a new request after checkout never reuses the cart ---
-// Regression: "như cũ" (reorder_usual) or add_to_cart in the same session as a
+// Regression: "the usual" (reorder_usual) or add_to_cart in the same session as a
 // placed order used to append to the already-charged cart and double every line.
 {
   const { cartForNewRequest } = await import("../lib/order");
