@@ -2537,6 +2537,24 @@ button:disabled { cursor: default; }
   color: var(--ink-soft);
 }
 
+.ops-login__hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px !important;
+  padding: 5px 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--cream);
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.ops-login__hint code {
+  font: 700 12px/1 var(--font-mono);
+  color: var(--red-deep);
+}
+
 .ops-login__card input {
   font: inherit;
   padding: 11px 14px;

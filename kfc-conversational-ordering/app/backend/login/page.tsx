@@ -41,6 +41,9 @@ export default function BackendLoginPage() {
           <div>
             <h1>Operations area</h1>
             <p>Enter the password to open the console</p>
+            <p className="ops-login__hint">
+              Password: <code>letmein</code>
+            </p>
           </div>
         </div>
         <input
